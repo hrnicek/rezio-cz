@@ -14,7 +14,7 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Building, Calendar, Folder, LayoutGrid } from 'lucide-vue-next';
+import { BookOpen, Building, Calendar, Folder, LayoutGrid, BarChart } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
@@ -32,6 +32,11 @@ const mainNavItems: NavItem[] = [
         title: 'Bookings',
         href: '/bookings',
         icon: Calendar,
+    },
+    {
+        title: 'Reports',
+        href: '/reports',
+        icon: BarChart,
     },
 ];
 

@@ -30,4 +30,9 @@ class Property extends Model
     {
         return $this->hasMany(Booking::class);
     }
+
+    public function seasonalPrices(): HasMany
+    {
+        return $this->hasMany(SeasonalPrice::class);
+    }
 }

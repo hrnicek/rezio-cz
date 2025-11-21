@@ -44,13 +44,20 @@ const breadcrumbs = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-            <div class="flex items-center gap-4">
-                <Button variant="outline" size="icon" as-child>
-                    <Link :href="route('properties.index')">
-                        <ChevronLeft class="h-4 w-4" />
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <Button variant="outline" size="icon" as-child>
+                        <Link :href="route('properties.index')">
+                            <ChevronLeft class="h-4 w-4" />
+                        </Link>
+                    </Button>
+                    <h2 class="text-2xl font-bold tracking-tight">Edit Property</h2>
+                </div>
+                <Button variant="outline" as-child>
+                    <Link :href="route('properties.seasonal-prices.index', property.id)">
+                        Manage Seasonal Prices
                     </Link>
                 </Button>
-                <h2 class="text-2xl font-bold tracking-tight">Edit Property</h2>
             </div>
 
             <div class="mx-auto w-full max-w-2xl">

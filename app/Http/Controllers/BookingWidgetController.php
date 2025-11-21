@@ -50,8 +50,8 @@ class BookingWidgetController extends Controller
         // Calculate price
         $start = \Carbon\Carbon::parse($validated['start_date']);
         $end = \Carbon\Carbon::parse($validated['end_date']);
-        $nights = $start->diffInDays($end);
-        $totalPrice = $nights * $property->price_per_night;
+
+        $totalPrice = $this->calculateTotalPrice($property, $start, $end);
 
         $booking = $property->bookings()->create([
             'user_id' => $property->user_id, // Owner
@@ -71,5 +71,38 @@ class BookingWidgetController extends Controller
         \Illuminate\Support\Facades\Mail::to($property->user->email)->send(new \App\Mail\NewBookingAlert($booking));
 
         return redirect()->back()->with('success', 'Booking request sent successfully!');
+    }
+
+    private function calculateTotalPrice(Property $property, \Carbon\Carbon $start, \Carbon\Carbon $end)
+    {
+        $seasonalPrices = $property->seasonalPrices()
+            ->where(function ($query) use ($start, $end) {
+                $query->whereBetween('start_date', [$start, $end])
+                    ->orWhereBetween('end_date', [$start, $end])
+                    ->orWhere(function ($query) use ($start, $end) {
+                        $query->where('start_date', '<=', $start)
+                            ->where('end_date', '>=', $end);
+                    });
+            })
+            ->get();
+
+        $totalPrice = 0;
+        $currentDate = $start->copy();
+
+        while ($currentDate->lt($end)) {
+            $price = $property->price_per_night;
+
+            foreach ($seasonalPrices as $season) {
+                if ($currentDate->between($season->start_date, $season->end_date)) {
+                    $price = $season->price_per_night;
+                    break;
+                }
+            }
+
+            $totalPrice += $price;
+            $currentDate->addDay();
+        }
+
+        return $totalPrice;
     }
 }

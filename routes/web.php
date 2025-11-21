@@ -22,6 +22,16 @@ use App\Http\Controllers\PropertyController;
 Route::resource('properties', PropertyController::class)
     ->middleware(['auth', 'verified']);
 
+use App\Http\Controllers\SeasonalPriceController;
+
+Route::resource('properties.seasonal-prices', SeasonalPriceController::class)
+    ->middleware(['auth', 'verified']);
+
+use App\Http\Controllers\ReportController;
+
+Route::get('/reports', [ReportController::class, 'index'])->name('reports.index')->middleware(['auth', 'verified']);
+Route::get('/reports/data', [ReportController::class, 'data'])->name('reports.data')->middleware(['auth', 'verified']);
+
 Route::get('/bookings/export', [BookingController::class, 'export'])->name('bookings.export');
 Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
 Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
