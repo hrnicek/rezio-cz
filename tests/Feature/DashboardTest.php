@@ -24,4 +24,30 @@ class DashboardTest extends TestCase
         $response = $this->get(route('dashboard'));
         $response->assertStatus(200);
     }
+
+    public function test_dashboard_displays_bookings()
+    {
+        $user = User::factory()->create();
+        $property = \App\Models\Property::factory()->create(['user_id' => $user->id]);
+        $booking = \App\Models\Booking::create([
+            'property_id' => $property->id,
+            'user_id' => $user->id,
+            'start_date' => now()->addDays(1),
+            'end_date' => now()->addDays(3),
+            'guest_info' => ['name' => 'Test Guest'],
+            'total_price' => 200,
+            'status' => 'confirmed',
+        ]);
+
+        $this->actingAs($user);
+
+        $response = $this->get(route('dashboard'));
+        $response->assertStatus(200);
+        $response->assertInertia(
+            fn($page) => $page
+                ->component('Dashboard')
+                ->has('bookings', 1)
+                ->where('bookings.0.key', $booking->id)
+        );
+    }
 }
