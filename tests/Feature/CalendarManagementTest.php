@@ -22,7 +22,6 @@ class CalendarManagementTest extends TestCase
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
             'total_price' => 100,
-            'guest_info' => ['name' => 'Test Guest'],
         ]);
         $booking->update(["status" => 'pending']); // Set status using new method
 
@@ -55,7 +54,6 @@ class CalendarManagementTest extends TestCase
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
             'total_price' => 100,
-            'guest_info' => ['name' => 'Guest 1'],
         ]);
         $booking1->update(["status" => 'confirmed']); // Set status using new method
 
@@ -65,7 +63,6 @@ class CalendarManagementTest extends TestCase
             'start_date' => now()->addDays(5),
             'end_date' => now()->addDays(7),
             'total_price' => 100,
-            'guest_info' => ['name' => 'Guest 2'],
         ]);
         $booking2->update(["status" => 'confirmed']); // Set status using new method
 
@@ -93,7 +90,6 @@ class CalendarManagementTest extends TestCase
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
             'total_price' => 100,
-            'guest_info' => ['name' => 'Test Guest'],
         ]);
         $booking->update(["status" => 'pending']); // Set status using new method
 
@@ -102,6 +98,6 @@ class CalendarManagementTest extends TestCase
         $response = $this->from(route('admin.bookings.index'))->delete(route('admin.bookings.destroy', $booking)); // Added ->from()
 
         $response->assertRedirect();
-        $this->assertDatabaseMissing('bookings', ['id' => $booking->id]);
+        $this->assertSoftDeleted('bookings', ['id' => $booking->id]);
     }
 }

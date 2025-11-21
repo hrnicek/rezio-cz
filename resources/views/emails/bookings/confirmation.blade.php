@@ -1,7 +1,7 @@
 <x-mail::message>
     # Booking Confirmation
 
-    Dear {{ $booking->guest_info['name'] }},
+    Dear {{ $booking->customer->first_name }} {{ $booking->customer->last_name }},
 
     Thank you for your booking at **{{ $booking->property->name }}**.
 

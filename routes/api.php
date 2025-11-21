@@ -1,17 +1,21 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\BookingController;
-use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Client\Api\ServiceController;
+use App\Http\Controllers\Client\Api\BookingController;
+use App\Http\Controllers\Client\Api\Booking\CalendarController;
+use App\Http\Controllers\Client\Api\Service\ListServicesController;
+use App\Http\Controllers\Client\Api\Booking\VerifyAvailabilityController;
 
 Route::prefix('bookings')->group(function () {
     Route::get('calendar', [BookingController::class, 'calendar'])->name('api.bookings.calendar');
     Route::post('verify', [BookingController::class, 'verify'])->name('api.bookings.verify');
     Route::post('verify-customer', [BookingController::class, 'verifyCustomer'])->name('api.bookings.verify-customer');
+    Route::post('/', [BookingController::class, 'store'])->name('api.bookings.store');
 });
 
 Route::prefix('services')->group(function () {
-    Route::get('/', [ServiceController::class, 'index'])->name('api.services.index');
+    Route::get('/', ListServicesController::class)->name('api.services.index');
     Route::post('availability', [ServiceController::class, 'availability'])->name('api.services.availability');
 });
 

@@ -20,6 +20,8 @@ abstract class BookingState extends State
             ->allowTransition(Confirmed::class, Cancelled::class)
             ->allowTransition(Confirmed::class, Paid::class)
             ->allowTransition(Paid::class, Completed::class)
-            ->allowTransition(Paid::class, Cancelled::class);
+            ->allowTransition(Paid::class, Cancelled::class)
+            ->allowTransition(Pending::class, Blocked::class)
+            ->allowTransition(Confirmed::class, Blocked::class);
     }
 }

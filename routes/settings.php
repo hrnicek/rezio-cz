@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Settings\PasswordController;
-use App\Http\Controllers\Settings\ProfileController;
-use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
+use App\Http\Controllers\Admin\Settings\PasswordController;
+use App\Http\Controllers\Admin\Settings\ProfileController;
+use App\Http\Controllers\Admin\Settings\TwoFactorAuthenticationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -20,7 +20,7 @@ Route::middleware('auth')->group(function () {
         ->name('user-password.update');
 
     Route::get('settings/appearance', function () {
-        return Inertia::render('settings/Appearance');
+        return Inertia::render('Admin/Settings/Appearance');
     })->name('appearance.edit');
 
     Route::get('settings/two-factor', [TwoFactorAuthenticationController::class, 'show'])

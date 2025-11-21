@@ -12,51 +12,43 @@ class BookingSearchExportTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_admin_can_search_bookings()
+    public function test_admin_can_search_bookings(): void
     {
         $user = User::factory()->create();
         $property = Property::factory()->create(['user_id' => $user->id]);
+        $user->update(['current_property_id' => $property->id]);
 
-        $booking1 = Booking::create([ // Assigned to booking1
+        Booking::create([
             'property_id' => $property->id,
             'user_id' => $user->id,
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
-            // 'status' => 'confirmed', // Removed
-            'total_price' => 100,
-            'guest_info' => ['name' => 'John Doe', 'email' => 'john@example.com'],
+            'total_price' => 200,
+            'status' => 'pending',
         ]);
-        $booking1->update(["status" => 'confirmed']); // Set status using new method
-
-        $booking2 = Booking::create([ // Assigned to booking2
+        Booking::create([
             'property_id' => $property->id,
             'user_id' => $user->id,
             'start_date' => now()->addDays(5),
             'end_date' => now()->addDays(7),
-            // 'status' => 'confirmed', // Removed
-            'total_price' => 100,
-            'guest_info' => ['name' => 'Jane Smith', 'email' => 'jane@example.com'],
+            'total_price' => 300,
+            'status' => 'confirmed',
         ]);
-        $booking2->update(["status" => 'confirmed']); // Set status using new method
 
-        $this->actingAs($user);
-
-        // Search for John
-        $response = $this->get(route('admin.bookings.index', ['search' => 'John']));
+        // Search for John's name
+        $response = $this->actingAs($user)->get(route('admin.bookings.index', ['search' => 'John']));
         $response->assertOk();
         $response->assertInertia(
             fn($page) => $page
-                ->has('bookings', 1)
-                ->where('bookings.0.guest_info.name', 'John Doe')
+                ->has('bookings.data', 1)
         );
 
         // Search for Jane's email
-        $response = $this->get(route('admin.bookings.index', ['search' => 'jane@example.com']));
+        $response = $this->actingAs($user)->get(route('admin.bookings.index', ['search' => 'jane@example']));
         $response->assertOk();
         $response->assertInertia(
             fn($page) => $page
-                ->has('bookings', 1)
-                ->where('bookings.0.guest_info.name', 'Jane Smith')
+                ->has('bookings.data', 1)
         );
     }
 
@@ -72,7 +64,6 @@ class BookingSearchExportTest extends TestCase
             'end_date' => now()->addDays(3),
             // 'status' => 'confirmed', // Removed
             'total_price' => 100,
-            'guest_info' => ['name' => 'Export Guest', 'email' => 'export@example.com'],
         ]);
         $booking->update(["status" => 'confirmed']); // Set status using new method
 

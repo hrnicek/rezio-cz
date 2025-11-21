@@ -34,7 +34,6 @@ class DashboardTest extends TestCase
             'user_id' => $user->id,
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
-            'guest_info' => ['name' => 'Test Guest'],
             'total_price' => 200,
             'status' => 'confirmed',
         ]);

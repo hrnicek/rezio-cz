@@ -4,9 +4,9 @@
     You have a new booking for **{{ $booking->property->name }}**.
 
     **Guest Details:**
-    - **Name:** {{ $booking->guest_info['name'] }}
-    - **Email:** {{ $booking->guest_info['email'] }}
-    - **Phone:** {{ $booking->guest_info['phone'] ?? 'N/A' }}
+    - **Name:** {{ $booking->customer->first_name }} {{ $booking->customer->last_name }}
+    - **Email:** {{ $booking->customer->email }}
+    - **Phone:** {{ $booking->customer->phone ?? 'N/A' }}
 
     **Booking Details:**
     - **Check-in:** {{ $booking->start_date->format('M d, Y') }}

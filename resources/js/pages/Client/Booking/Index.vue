@@ -639,7 +639,7 @@
               <div v-if="submitError" class="rounded-lg bg-red-50 p-4 text-sm text-red-700">
                 <div class="flex items-center justify-between gap-3">
                   <span>{{ submitError }}</span>
-                  <Link :href="route('contact')" class="rounded-md bg-red-600 px-3 py-1.5 text-white hover:bg-red-700">Kontaktovat nás</Link>
+                  <Link :href="route('welcome')" class="rounded-md bg-red-600 px-3 py-1.5 text-white hover:bg-red-700">Kontaktovat nás</Link>
                 </div>
               </div>
 
@@ -1318,6 +1318,7 @@ async function submit() {
   submitError.value = "";
   try {
     const payload = {
+      property_id: page.props.property?.id,
       start_date: startDate.value,
       end_date: endDate.value,
       customer: {

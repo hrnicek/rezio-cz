@@ -12,52 +12,44 @@ class SeasonSeeder extends Seeder
      */
     public function run(): void
     {
-        // Default Season (Mimo sezónu) - rok 2025
+        // Default Season (Mimo sezónu)
         Season::create([
             'name' => 'MIMO SEZÓNU',
-            'start_date' => '2025-01-01',
-            'end_date' => '2025-12-31',
-            'is_fixed_range' => false,
+            'start_month_day' => '01-01',
+            'end_month_day' => '12-31',
             'is_default' => true,
             'min_stay' => 1,
-            'check_in_days' => null,
-            'price' => 2500.00, // Default price for off-season
+            'price' => 2500,
         ]);
 
         // Léto (June 15 - August 31)
         Season::create([
             'name' => 'LÉTO',
-            'start_date' => '2025-06-15',
-            'end_date' => '2025-08-31',
-            'is_fixed_range' => false,
+            'start_month_day' => '06-15',
+            'end_month_day' => '08-31',
             'is_default' => false,
             'min_stay' => 5,
-            'check_in_days' => [6], // Saturday only
-            'price' => 5500.00, // Summer season price
+            'price' => 5500,
         ]);
 
         // Zima (December 20 - March 15)
         Season::create([
             'name' => 'ZIMA',
-            'start_date' => '2025-12-20',
-            'end_date' => '2026-03-15',
-            'is_fixed_range' => false,
+            'start_month_day' => '12-20',
+            'end_month_day' => '03-15',
             'is_default' => false,
             'min_stay' => 5,
-            'check_in_days' => [6], // Saturday only
-            'price' => 5000.00, // Winter season price
+            'price' => 5000,
         ]);
 
-        // Silvestr (Fixed range: December 28 - January 2)
+        // Silvestr (December 28 - January 2)
         Season::create([
             'name' => 'SILVESTR',
-            'start_date' => '2025-12-28',
-            'end_date' => '2026-01-02',
-            'is_fixed_range' => true,
+            'start_month_day' => '12-28',
+            'end_month_day' => '01-02',
             'is_default' => false,
             'min_stay' => 5,
-            'check_in_days' => [6], // Saturday only
-            'price' => 8000.00, // New Year's Eve premium price
+            'price' => 8000,
         ]);
     }
 }

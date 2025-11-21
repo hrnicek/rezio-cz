@@ -3,6 +3,7 @@ import type { LucideIcon } from 'lucide-vue-next';
 
 export interface Auth {
     user: User;
+    properties?: Property[];
 }
 
 export interface BreadcrumbItem {
@@ -17,23 +18,29 @@ export interface NavItem {
     isActive?: boolean;
 }
 
-export type AppPageProps<
-    T extends Record<string, unknown> = Record<string, unknown>,
-> = T & {
-    name: string;
-    quote: { message: string; author: string };
-    auth: Auth;
-    sidebarOpen: boolean;
-};
-
 export interface User {
     id: number;
     name: string;
     email: string;
-    avatar?: string;
-    email_verified_at: string | null;
-    created_at: string;
-    updated_at: string;
+    email_verified_at?: string;
+    two_factor_enabled?: boolean;
+    current_property_id?: number;
+    currentProperty?: Property;
 }
+
+export interface Property {
+    id: number;
+    name: string;
+    slug: string;
+}
+
+export type PageProps<
+    T extends Record<string, unknown> = Record<string, unknown>,
+> = T & {
+    auth: Auth;
+    name: string;
+    quote: { message: string; author: string };
+    sidebarOpen: boolean;
+};
 
 export type BreadcrumbItemType = BreadcrumbItem;

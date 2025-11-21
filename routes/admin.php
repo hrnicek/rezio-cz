@@ -7,13 +7,15 @@ use App\Http\Controllers\Admin\SeasonController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\CleaningTaskController;
 use App\Http\Controllers\Admin\BookingController;
+use App\Http\Controllers\Admin\SwitchPropertyController;
 
 Route::middleware(['auth', 'verified'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
 
-        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+        Route::post('/switch-property', SwitchPropertyController::class)->name('switch-property');
 
         Route::resource('properties', PropertyController::class);
         Route::resource('properties.seasons', SeasonController::class)->except(['show', 'create', 'edit']);

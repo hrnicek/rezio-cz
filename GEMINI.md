@@ -1,3 +1,7 @@
+Admin test login:
+email: hrncir@zondy.cz
+password: password
+
 <laravel-boost-guidelines>
 === foundation rules ===
 

@@ -51,7 +51,7 @@ class TwoFactorChallengeTest extends TestCase
             ->assertOk()
             ->assertInertia(
                 fn(Assert $page) => $page
-                    ->component('auth/TwoFactorChallenge')
+                    ->component('Auth/TwoFactorChallenge')
             );
     }
 }

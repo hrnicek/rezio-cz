@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('address')->nullable();
             $table->text('description')->nullable();
+            $table->decimal('price_per_night', 10, 2)->default(0);
             $table->string('widget_token')->unique();
             $table->timestamps();
         });

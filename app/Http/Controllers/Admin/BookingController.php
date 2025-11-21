@@ -15,21 +15,27 @@ class BookingController extends Controller
     {
         $status = $request->input('status');
         $search = $request->input('search');
+        $currentPropertyId = $request->user()->current_property_id;
 
-        $bookings = Booking::with(['property'])
-            ->when($status, function ($query, $status) {
+        $bookings = Booking::with(['property', 'customer'])
+            ->when($currentPropertyId, function ($query, $propertyId) {
+                return $query->where('property_id', $propertyId);
+            })
+            ->when($request->status, function ($query, $status) {
                 return $query->where('status', $status);
             })
-            ->when($search, function ($query, $search) {
-                return $query->where(function ($q) use ($search) {
-                    $q->where('guest_info->name', 'like', "%{$search}%")
-                        ->orWhere('guest_info->email', 'like', "%{$search}%");
+            ->when($request->search, function ($query, $search) {
+                return $query->whereHas('customer', function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
                 });
             })
             ->latest()
-            ->get();
+            ->paginate(15)
+            ->withQueryString();
 
-        return Inertia::render('Admin/Bookings/Index', [
+        return Inertia::render('Admin/Properties/Bookings/Index', [
             'bookings' => $bookings,
             'filters' => [
                 'status' => $status,
@@ -42,15 +48,20 @@ class BookingController extends Controller
     {
         $status = $request->input('status');
         $search = $request->input('search');
+        $currentPropertyId = $request->user()->current_property_id;
 
-        $bookings = Booking::with(['property'])
+        $bookings = Booking::with(['property', 'customer'])
+            ->when($currentPropertyId, function ($query, $propertyId) {
+                return $query->where('property_id', $propertyId);
+            })
             ->when($status, function ($query, $status) {
                 return $query->where('status', $status);
             })
             ->when($search, function ($query, $search) {
-                return $query->where(function ($q) use ($search) {
-                    $q->where('guest_info->name', 'like', "%{$search}%")
-                        ->orWhere('guest_info->email', 'like', "%{$search}%");
+                return $query->whereHas('customer', function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
                 });
             })
             ->latest()
@@ -72,9 +83,9 @@ class BookingController extends Controller
                 fputcsv($file, [
                     $booking->id,
                     $booking->property->name,
-                    $booking->guest_info['name'] ?? '',
-                    $booking->guest_info['email'] ?? '',
-                    $booking->guest_info['phone'] ?? '',
+                    $booking->customer ? $booking->customer->first_name . ' ' . $booking->customer->last_name : '',
+                    $booking->customer->email ?? '',
+                    $booking->customer->phone ?? '',
                     $booking->start_date->format('Y-m-d'),
                     $booking->end_date->format('Y-m-d'),
                     $booking->status ?? '',
@@ -105,12 +116,20 @@ class BookingController extends Controller
             return back()->withErrors(['start_date' => 'Selected dates are not available.']);
         }
 
+        // Create a customer for the blocked date
+        $customer = \App\Models\Customer::create([
+            'first_name' => 'Blocked',
+            'last_name' => 'Date',
+            'email' => 'blocked@system.local',
+            'phone' => 'N/A',
+        ]);
+
         $newBooking = Booking::create([
             'property_id' => $property->id,
             'user_id' => auth()->id(),
+            'customer_id' => $customer->id,
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
-            'guest_info' => ['name' => 'Blocked'],
             'total_price' => 0,
             'status' => $validated['status'],
         ]);

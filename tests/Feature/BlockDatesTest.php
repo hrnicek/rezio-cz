@@ -51,7 +51,6 @@ class BlockDatesTest extends TestCase
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
             'total_price' => 100,
-            'guest_info' => ['name' => 'Existing Guest'],
         ]);
         $existingBooking->update(["status" => 'confirmed']); // Set status using new method
 
@@ -79,7 +78,6 @@ class BlockDatesTest extends TestCase
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
             'total_price' => 0,
-            'guest_info' => ['name' => 'Blocked'],
         ]);
         $blockedBooking->update(["status" => 'blocked']); // Set status using new method
 

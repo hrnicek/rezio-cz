@@ -3,11 +3,11 @@ import { defineStore } from 'pinia';
 export const useBookingStore = defineStore('booking', {
   state: () => ({
     customer: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      note: '',
+      firstName: 'Jakub',
+      lastName: 'Novák',
+      email: 'jakub@novak.com',
+      phone: '+420123456789',
+      note: 'test',
     },
     startDate: null as string | null,
     endDate: null as string | null,

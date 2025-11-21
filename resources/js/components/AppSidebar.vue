@@ -15,6 +15,7 @@ import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { BookOpen, Building, Calendar, Folder, LayoutGrid, BarChart } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
+import PropertySwitcher from './PropertySwitcher.vue';
 
 declare const route: any;
 
@@ -65,6 +66,9 @@ const footerNavItems: NavItem[] = [
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                    <PropertySwitcher />
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarHeader>

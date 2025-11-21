@@ -65,6 +65,7 @@ class CreateBookingAction
 
             // 6. Create booking
             $booking = Booking::create([
+                'property_id' => $data['property_id'] ?? null,
                 'customer_id' => $customer->id,
                 'season_id' => $season?->id,
                 'start_date' => $data['start_date'],

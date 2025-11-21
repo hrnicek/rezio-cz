@@ -18,12 +18,13 @@ class BookingTest extends TestCase
     {
         $user = User::factory()->create();
         $property = Property::factory()->create(['user_id' => $user->id]);
+        $user->update(['current_property_id' => $property->id]);
+
         $booking = Booking::create([
             'property_id' => $property->id,
             'user_id' => $user->id,
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
-            'guest_info' => ['name' => 'Test Guest', 'email' => 'test@example.com', 'phone' => '123'],
             'total_price' => 200,
             'status' => 'pending',
         ]);
@@ -33,8 +34,8 @@ class BookingTest extends TestCase
         $response->assertStatus(200);
         $response->assertInertia(
             fn(Assert $page) => $page
-                ->component('Admin/Bookings/Index')
-                ->has('bookings', 1)
+                ->component('Admin/Properties/Bookings/Index')
+                ->has('bookings.data', 1)
         );
     }
 
@@ -42,13 +43,13 @@ class BookingTest extends TestCase
     {
         $user = User::factory()->create();
         $property = Property::factory()->create(['user_id' => $user->id]);
+        $user->update(['current_property_id' => $property->id]);
 
         $bookingPending = Booking::create([
             'property_id' => $property->id,
             'user_id' => $user->id,
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
-            'guest_info' => ['name' => 'Pending Guest'],
             'total_price' => 200,
             'status' => 'pending',
         ]);
@@ -58,7 +59,6 @@ class BookingTest extends TestCase
             'user_id' => $user->id,
             'start_date' => now()->addDays(5),
             'end_date' => now()->addDays(7),
-            'guest_info' => ['name' => 'Confirmed Guest'],
             'total_price' => 200,
             'status' => 'confirmed',
         ]);
@@ -68,10 +68,10 @@ class BookingTest extends TestCase
         $response->assertStatus(200);
         $response->assertInertia(
             fn(Assert $page) => $page
-                ->component('Admin/Bookings/Index')
-                ->has('bookings', 1)
-                ->where('bookings.0.id', $bookingConfirmed->id)
-                ->where('bookings.0.status', 'confirmed')
+                ->component('Admin/Properties/Bookings/Index')
+                ->has('bookings.data', 1)
+                ->where('bookings.data.0.id', $bookingConfirmed->id)
+                ->where('bookings.data.0.status', 'confirmed')
         );
 
         $confirmedBooking = Booking::find($bookingConfirmed->id);
@@ -87,7 +87,6 @@ class BookingTest extends TestCase
             'user_id' => $user->id,
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
-            'guest_info' => ['name' => 'Test Guest'],
             'total_price' => 200,
             'status' => 'pending',
         ]);
@@ -110,7 +109,6 @@ class BookingTest extends TestCase
             'user_id' => $user->id,
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
-            'guest_info' => ['name' => 'Test Guest'],
             'total_price' => 200,
             'status' => 'pending',
         ]);
@@ -118,7 +116,7 @@ class BookingTest extends TestCase
         $response = $this->actingAs($user)->from(route('admin.bookings.index'))->delete(route('admin.bookings.destroy', $booking));
 
         $response->assertRedirect();
-        $this->assertDatabaseMissing('bookings', [
+        $this->assertSoftDeleted('bookings', [
             'id' => $booking->id,
         ]);
     }
@@ -133,7 +131,6 @@ class BookingTest extends TestCase
             'user_id' => $user1->id,
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
-            'guest_info' => ['name' => 'Test Guest'],
             'total_price' => 200,
             'status' => 'pending',
         ]);

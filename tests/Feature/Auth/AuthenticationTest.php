@@ -80,7 +80,7 @@ class AuthenticationTest extends TestCase
         $response = $this->actingAs($user)->from(route('admin.dashboard'))->post(route('logout')); // Added ->from()
 
         $this->assertGuest();
-        $response->assertRedirect(route('client.home'));
+        $response->assertRedirect(route('welcome'));
     }
 
     public function test_users_are_rate_limited()

@@ -18,6 +18,15 @@ class Booking extends Model
     /** @use HasFactory<\Database\Factories\BookingFactory> */
     use HasFactory, SoftDeletes, HasStates, LogsActivity;
 
+    public const ALLOWED_STATUSES = ['pending', 'confirmed', 'cancelled', 'paid', 'blocked'];
+
+    protected static function booted(): void
+    {
+        static::deleted(function (Booking $booking) {
+            $booking->cleaningTask()->delete();
+        });
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -27,26 +36,32 @@ class Booking extends Model
     }
 
     protected $fillable = [
-        'code',
+        'property_id',
+        'user_id',
+        'customer_id',
+        'season_id',
         'start_date',
         'end_date',
         'date_start',
         'date_end',
         'total_price',
         'status',
-        'customer_id',
         'notes',
+        'reminders_sent_at',
     ];
 
-    protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
-        'date_start' => 'datetime',
-        'date_end' => 'datetime',
-        'total_price' => 'decimal:2',
-        'status' => BookingState::class,
-        'guest_info' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'start_date' => 'date',
+            'end_date' => 'date',
+            'date_start' => 'datetime',
+            'date_end' => 'datetime',
+            'total_price' => 'decimal:2',
+            'status' => BookingState::class,
+            'reminders_sent_at' => 'datetime',
+        ];
+    }
 
     public function customer(): BelongsTo
     {
@@ -68,5 +83,10 @@ class Booking extends Model
         return $this->belongsToMany(Service::class, 'booking_services')
             ->withPivot(['quantity', 'price_total'])
             ->withTimestamps();
+    }
+
+    public function cleaningTask(): HasOne
+    {
+        return $this->hasOne(CleaningTask::class);
     }
 }
