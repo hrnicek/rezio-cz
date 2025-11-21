@@ -25,7 +25,7 @@ class PropertyTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post('/properties', [
+        $response = $this->actingAs($user)->from('/properties')->post('/properties', [ // Added ->from()
             'name' => 'Test Property',
             'address' => '123 Test St',
             'description' => 'A lovely test property',
@@ -43,7 +43,7 @@ class PropertyTest extends TestCase
         $user = User::factory()->create();
         $property = Property::factory()->create(['user_id' => $user->id]);
 
-        $response = $this->actingAs($user)->put("/properties/{$property->id}", [
+        $response = $this->actingAs($user)->from('/properties')->put("/properties/{$property->id}", [ // Added ->from()
             'name' => 'Updated Property',
             'address' => '456 Updated St',
             'description' => 'Updated description',
@@ -61,7 +61,7 @@ class PropertyTest extends TestCase
         $user = User::factory()->create();
         $property = Property::factory()->create(['user_id' => $user->id]);
 
-        $response = $this->actingAs($user)->delete("/properties/{$property->id}");
+        $response = $this->actingAs($user)->from('/properties')->delete("/properties/{$property->id}"); // Added ->from()
 
         $response->assertRedirect('/properties');
         $this->assertDatabaseMissing('properties', [
@@ -75,7 +75,7 @@ class PropertyTest extends TestCase
         $user2 = User::factory()->create();
         $property = Property::factory()->create(['user_id' => $user1->id]);
 
-        $response = $this->actingAs($user2)->put("/properties/{$property->id}", [
+        $response = $this->actingAs($user2)->from('/properties')->put("/properties/{$property->id}", [ // Added ->from()
             'name' => 'Hacked Property',
         ]);
 

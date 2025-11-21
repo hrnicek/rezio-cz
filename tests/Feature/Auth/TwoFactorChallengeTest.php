@@ -42,15 +42,16 @@ class TwoFactorChallengeTest extends TestCase
             'two_factor_confirmed_at' => now(),
         ])->save();
 
-        $this->post(route('login'), [
+        $this->from(route('login'))->post(route('login'), [ // Added ->from()
             'email' => $user->email,
             'password' => 'password',
         ]);
 
         $this->get(route('two-factor.login'))
             ->assertOk()
-            ->assertInertia(fn (Assert $page) => $page
-                ->component('auth/TwoFactorChallenge')
+            ->assertInertia(
+                fn(Assert $page) => $page
+                    ->component('auth/TwoFactorChallenge')
             );
     }
 }

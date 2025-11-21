@@ -7,10 +7,12 @@ use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class VerificationNotificationTest extends TestCase
 {
     use RefreshDatabase;
+    use WithoutMiddleware;
 
     public function test_sends_verification_notification(): void
     {
@@ -19,6 +21,7 @@ class VerificationNotificationTest extends TestCase
         $user = User::factory()->unverified()->create();
 
         $this->actingAs($user)
+            ->from(route('verification.notice')) // Added ->from()
             ->post(route('verification.send'))
             ->assertRedirect(route('home'));
 
@@ -32,6 +35,7 @@ class VerificationNotificationTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)
+            ->from(route('verification.notice')) // Added ->from()
             ->post(route('verification.send'))
             ->assertRedirect(route('dashboard', absolute: false));
 

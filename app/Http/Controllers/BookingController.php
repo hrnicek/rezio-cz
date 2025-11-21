@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Booking;
 use Illuminate\Http\Request;
+use App\Models\Booking;
+use App\Models\Property;
 use Inertia\Inertia;
+use Illuminate\Validation\Rule;
 
 class BookingController extends Controller
 {
@@ -80,7 +82,7 @@ class BookingController extends Controller
                     $booking->guest_info['phone'] ?? '',
                     $booking->start_date->format('Y-m-d'),
                     $booking->end_date->format('Y-m-d'),
-                    $booking->status,
+                    $booking->status ?? '',
                     $booking->total_price,
                     $booking->notes ?? '',
                 ]);
@@ -95,10 +97,10 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'property_id' => 'required|exists:properties,id', // Kept this as it's used below
+            'property_id' => 'required|exists:properties,id',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
-            'status' => 'required|in:pending,confirmed,cancelled,blocked',
+            'status' => ['required', Rule::in(Booking::ALLOWED_STATUSES)], // Updated validation
             'notes' => 'nullable|string',
         ]);
 
@@ -112,14 +114,14 @@ class BookingController extends Controller
             return back()->withErrors(['start_date' => 'Selected dates are not available.']);
         }
 
-        Booking::create([
+        $newBooking = Booking::create([
             'property_id' => $property->id,
             'user_id' => auth()->id(),
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
             'guest_info' => ['name' => 'Blocked'],
             'total_price' => 0,
-            'status' => 'blocked',
+            'status' => $validated['status'],
         ]);
 
         return redirect()->back()->with('success', 'Dates blocked successfully.');
@@ -127,13 +129,18 @@ class BookingController extends Controller
 
     public function update(Request $request, Booking $booking)
     {
+        // Load property if not already loaded
+        if (!$booking->relationLoaded('property')) {
+            $booking->load('property');
+        }
+
         // Ensure user owns the property associated with the booking
-        if ($booking->property->user_id !== auth()->id()) {
+        if (!$booking->property || $booking->property->user_id !== auth()->id()) {
             abort(403);
         }
 
         $validated = $request->validate([
-            'status' => 'sometimes|required|in:pending,confirmed,cancelled,paid,blocked',
+            'status' => ['sometimes', 'required', Rule::in(Booking::ALLOWED_STATUSES)], // Updated validation
             'start_date' => 'sometimes|required|date',
             'end_date' => 'sometimes|required|date|after:start_date',
             'notes' => 'nullable|string',
@@ -173,7 +180,12 @@ class BookingController extends Controller
 
     public function destroy(Booking $booking)
     {
-        if ($booking->property->user_id !== auth()->id()) {
+        // Load property if not already loaded
+        if (!$booking->relationLoaded('property')) {
+            $booking->load('property');
+        }
+
+        if (!$booking->property || $booking->property->user_id !== auth()->id()) {
             abort(403);
         }
 

@@ -16,22 +16,22 @@ class CalendarManagementTest extends TestCase
     {
         $user = User::factory()->create();
         $property = Property::factory()->create(['user_id' => $user->id]);
-        $booking = Booking::create([
+        $booking = Booking::create([ // Assigned to booking
             'property_id' => $property->id,
             'user_id' => $user->id,
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
-            'status' => 'pending',
             'total_price' => 100,
             'guest_info' => ['name' => 'Test Guest'],
         ]);
+        $booking->update(["status" => 'pending']); // Set status using new method
 
         $this->actingAs($user);
 
         $newStart = now()->addDays(2)->startOfDay();
         $newEnd = now()->addDays(4)->startOfDay();
 
-        $response = $this->put(route('bookings.update', $booking), [
+        $response = $this->from(route('bookings.index'))->put(route('bookings.update', $booking), [ // Added ->from()
             'status' => 'confirmed',
             'start_date' => $newStart->format('Y-m-d'),
             'end_date' => $newEnd->format('Y-m-d'),
@@ -39,7 +39,7 @@ class CalendarManagementTest extends TestCase
 
         $response->assertRedirect();
         $booking->refresh();
-        $this->assertEquals('confirmed', $booking->status);
+        $this->assertEquals('confirmed', $booking->status); // Changed assertion
         $this->assertEquals($newStart->format('Y-m-d'), $booking->start_date->format('Y-m-d'));
         $this->assertEquals($newEnd->format('Y-m-d'), $booking->end_date->format('Y-m-d'));
     }
@@ -49,30 +49,30 @@ class CalendarManagementTest extends TestCase
         $user = User::factory()->create();
         $property = Property::factory()->create(['user_id' => $user->id]);
 
-        $booking1 = Booking::create([
+        $booking1 = Booking::create([ // Assigned to booking1
             'property_id' => $property->id,
             'user_id' => $user->id,
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
-            'status' => 'confirmed',
             'total_price' => 100,
             'guest_info' => ['name' => 'Guest 1'],
         ]);
+        $booking1->update(["status" => 'confirmed']); // Set status using new method
 
-        $booking2 = Booking::create([
+        $booking2 = Booking::create([ // Assigned to booking2
             'property_id' => $property->id,
             'user_id' => $user->id,
             'start_date' => now()->addDays(5),
             'end_date' => now()->addDays(7),
-            'status' => 'confirmed',
             'total_price' => 100,
             'guest_info' => ['name' => 'Guest 2'],
         ]);
+        $booking2->update(["status" => 'confirmed']); // Set status using new method
 
         $this->actingAs($user);
 
         // Try to move booking2 to overlap with booking1
-        $response = $this->put(route('bookings.update', $booking2), [
+        $response = $this->from(route('bookings.index'))->put(route('bookings.update', $booking2), [ // Added ->from()
             'status' => 'confirmed',
             'start_date' => now()->addDays(2)->format('Y-m-d'),
             'end_date' => now()->addDays(4)->format('Y-m-d'),
@@ -87,19 +87,19 @@ class CalendarManagementTest extends TestCase
     {
         $user = User::factory()->create();
         $property = Property::factory()->create(['user_id' => $user->id]);
-        $booking = Booking::create([
+        $booking = Booking::create([ // Assigned to booking
             'property_id' => $property->id,
             'user_id' => $user->id,
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
-            'status' => 'pending',
             'total_price' => 100,
             'guest_info' => ['name' => 'Test Guest'],
         ]);
+        $booking->update(["status" => 'pending']); // Set status using new method
 
         $this->actingAs($user);
 
-        $response = $this->delete(route('bookings.destroy', $booking));
+        $response = $this->from(route('bookings.index'))->delete(route('bookings.destroy', $booking)); // Added ->from()
 
         $response->assertRedirect();
         $this->assertDatabaseMissing('bookings', ['id' => $booking->id]);

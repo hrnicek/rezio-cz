@@ -23,9 +23,9 @@ class DashboardController extends Controller
                     ],
                     'customData' => [
                         'title' => $booking->guest_info['name'],
-                        'status' => $booking->status,
+                        'status' => $booking->status ?? '',
                         'notes' => $booking->notes,
-                        'class' => match ($booking->status) {
+                        'class' => match ($booking->status ?? '') {
                             'confirmed' => 'bg-green-500 text-white',
                             'pending' => 'bg-yellow-500 text-white',
                             'cancelled' => 'bg-red-500 text-white',
@@ -34,7 +34,7 @@ class DashboardController extends Controller
                         },
                     ],
                     'popover' => [
-                        'label' => $booking->guest_info['name'] . ' (' . $booking->status . ')',
+                        'label' => $booking->guest_info['name'] . ' (' . ($booking->status ?? '') . ')',
                     ],
                 ];
             });

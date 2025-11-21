@@ -32,13 +32,14 @@ class ReportingTest extends TestCase
         $property = Property::factory()->create(['user_id' => $user->id, 'price_per_night' => 100]);
 
         // Create a booking for 5 nights: 2025-01-01 to 2025-01-06
-        Booking::factory()->create([
+        $booking = Booking::factory()->create([ // Assigned to booking
             'property_id' => $property->id,
             'start_date' => '2025-01-01',
             'end_date' => '2025-01-06',
             'total_price' => 500,
-            'status' => 'confirmed',
+            // 'status' => 'confirmed', // Removed
         ]);
+        $booking->update(["status" => 'confirmed']); // Set status using new method
 
         $response = $this->actingAs($user)->get(route('reports.data', [
             'start_date' => '2025-01-01',
@@ -63,12 +64,13 @@ class ReportingTest extends TestCase
         $property2 = Property::factory()->create(['user_id' => $user->id]);
 
         // Property 1: 10 nights booked
-        Booking::factory()->create([
+        $booking1 = Booking::factory()->create([ // Assigned to booking1
             'property_id' => $property1->id,
             'start_date' => '2025-01-01',
             'end_date' => '2025-01-11',
-            'status' => 'confirmed',
+            // 'status' => 'confirmed', // Removed
         ]);
+        $booking1->update(["status" => 'confirmed']); // Set status using new method
 
         // Property 2: 0 nights booked
 

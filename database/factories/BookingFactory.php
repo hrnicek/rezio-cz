@@ -21,7 +21,7 @@ class BookingFactory extends Factory
 
         return [
             'property_id' => \App\Models\Property::factory(),
-            'user_id' => \App\Models\User::factory(),
+            'user_id' => \App\Models\User::factory(), // Changed from 1
             'start_date' => $startDate,
             'end_date' => $endDate,
             'guest_info' => [

@@ -32,15 +32,25 @@ use App\Http\Controllers\ReportController;
 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index')->middleware(['auth', 'verified']);
 Route::get('/reports/data', [ReportController::class, 'data'])->name('reports.data')->middleware(['auth', 'verified']);
 
-Route::get('/bookings/export', [BookingController::class, 'export'])->name('bookings.export');
-Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
-Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
-Route::put('/bookings/{booking}', [BookingController::class, 'update'])->name('bookings.update');
-Route::delete('/bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
+Route::get('/bookings/export', [BookingController::class, 'export'])->name('bookings.export')->middleware(['auth', 'verified']);
+Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index')->middleware(['auth', 'verified']);
+Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store')->middleware(['auth', 'verified']);
+Route::put('/bookings/{booking}', [BookingController::class, 'update'])->name('bookings.update')->middleware(['auth', 'verified']);
+Route::delete('/bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy')->middleware(['auth', 'verified']);
 
 use App\Http\Controllers\BookingWidgetController;
 
 Route::get('/book/{token}', [BookingWidgetController::class, 'show'])->name('widget.show');
 Route::post('/book/{token}', [BookingWidgetController::class, 'store'])->name('widget.store');
 
+use App\Http\Controllers\CleaningTaskController;
+
+Route::resource('cleaning-tasks', CleaningTaskController::class)
+    ->middleware(['auth', 'verified']);
+
+Route::post('cleaning-tasks/{cleaningTask}/complete', [CleaningTaskController::class, 'complete'])
+    ->middleware(['auth', 'verified'])
+    ->name('cleaning-tasks.complete');
+
+// Include settings routes
 require __DIR__ . '/settings.php';

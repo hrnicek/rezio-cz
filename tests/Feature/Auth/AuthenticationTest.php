@@ -23,7 +23,7 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->withoutTwoFactor()->create();
 
-        $response = $this->post(route('login.store'), [
+        $response = $this->from(route('login'))->post(route('login.store'), [ // Added ->from()
             'email' => $user->email,
             'password' => 'password',
         ]);
@@ -51,7 +51,7 @@ class AuthenticationTest extends TestCase
             'two_factor_confirmed_at' => now(),
         ])->save();
 
-        $response = $this->post(route('login'), [
+        $response = $this->from(route('login'))->post(route('login'), [ // Added ->from()
             'email' => $user->email,
             'password' => 'password',
         ]);
@@ -65,7 +65,7 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->post(route('login.store'), [
+        $this->from(route('login'))->post(route('login.store'), [ // Added ->from()
             'email' => $user->email,
             'password' => 'wrong-password',
         ]);
@@ -77,7 +77,7 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post(route('logout'));
+        $response = $this->actingAs($user)->from(route('dashboard'))->post(route('logout')); // Added ->from()
 
         $this->assertGuest();
         $response->assertRedirect(route('home'));
@@ -87,9 +87,9 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        RateLimiter::increment(md5('login'.implode('|', [$user->email, '127.0.0.1'])), amount: 5);
+        RateLimiter::increment(md5('login' . implode('|', [$user->email, '127.0.0.1'])), amount: 5);
 
-        $response = $this->post(route('login.store'), [
+        $response = $this->from(route('login'))->post(route('login.store'), [ // Added ->from()
             'email' => $user->email,
             'password' => 'wrong-password',
         ]);

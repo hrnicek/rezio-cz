@@ -24,29 +24,32 @@ class AutomatedRemindersTest extends TestCase
         // Booking starting in 3 days
         $bookingToRemind = Booking::factory()->create([
             'property_id' => $property->id,
+            'user_id' => $user->id, // Explicitly set user_id
             'start_date' => now()->addDays(3),
             'end_date' => now()->addDays(5),
-            'status' => 'confirmed',
             'reminders_sent_at' => null,
         ]);
+        $bookingToRemind->update(["status" => 'confirmed']); // Set status using new method
 
         // Booking starting in 4 days (should not remind)
         $bookingTooEarly = Booking::factory()->create([
             'property_id' => $property->id,
+            'user_id' => $user->id, // Explicitly set user_id
             'start_date' => now()->addDays(4)->toDateString(),
             'end_date' => now()->addDays(6)->toDateString(),
-            'status' => 'confirmed',
             'reminders_sent_at' => null,
         ]);
+        $bookingTooEarly->update(["status" => 'confirmed']); // Set status using new method
 
         // Booking already reminded (should not remind)
         $bookingAlreadyReminded = Booking::factory()->create([
             'property_id' => $property->id,
+            'user_id' => $user->id, // Explicitly set user_id
             'start_date' => now()->addDays(3)->toDateString(),
             'end_date' => now()->addDays(5)->toDateString(),
-            'status' => 'confirmed',
             'reminders_sent_at' => now(),
         ]);
+        $bookingAlreadyReminded->update(["status" => 'confirmed']); // Set status using new method
 
         // Run the command
         $this->artisan('bookings:send-reminders')
@@ -58,5 +61,6 @@ class AutomatedRemindersTest extends TestCase
 
         // Assert database updated
         $this->assertNotNull($bookingToRemind->fresh()->reminders_sent_at);
+        $this->assertEquals('confirmed', $bookingToRemind->fresh()->status);
     }
 }

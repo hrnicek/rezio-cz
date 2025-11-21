@@ -17,7 +17,7 @@ class SeasonalPricingTest extends TestCase
         $user = User::factory()->create();
         $property = Property::factory()->create(['user_id' => $user->id]);
 
-        $response = $this->actingAs($user)->post(route('properties.seasonal-prices.store', $property), [
+        $response = $this->actingAs($user)->from(route('properties.show', $property))->post(route('properties.seasonal-prices.store', $property), [ // Added ->from()
             'name' => 'Summer',
             'start_date' => '2025-06-01',
             'end_date' => '2025-08-31',
@@ -43,7 +43,7 @@ class SeasonalPricingTest extends TestCase
             'end_date' => '2025-08-31',
         ]);
 
-        $response = $this->actingAs($user)->post(route('properties.seasonal-prices.store', $property), [
+        $response = $this->actingAs($user)->from(route('properties.show', $property))->post(route('properties.seasonal-prices.store', $property), [ // Added ->from()
             'name' => 'Overlap',
             'start_date' => '2025-07-01',
             'end_date' => '2025-07-15',
@@ -75,7 +75,7 @@ class SeasonalPricingTest extends TestCase
         // June 1: 200 (Season)
         // Total: 400
 
-        $response = $this->post(route('widget.store', 'test-token'), [
+        $response = $this->from("/book/{$property->widget_token}")->post(route('widget.store', 'test-token'), [ // Added ->from()
             'start_date' => '2026-05-30',
             'end_date' => '2026-06-02',
             'guest_name' => 'John Doe',

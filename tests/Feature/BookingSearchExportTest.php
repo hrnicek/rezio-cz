@@ -17,25 +17,27 @@ class BookingSearchExportTest extends TestCase
         $user = User::factory()->create();
         $property = Property::factory()->create(['user_id' => $user->id]);
 
-        Booking::create([
+        $booking1 = Booking::create([ // Assigned to booking1
             'property_id' => $property->id,
             'user_id' => $user->id,
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
-            'status' => 'confirmed',
+            // 'status' => 'confirmed', // Removed
             'total_price' => 100,
             'guest_info' => ['name' => 'John Doe', 'email' => 'john@example.com'],
         ]);
+        $booking1->update(["status" => 'confirmed']); // Set status using new method
 
-        Booking::create([
+        $booking2 = Booking::create([ // Assigned to booking2
             'property_id' => $property->id,
             'user_id' => $user->id,
             'start_date' => now()->addDays(5),
             'end_date' => now()->addDays(7),
-            'status' => 'confirmed',
+            // 'status' => 'confirmed', // Removed
             'total_price' => 100,
             'guest_info' => ['name' => 'Jane Smith', 'email' => 'jane@example.com'],
         ]);
+        $booking2->update(["status" => 'confirmed']); // Set status using new method
 
         $this->actingAs($user);
 
@@ -63,15 +65,16 @@ class BookingSearchExportTest extends TestCase
         $user = User::factory()->create();
         $property = Property::factory()->create(['user_id' => $user->id]);
 
-        $booking = Booking::create([
+        $booking = Booking::create([ // Assigned to booking
             'property_id' => $property->id,
             'user_id' => $user->id,
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
-            'status' => 'confirmed',
+            // 'status' => 'confirmed', // Removed
             'total_price' => 100,
             'guest_info' => ['name' => 'Export Guest', 'email' => 'export@example.com'],
         ]);
+        $booking->update(["status" => 'confirmed']); // Set status using new method
 
         $this->actingAs($user);
 

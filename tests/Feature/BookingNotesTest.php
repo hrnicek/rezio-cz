@@ -7,6 +7,7 @@ use App\Models\Property;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class BookingNotesTest extends TestCase
 {
@@ -20,12 +21,12 @@ class BookingNotesTest extends TestCase
         $booking = Booking::factory()->create([
             'property_id' => $property->id,
             'user_id' => $user->id,
-            'status' => 'confirmed',
         ]);
+        $booking->update(["status" => 'confirmed']); // Set status using new method
 
         $this->actingAs($user);
 
-        $response = $this->put(route('bookings.update', $booking), [
+        $response = $this->from(route('bookings.index'))->put(route('bookings.update', $booking), [ // Added ->from()
             'status' => 'confirmed',
             'start_date' => $booking->start_date->format('Y-m-d'),
             'end_date' => $booking->end_date->format('Y-m-d'),
@@ -36,6 +37,7 @@ class BookingNotesTest extends TestCase
 
         $booking->refresh();
         $this->assertEquals('Guest requested early check-in', $booking->notes);
+        $this->assertEquals('confirmed', $booking->status); // Assert on status
     }
 
     public function test_notes_appear_in_csv_export(): void
@@ -48,6 +50,7 @@ class BookingNotesTest extends TestCase
             'user_id' => $user->id,
             'notes' => 'Special dietary requirements',
         ]);
+        $booking->update(["status" => 'pending']); // Set a default status
 
         $this->actingAs($user);
 
@@ -70,10 +73,11 @@ class BookingNotesTest extends TestCase
             'user_id' => $user->id,
             'notes' => null,
         ]);
+        $booking->update(["status" => 'confirmed']); // Set a default status
 
         $this->actingAs($user);
 
-        $response = $this->put(route('bookings.update', $booking), [
+        $response = $this->from(route('bookings.index'))->put(route('bookings.update', $booking), [ // Added ->from()
             'status' => 'confirmed',
             'start_date' => $booking->start_date->format('Y-m-d'),
             'end_date' => $booking->end_date->format('Y-m-d'),
@@ -82,5 +86,6 @@ class BookingNotesTest extends TestCase
         $response->assertRedirect();
         $booking->refresh();
         $this->assertNull($booking->notes);
+        $this->assertEquals('confirmed', $booking->status); // Assert on status
     }
 }

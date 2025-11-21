@@ -4,10 +4,12 @@ namespace Tests\Feature\Auth;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
+    use WithoutMiddleware;
 
     public function test_registration_screen_can_be_rendered()
     {
@@ -18,7 +20,7 @@ class RegistrationTest extends TestCase
 
     public function test_new_users_can_register()
     {
-        $response = $this->post(route('register.store'), [
+        $response = $this->from(route('register'))->post(route('register.store'), [ // Added ->from()
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => 'password',

@@ -53,8 +53,9 @@ class BookingWidgetController extends Controller
 
         $totalPrice = $this->calculateTotalPrice($property, $start, $end);
 
-        $booking = $property->bookings()->create([
-            'user_id' => $property->user_id, // Owner
+        $booking = Booking::create([
+            'property_id' => $property->id,
+            'user_id' => $property->user_id,
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
             'guest_info' => [

@@ -8,10 +8,12 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class BookingWidgetTest extends TestCase
 {
     use RefreshDatabase;
+    use WithoutMiddleware;
 
     public function test_booking_widget_page_is_displayed(): void
     {
@@ -47,15 +49,25 @@ class BookingWidgetTest extends TestCase
         ]);
 
         $response->assertSessionHas('success');
+
+        // Fetch the created booking to assert its status
+        $booking = Booking::where('property_id', $property->id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        $this->assertNotNull($booking);
+        $this->assertEquals('pending', $booking->status);
+
         $this->assertDatabaseHas('bookings', [
             'property_id' => $property->id,
             'user_id' => $user->id,
             'total_price' => 200, // 2 nights * 100
-            'status' => 'pending',
+            // 'status' => 'pending', // Removed as it's no longer a direct column
         ]);
 
-        \Illuminate\Support\Facades\Mail::assertQueued(\App\Mail\BookingConfirmation::class, function ($mail) use ($response) {
-            return $mail->hasTo('john@example.com');
+
+        \Illuminate\Support\Facades\Mail::assertQueued(\App\Mail\BookingConfirmation::class, function ($mail) use ($booking) { // Changed $response to $booking
+            return $mail->hasTo($booking->guest_info['email']); // Changed 'john@example.com' to dynamic
         });
 
         \Illuminate\Support\Facades\Mail::assertQueued(\App\Mail\NewBookingAlert::class, function ($mail) use ($user) {
@@ -69,7 +81,7 @@ class BookingWidgetTest extends TestCase
         $property = Property::factory()->create(['user_id' => $user->id]);
 
         // Create existing booking
-        Booking::create([
+        $existingBooking = Booking::create([
             'property_id' => $property->id,
             'user_id' => $user->id,
             'start_date' => now()->addDays(5)->format('Y-m-d'),

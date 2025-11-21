@@ -18,7 +18,7 @@ class BookingTest extends TestCase
     {
         $user = User::factory()->create();
         $property = Property::factory()->create(['user_id' => $user->id]);
-        Booking::create([
+        $booking = Booking::create([
             'property_id' => $property->id,
             'user_id' => $user->id,
             'start_date' => now()->addDays(1),
@@ -43,7 +43,7 @@ class BookingTest extends TestCase
         $user = User::factory()->create();
         $property = Property::factory()->create(['user_id' => $user->id]);
 
-        Booking::create([
+        $bookingPending = Booking::create([
             'property_id' => $property->id,
             'user_id' => $user->id,
             'start_date' => now()->addDays(1),
@@ -53,7 +53,7 @@ class BookingTest extends TestCase
             'status' => 'pending',
         ]);
 
-        Booking::create([
+        $bookingConfirmed = Booking::create([
             'property_id' => $property->id,
             'user_id' => $user->id,
             'start_date' => now()->addDays(5),
@@ -70,15 +70,19 @@ class BookingTest extends TestCase
             fn(Assert $page) => $page
                 ->component('Bookings/Index')
                 ->has('bookings', 1)
+                ->where('bookings.0.id', $bookingConfirmed->id)
                 ->where('bookings.0.status', 'confirmed')
         );
+
+        $confirmedBooking = Booking::find($bookingConfirmed->id);
+        $this->assertEquals('confirmed', $confirmedBooking->status);
     }
 
     public function test_booking_status_can_be_updated(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email_verified_at' => now()]);
         $property = Property::factory()->create(['user_id' => $user->id]);
-        $booking = Booking::create([
+        $booking = Booking::factory()->create([
             'property_id' => $property->id,
             'user_id' => $user->id,
             'start_date' => now()->addDays(1),
@@ -88,22 +92,20 @@ class BookingTest extends TestCase
             'status' => 'pending',
         ]);
 
-        $response = $this->actingAs($user)->put("/bookings/{$booking->id}", [
+        $response = $this->actingAs($user)->from(route('bookings.index'))->put(route('bookings.update', $booking), [
             'status' => 'confirmed',
         ]);
 
         $response->assertRedirect();
-        $this->assertDatabaseHas('bookings', [
-            'id' => $booking->id,
-            'status' => 'confirmed',
-        ]);
+        $booking->refresh();
+        $this->assertEquals('confirmed', $booking->status);
     }
 
     public function test_booking_can_be_deleted(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['email_verified_at' => now()]);
         $property = Property::factory()->create(['user_id' => $user->id]);
-        $booking = Booking::create([
+        $booking = Booking::factory()->create([
             'property_id' => $property->id,
             'user_id' => $user->id,
             'start_date' => now()->addDays(1),
@@ -113,7 +115,7 @@ class BookingTest extends TestCase
             'status' => 'pending',
         ]);
 
-        $response = $this->actingAs($user)->delete("/bookings/{$booking->id}");
+        $response = $this->actingAs($user)->from(route('bookings.index'))->delete(route('bookings.destroy', $booking));
 
         $response->assertRedirect();
         $this->assertDatabaseMissing('bookings', [
@@ -136,7 +138,7 @@ class BookingTest extends TestCase
             'status' => 'pending',
         ]);
 
-        $response = $this->actingAs($user2)->put("/bookings/{$booking->id}", [
+        $response = $this->actingAs($user2)->from(route('bookings.index'))->put("/bookings/{$booking->id}", [
             'status' => 'confirmed',
         ]);
 
