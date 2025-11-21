@@ -48,24 +48,29 @@
    - Date range and property filtering
    - Fully tested with `ReportingTest`
 
+7. **Automated Reminders** 📧
+   - `BookingReminder` Mailable with booking details
+   - `SendBookingReminders` Command (runs daily via scheduler)
+   - `reminders_sent_at` tracking to prevent duplicates
+   - Fully tested with `AutomatedRemindersTest`
+
 ---
 
 ## 🚀 Next Steps (Phase 2)
 
-### Immediate Priority: Automated Reminders
+### Immediate Priority: Cleaning Schedule
 
-**Goal:** Automatically send email reminders to guests before their check-in date.
+**Goal:** Automatically create cleaning tasks between bookings to help property managers organize cleaning staff.
 
 **Key Tasks:**
-1. Create `BookingReminder` Mailable.
-2. Create `SendBookingReminders` Command.
-3. Schedule command in `routes/console.php`.
-4. Add `reminders_sent_at` column to bookings table (to prevent duplicates).
+1. Create `cleaning_tasks` table and model.
+2. Create command to generate cleaning tasks for upcoming check-outs.
+3. Create UI to view and manage cleaning tasks.
+4. Add ability to mark tasks as complete.
 
 ### Remaining Phase 2 Features (in order)
 
-1. **Cleaning Schedule** - Auto-create cleaning tasks between bookings
-2. **GoPay Integration** - Payment processing (requires merchant account)
+1. **GoPay Integration** - Payment processing (requires merchant account)
 
 ---
 

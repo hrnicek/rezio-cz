@@ -19,6 +19,7 @@ class Booking extends Model
         'total_price',
         'status',
         'notes',
+        'reminders_sent_at',
     ];
 
     protected $casts = [
