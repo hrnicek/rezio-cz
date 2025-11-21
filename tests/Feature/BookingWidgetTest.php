@@ -66,7 +66,8 @@ class BookingWidgetTest extends TestCase
         ]);
 
 
-        \Illuminate\Support\Facades\Mail::assertQueued(\App\Mail\BookingConfirmation::class, function ($mail) use ($booking) { // Changed $response to $booking
+        \Illuminate\Support\Facades\Mail::assertQueued(\App\Mail\BookingConfirmation::class, function ($mail) use ($booking) {
+            return $mail->booking->id === $booking->id;
         });
 
         \Illuminate\Support\Facades\Mail::assertQueued(\App\Mail\NewBookingAlert::class, function ($mail) use ($user) {

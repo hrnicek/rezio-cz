@@ -41,6 +41,7 @@ class PropertyController extends Controller
 
         $request->user()->properties()->create([
             ...$validated,
+            'user_id' => $request->user()->id,
             'slug' => Str::slug($validated['name']) . '-' . Str::random(6),
             'widget_token' => Str::random(32),
         ]);

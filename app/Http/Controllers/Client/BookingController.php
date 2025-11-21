@@ -72,9 +72,8 @@ class BookingController extends Controller
             'status' => 'pending',
         ]);
 
-        // Send emails (optional - comment out if mail classes don't exist)
-        \Illuminate\Support\Facades\Mail::to($validated['guest_email'])->send(new \App\Mail\BookingConfirmation($booking));
-        \Illuminate\Support\Facades\Mail::to($property->user->email)->send(new \App\Mail\NewBookingAlert($booking));
+        \Illuminate\Support\Facades\Mail::to($validated['guest_email'])->queue(new \App\Mail\BookingConfirmation($booking));
+        \Illuminate\Support\Facades\Mail::to($property->user->email)->queue(new \App\Mail\NewBookingAlert($booking));
 
         return redirect()->back()->with('success', 'Booking request sent successfully!');
     }

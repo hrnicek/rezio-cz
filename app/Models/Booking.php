@@ -36,6 +36,7 @@ class Booking extends Model
     }
 
     protected $fillable = [
+        'code',
         'property_id',
         'user_id',
         'customer_id',

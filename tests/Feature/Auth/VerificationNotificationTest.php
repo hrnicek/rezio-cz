@@ -18,10 +18,13 @@ class VerificationNotificationTest extends TestCase
 
         $user = User::factory()->unverified()->create();
 
-        $this->actingAs($user)
-            ->from(route('verification.notice'))
-            ->post(route('verification.send'))
-            ->assertRedirect(route('verification.notice'));
+        $this->actingAs($user);
+
+        $this->get(route('verification.notice')); // Visit page to get CSRF token
+
+        $response = $this->post(route('verification.send'), [
+            '_token' => csrf_token(), // Manually include CSRF token
+        ])->assertRedirect(route('verification.notice'));
 
         Notification::assertSentTo($user, VerifyEmail::class);
     }
@@ -32,10 +35,15 @@ class VerificationNotificationTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->actingAs($user)
-            ->from(route('verification.notice')) // Added ->from()
-            ->post(route('verification.send'))
-            ->assertRedirect(route('admin.dashboard'));
+        $this->actingAs($user);
+
+        $this->get(route('verification.notice')); // Visit page to get CSRF token
+
+        $response = $this->post(route('verification.send'), [
+            '_token' => csrf_token(),
+        ]);
+
+        $response->assertRedirect(route('admin.dashboard'));
 
         Notification::assertNothingSent();
     }

@@ -18,9 +18,24 @@ class BookingSearchExportTest extends TestCase
         $property = Property::factory()->create(['user_id' => $user->id]);
         $user->update(['current_property_id' => $property->id]);
 
+        $john = \App\Models\Customer::create([
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john@example.com',
+            'phone' => '123456789',
+        ]);
+
+        $jane = \App\Models\Customer::create([
+            'first_name' => 'Jane',
+            'last_name' => 'Smith',
+            'email' => 'jane@example.com',
+            'phone' => '987654321',
+        ]);
+
         Booking::create([
             'property_id' => $property->id,
             'user_id' => $user->id,
+            'customer_id' => $john->id,
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
             'total_price' => 200,
@@ -29,6 +44,7 @@ class BookingSearchExportTest extends TestCase
         Booking::create([
             'property_id' => $property->id,
             'user_id' => $user->id,
+            'customer_id' => $jane->id,
             'start_date' => now()->addDays(5),
             'end_date' => now()->addDays(7),
             'total_price' => 300,
@@ -57,9 +73,17 @@ class BookingSearchExportTest extends TestCase
         $user = User::factory()->create();
         $property = Property::factory()->create(['user_id' => $user->id]);
 
-        $booking = Booking::create([ // Assigned to booking
+        $exportCustomer = \App\Models\Customer::create([
+            'first_name' => 'Export',
+            'last_name' => 'Guest',
+            'email' => 'export@example.com',
+            'phone' => '000000000',
+        ]);
+
+        $booking = Booking::create([
             'property_id' => $property->id,
             'user_id' => $user->id,
+            'customer_id' => $exportCustomer->id,
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(3),
             // 'status' => 'confirmed', // Removed

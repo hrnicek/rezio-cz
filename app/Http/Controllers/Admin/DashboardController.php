@@ -22,6 +22,7 @@ class DashboardController extends Controller
             ->map(function ($booking) {
                 return [
                     'id' => $booking->id,
+                    'key' => $booking->id,
                     'start' => $booking->start_date->format('Y-m-d'),
                     'end' => $booking->end_date->format('Y-m-d'),
                     'title' => $booking->customer ? $booking->customer->first_name . ' ' . $booking->customer->last_name : 'Unknown',
