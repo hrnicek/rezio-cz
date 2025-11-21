@@ -14,7 +14,7 @@
     - **Total Price:** ${{ number_format($booking->total_price, 2) }}
     - **Status:** {{ $booking->status }}
 
-    <x-mail::button :url="route('bookings.index')">
+    <x-mail::button :url="route('admin.bookings.index')">
         Manage Bookings
     </x-mail::button>
 

@@ -25,5 +25,8 @@ class DatabaseSeeder extends Seeder
 
         Property::factory(2)->create();
         Booking::factory(12)->create();
+
+        $this->call(SeasonSeeder::class);
+        $this->call(ServiceSeeder::class);
     }
 }

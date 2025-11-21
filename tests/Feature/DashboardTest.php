@@ -12,7 +12,7 @@ class DashboardTest extends TestCase
 
     public function test_guests_are_redirected_to_the_login_page()
     {
-        $response = $this->get(route('dashboard'));
+        $response = $this->get(route('admin.dashboard'));
         $response->assertRedirect(route('login'));
     }
 
@@ -21,7 +21,7 @@ class DashboardTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        $response = $this->get(route('dashboard'));
+        $response = $this->get(route('admin.dashboard'));
         $response->assertStatus(200);
     }
 
@@ -41,11 +41,11 @@ class DashboardTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->get(route('dashboard'));
+        $response = $this->get(route('admin.dashboard'));
         $response->assertStatus(200);
         $response->assertInertia(
             fn($page) => $page
-                ->component('Dashboard')
+                ->component('Admin/Dashboard')
                 ->has('bookings', 1)
                 ->where('bookings.0.key', $booking->id)
         );

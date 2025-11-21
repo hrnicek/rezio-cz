@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('status')->default('pending'); // pending, confirmed, paid, cancelled
             $table->decimal('total_price', 10, 2);
             $table->decimal('deposit_amount', 10, 2)->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

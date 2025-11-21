@@ -24,7 +24,7 @@ class BlockDatesTest extends TestCase
         $start = now()->addDays(1)->startOfDay();
         $end = now()->addDays(3)->startOfDay();
 
-        $response = $this->from(route('bookings.index'))->post(route('bookings.store'), [ // Added ->from()
+        $response = $this->from(route('admin.bookings.index'))->post(route('admin.bookings.store'), [ // Added ->from()
             'property_id' => $property->id,
             'start_date' => $start->format('Y-m-d'),
             'end_date' => $end->format('Y-m-d'),
@@ -57,7 +57,7 @@ class BlockDatesTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->from(route('bookings.index'))->post(route('bookings.store'), [ // Added ->from()
+        $response = $this->from(route('admin.bookings.index'))->post(route('admin.bookings.store'), [ // Added ->from()
             'property_id' => $property->id,
             'start_date' => now()->addDays(2)->format('Y-m-d'),
             'end_date' => now()->addDays(4)->format('Y-m-d'),
@@ -83,7 +83,7 @@ class BlockDatesTest extends TestCase
         ]);
         $blockedBooking->update(["status" => 'blocked']); // Set status using new method
 
-        $response = $this->from("/book/{$property->widget_token}")->post(route('widget.store', $property->widget_token), [ // Added ->from()
+        $response = $this->from("/book/{$property->widget_token}")->post(route('client.widget.store', $property->widget_token), [ // Added ->from()
             'start_date' => now()->addDays(1)->format('Y-m-d'),
             'end_date' => now()->addDays(3)->format('Y-m-d'),
             'guest_name' => 'New Guest',

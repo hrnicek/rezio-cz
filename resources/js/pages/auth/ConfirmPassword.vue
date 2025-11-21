@@ -5,8 +5,19 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/AuthLayout.vue';
-import { store } from '@/routes/password/confirm';
-import { Form, Head } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
+
+declare const route: any;
+
+const form = useForm({
+    password: '',
+});
+
+const submit = () => {
+    form.post(route('password.confirm'), {
+        onFinish: () => form.reset('password'),
+    });
+};
 </script>
 
 <template>
@@ -16,38 +27,34 @@ import { Form, Head } from '@inertiajs/vue3';
     >
         <Head title="Confirm password" />
 
-        <Form
-            v-bind="store.form()"
-            reset-on-success
-            v-slot="{ errors, processing }"
-        >
+        <form @submit.prevent="submit">
             <div class="space-y-6">
                 <div class="grid gap-2">
                     <Label htmlFor="password">Password</Label>
                     <Input
                         id="password"
                         type="password"
-                        name="password"
+                        v-model="form.password"
                         class="mt-1 block w-full"
                         required
                         autocomplete="current-password"
                         autofocus
                     />
 
-                    <InputError :message="errors.password" />
+                    <InputError :message="form.errors.password" />
                 </div>
 
                 <div class="flex items-center">
                     <Button
                         class="w-full"
-                        :disabled="processing"
+                        :disabled="form.processing"
                         data-test="confirm-password-button"
                     >
-                        <Spinner v-if="processing" />
+                        <Spinner v-if="form.processing" />
                         Confirm Password
                     </Button>
                 </div>
             </div>
-        </Form>
+        </form>
     </AuthLayout>
 </template>

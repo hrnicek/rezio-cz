@@ -16,12 +16,12 @@ class ReportingTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get(route('reports.index'));
+        $response = $this->actingAs($user)->get(route('admin.reports.index'));
 
         $response->assertStatus(200);
         $response->assertInertia(
             fn($page) => $page
-                ->component('Reports/Index')
+                ->component('Admin/Reports/Index')
                 ->has('properties')
         );
     }
@@ -41,7 +41,7 @@ class ReportingTest extends TestCase
         ]);
         $booking->update(["status" => 'confirmed']); // Set status using new method
 
-        $response = $this->actingAs($user)->get(route('reports.data', [
+        $response = $this->actingAs($user)->get(route('admin.reports.data', [
             'start_date' => '2025-01-01',
             'end_date' => '2025-01-31',
             'property_id' => $property->id,
@@ -78,7 +78,7 @@ class ReportingTest extends TestCase
         // Booked nights: 10
         // Occupancy: 10 / 62 = 16.1%
 
-        $response = $this->actingAs($user)->get(route('reports.data', [
+        $response = $this->actingAs($user)->get(route('admin.reports.data', [
             'start_date' => '2025-01-01',
             'end_date' => '2025-01-31',
             // No property_id filter

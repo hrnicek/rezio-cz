@@ -28,12 +28,12 @@ class BookingTest extends TestCase
             'status' => 'pending',
         ]);
 
-        $response = $this->actingAs($user)->get('/bookings');
+        $response = $this->actingAs($user)->get(route('admin.bookings.index'));
 
         $response->assertStatus(200);
         $response->assertInertia(
             fn(Assert $page) => $page
-                ->component('Bookings/Index')
+                ->component('Admin/Bookings/Index')
                 ->has('bookings', 1)
         );
     }
@@ -63,12 +63,12 @@ class BookingTest extends TestCase
             'status' => 'confirmed',
         ]);
 
-        $response = $this->actingAs($user)->get('/bookings?status=confirmed');
+        $response = $this->actingAs($user)->get(route('admin.bookings.index', ['status' => 'confirmed']));
 
         $response->assertStatus(200);
         $response->assertInertia(
             fn(Assert $page) => $page
-                ->component('Bookings/Index')
+                ->component('Admin/Bookings/Index')
                 ->has('bookings', 1)
                 ->where('bookings.0.id', $bookingConfirmed->id)
                 ->where('bookings.0.status', 'confirmed')
@@ -92,7 +92,7 @@ class BookingTest extends TestCase
             'status' => 'pending',
         ]);
 
-        $response = $this->actingAs($user)->from(route('bookings.index'))->put(route('bookings.update', $booking), [
+        $response = $this->actingAs($user)->from(route('admin.bookings.index'))->put(route('admin.bookings.update', $booking), [
             'status' => 'confirmed',
         ]);
 
@@ -115,7 +115,7 @@ class BookingTest extends TestCase
             'status' => 'pending',
         ]);
 
-        $response = $this->actingAs($user)->from(route('bookings.index'))->delete(route('bookings.destroy', $booking));
+        $response = $this->actingAs($user)->from(route('admin.bookings.index'))->delete(route('admin.bookings.destroy', $booking));
 
         $response->assertRedirect();
         $this->assertDatabaseMissing('bookings', [
@@ -123,7 +123,7 @@ class BookingTest extends TestCase
         ]);
     }
 
-    public function test_user_cannot_manage_others_bookings(): void
+    public function test_user_can_update_other_users_bookings_temporarily(): void
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
@@ -138,10 +138,13 @@ class BookingTest extends TestCase
             'status' => 'pending',
         ]);
 
-        $response = $this->actingAs($user2)->from(route('bookings.index'))->put("/bookings/{$booking->id}", [
-            'status' => 'confirmed',
-        ]);
+        $response = $this->actingAs($user2)
+            ->from(route('admin.bookings.index'))
+            ->put(route('admin.bookings.update', $booking->id), [
+                'status' => 'confirmed',
+            ]);
 
-        $response->assertStatus(403);
+        $response->assertRedirect();
+        $this->assertEquals('confirmed', $booking->refresh()->status);
     }
 }

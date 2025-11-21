@@ -25,7 +25,7 @@ class BookingWidgetTest extends TestCase
         $response->assertStatus(200);
         $response->assertInertia(
             fn($page) => $page
-                ->component('Widget/Show')
+                ->component('Client/Booking/Index')
                 ->has('property')
         );
     }

@@ -42,7 +42,7 @@ class BookingSearchExportTest extends TestCase
         $this->actingAs($user);
 
         // Search for John
-        $response = $this->get(route('bookings.index', ['search' => 'John']));
+        $response = $this->get(route('admin.bookings.index', ['search' => 'John']));
         $response->assertOk();
         $response->assertInertia(
             fn($page) => $page
@@ -51,7 +51,7 @@ class BookingSearchExportTest extends TestCase
         );
 
         // Search for Jane's email
-        $response = $this->get(route('bookings.index', ['search' => 'jane@example.com']));
+        $response = $this->get(route('admin.bookings.index', ['search' => 'jane@example.com']));
         $response->assertOk();
         $response->assertInertia(
             fn($page) => $page
@@ -78,7 +78,7 @@ class BookingSearchExportTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->get(route('bookings.export'));
+        $response = $this->get(route('admin.bookings.export'));
 
         $response->assertOk();
         $response->assertHeader('Content-Type', 'text/csv; charset=UTF-8');

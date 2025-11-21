@@ -26,7 +26,7 @@ class BookingNotesTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->from(route('bookings.index'))->put(route('bookings.update', $booking), [ // Added ->from()
+        $response = $this->from(route('admin.bookings.index'))->put(route('admin.bookings.update', $booking), [ // Added ->from()
             'status' => 'confirmed',
             'start_date' => $booking->start_date->format('Y-m-d'),
             'end_date' => $booking->end_date->format('Y-m-d'),
@@ -54,7 +54,7 @@ class BookingNotesTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->get(route('bookings.export'));
+        $response = $this->get(route('admin.bookings.export'));
 
         $response->assertOk();
         $content = $response->streamedContent();
@@ -77,7 +77,7 @@ class BookingNotesTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->from(route('bookings.index'))->put(route('bookings.update', $booking), [ // Added ->from()
+        $response = $this->from(route('admin.bookings.index'))->put(route('admin.bookings.update', $booking), [ // Added ->from()
             'status' => 'confirmed',
             'start_date' => $booking->start_date->format('Y-m-d'),
             'end_date' => $booking->end_date->format('Y-m-d'),

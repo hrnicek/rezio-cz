@@ -31,7 +31,7 @@ class CalendarManagementTest extends TestCase
         $newStart = now()->addDays(2)->startOfDay();
         $newEnd = now()->addDays(4)->startOfDay();
 
-        $response = $this->from(route('bookings.index'))->put(route('bookings.update', $booking), [ // Added ->from()
+        $response = $this->from(route('admin.bookings.index'))->put(route('admin.bookings.update', $booking), [ // Added ->from()
             'status' => 'confirmed',
             'start_date' => $newStart->format('Y-m-d'),
             'end_date' => $newEnd->format('Y-m-d'),
@@ -72,7 +72,7 @@ class CalendarManagementTest extends TestCase
         $this->actingAs($user);
 
         // Try to move booking2 to overlap with booking1
-        $response = $this->from(route('bookings.index'))->put(route('bookings.update', $booking2), [ // Added ->from()
+        $response = $this->from(route('admin.bookings.index'))->put(route('admin.bookings.update', $booking2), [ // Added ->from()
             'status' => 'confirmed',
             'start_date' => now()->addDays(2)->format('Y-m-d'),
             'end_date' => now()->addDays(4)->format('Y-m-d'),
@@ -99,7 +99,7 @@ class CalendarManagementTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->from(route('bookings.index'))->delete(route('bookings.destroy', $booking)); // Added ->from()
+        $response = $this->from(route('admin.bookings.index'))->delete(route('admin.bookings.destroy', $booking)); // Added ->from()
 
         $response->assertRedirect();
         $this->assertDatabaseMissing('bookings', ['id' => $booking->id]);

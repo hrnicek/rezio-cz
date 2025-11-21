@@ -20,10 +20,10 @@ class CleaningTaskControllerTest extends TestCase
     public function test_authenticated_user_can_view_cleaning_tasks_index(): void
     {
         $user = User::factory()->create();
-        $response = $this->actingAs($user)->get(route('cleaning-tasks.index'));
+        $response = $this->actingAs($user)->get(route('admin.cleaning-tasks.index'));
 
         $response->assertOk();
-        $response->assertInertia(fn($page) => $page->component('CleaningTasks/Index'));
+        $response->assertInertia(fn($page) => $page->component('Admin/CleaningTasks/Index'));
     }
 
     /**
@@ -37,12 +37,12 @@ class CleaningTaskControllerTest extends TestCase
         $booking->update(["status" => 'confirmed']); // Set a status for the booking
         $task = CleaningTask::factory()->create(['booking_id' => $booking->id, 'property_id' => $property->id]);
 
-        $response = $this->actingAs($user)->get(route('cleaning-tasks.index'));
+        $response = $this->actingAs($user)->get(route('admin.cleaning-tasks.index'));
 
         $response->assertOk();
         $response->assertInertia(
             fn($page) => $page
-                ->component('CleaningTasks/Index')
+                ->component('Admin/CleaningTasks/Index')
                 ->has('cleaningTasks.data', 1)
                 ->where('cleaningTasks.data.0.id', $task->id)
         );
@@ -60,9 +60,9 @@ class CleaningTaskControllerTest extends TestCase
         $task = CleaningTask::factory()->create(['booking_id' => $booking->id, 'property_id' => $property->id, 'completed_at' => null]);
 
         $response = $this->actingAs($user)
-            ->post(route('cleaning-tasks.complete', $task));
+            ->post(route('admin.cleaning-tasks.complete', $task));
 
-        $response->assertRedirect(route('cleaning-tasks.index'));
+        $response->assertRedirect(route('admin.cleaning-tasks.index'));
         $this->assertNotNull($task->fresh()->completed_at);
         $this->assertDatabaseHas('cleaning_tasks', [
             'id' => $task->id,
@@ -74,7 +74,7 @@ class CleaningTaskControllerTest extends TestCase
      */
     public function test_unauthenticated_user_cannot_view_cleaning_tasks_index(): void
     {
-        $response = $this->get(route('cleaning-tasks.index'));
+        $response = $this->get(route('admin.cleaning-tasks.index'));
         $response->assertRedirect('/login');
     }
 
@@ -89,7 +89,7 @@ class CleaningTaskControllerTest extends TestCase
         $booking->update(["status" => 'confirmed']); // Set a status for the booking
         $task = CleaningTask::factory()->create(['booking_id' => $booking->id, 'property_id' => $property->id, 'completed_at' => null]);
 
-        $response = $this->post(route('cleaning-tasks.complete', $task));
+        $response = $this->post(route('admin.cleaning-tasks.complete', $task));
         $response->assertRedirect('/login');
         $this->assertNull($task->fresh()->completed_at);
     }

@@ -31,8 +31,8 @@ class Property extends Model
         return $this->hasMany(Booking::class);
     }
 
-    public function seasonalPrices(): HasMany
+    public function seasons(): HasMany
     {
-        return $this->hasMany(SeasonalPrice::class);
+        return $this->hasMany(Season::class);
     }
 }
