@@ -24,6 +24,10 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
+
+        $middleware->alias([
+            'allow-iframe' => \App\Http\Middleware\AllowIframe::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
