@@ -134,7 +134,6 @@ const getStatusVariant = (status: string) => {
                                     <TableHead>Termín</TableHead>
                                     <TableHead>Cena celkem</TableHead>
                                     <TableHead>Stav</TableHead>
-                                    <TableHead>Poznámky</TableHead>
                                     <TableHead class="text-right">Akce</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -158,11 +157,6 @@ const getStatusVariant = (status: string) => {
                                         <Badge :variant="getStatusVariant(booking.status)">
                                             {{ booking.status }}
                                         </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div class="text-sm text-gray-600 dark:text-gray-400 max-w-xs truncate" :title="booking.notes">
-                                            {{ booking.notes || '-' }}
-                                        </div>
                                     </TableCell>
                                     <TableCell class="text-right space-x-2">
                                         <Button 

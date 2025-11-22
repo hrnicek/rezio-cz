@@ -163,48 +163,49 @@
                   <p class="text-gray-500">Klikněte na datum příjezdu a poté na datum odjezdu.</p>
                 </div>
                 <div class="flex items-center gap-2">
-                  <button 
+                  <Button
                     v-if="canGoPrev"
+                    variant="outline"
+                    size="icon"
                     @click="prevMonth"
-                    class="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 text-gray-600 transition-colors hover:border-gray-300 hover:bg-gray-50"
                   >
                     <ChevronLeft class="h-5 w-5" />
-                  </button>
+                  </Button>
                   <div class="relative" ref="monthPickerEl">
-                    <button
-                      type="button"
+                    <Button
+                      variant="ghost"
                       @click="monthPickerOpen = !monthPickerOpen"
                       :aria-expanded="monthPickerOpen ? 'true' : 'false'"
                       aria-haspopup="listbox"
-                      class="inline-flex items-center gap-1 rounded-lg px-3 py-2 font-medium text-gray-900 hover:bg-gray-50"
                     >
                       <span>{{ monthLabel }} {{ year }}</span>
-                      <ChevronDown class="h-4 w-4 text-gray-400" />
-                    </button>
+                      <ChevronDown class="ml-1 h-4 w-4" />
+                    </Button>
                     <div
                       v-if="monthPickerOpen"
                       class="absolute left-1/2 z-10 mt-2 w-56 -translate-x-1/2 rounded-md border border-gray-200 bg-white p-1 shadow-lg"
                     >
                       <ul role="listbox" class="max-h-80 space-y-1 overflow-auto">
                         <li v-for="opt in monthOptions" :key="`${opt.year}-${opt.month}`">
-                          <button
-                            type="button"
+                          <Button
+                            variant="ghost"
+                            class="w-full justify-between"
                             @click="selectMonthOption(opt.year, opt.month)"
-                            class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
                           >
                             <span>{{ opt.label }} {{ opt.year }}</span>
-                            <ChevronRight class="h-4 w-4 text-gray-300" />
-                          </button>
+                            <ChevronRight class="h-4 w-4 text-muted-foreground" />
+                          </Button>
                         </li>
                       </ul>
                     </div>
                   </div>
-                  <button 
+                  <Button
+                    variant="outline"
+                    size="icon"
                     @click="nextMonth"
-                    class="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 text-gray-600 transition-colors hover:border-gray-300 hover:bg-gray-50"
                   >
                     <ChevronRight class="h-5 w-5" />
-                  </button>
+                  </Button>
               </div>
               </header>
 
@@ -317,22 +318,21 @@
                  </div>
                  
                  <div class="flex gap-3">
-                    <button 
+                    <Button
                       v-if="startDate"
+                      variant="outline"
                       @click="clearSelection"
-                      class="rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     >
                       Zrušit výběr
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       @click="verifyAndProceed"
                       :disabled="!canProceed || verifying"
-                      class="flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <Loader2 v-if="verifying" class="h-4 w-4 animate-spin" />
+                      <Loader2 v-if="verifying" class="mr-2 h-4 w-4 animate-spin" />
                       <span>{{ verifying ? 'Ověřuji...' : 'Pokračovat' }}</span>
-                      <ChevronRight v-if="!verifying" class="h-4 w-4" />
-                     </button>
+                      <ChevronRight v-if="!verifying" class="ml-2 h-4 w-4" />
+                    </Button>
                   </div>
                  <div v-if="verifyError" class="text-sm text-red-700" role="alert" aria-live="polite">{{ verifyError }}</div>
               </div>
@@ -348,113 +348,127 @@
               <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <!-- First Name -->
                 <div class="space-y-1.5">
-                  <label class="text-sm font-medium text-gray-700">Jméno</label>
+                  <Label for="firstName">Jméno</Label>
                   <div class="relative">
-                    <input
+                    <Input
+                      id="firstName"
                       v-model="customer.firstName"
                       @blur="validateField('firstName')"
                       @input="validateField('firstName')"
                       @focus="clearFieldError('firstName')"
                       type="text"
                       autocomplete="given-name"
-                      class="w-full rounded-lg border-2 px-4 py-2.5 pr-10 text-gray-900 placeholder-gray-400 transition-colors focus:outline-none"
-                      :class="fieldErrors.firstName ? 'border-red-400' : validFields.firstName ? 'border-emerald-400' : 'border-gray-200 focus:border-primary'"
                       placeholder="Jan"
+                      :class="[
+                        'pr-10',
+                        fieldErrors.firstName ? 'border-destructive' : '',
+                        validFields.firstName ? 'border-green-500' : ''
+                      ]"
                     />
                     <CheckCircle v-if="validFields.firstName" class="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-500" />
                   </div>
-                  <p v-if="fieldErrors.firstName" class="text-xs text-red-600">{{ fieldErrors.firstName }}</p>
+                  <p v-if="fieldErrors.firstName" class="text-xs text-destructive">{{ fieldErrors.firstName }}</p>
                 </div>
 
                 <!-- Last Name -->
                 <div class="space-y-1.5">
-                  <label class="text-sm font-medium text-gray-700">Příjmení</label>
+                  <Label for="lastName">Příjmení</Label>
                   <div class="relative">
-                    <input
+                    <Input
+                      id="lastName"
                       v-model="customer.lastName"
                       @blur="validateField('lastName')"
                       @input="validateField('lastName')"
                       @focus="clearFieldError('lastName')"
                       type="text"
                       autocomplete="family-name"
-                      class="w-full rounded-lg border-2 px-4 py-2.5 pr-10 text-gray-900 placeholder-gray-400 transition-colors focus:outline-none"
-                      :class="fieldErrors.lastName ? 'border-red-400' : validFields.lastName ? 'border-emerald-400' : 'border-gray-200 focus:border-primary'"
                       placeholder="Novák"
+                      :class="[
+                        'pr-10',
+                        fieldErrors.lastName ? 'border-destructive' : '',
+                        validFields.lastName ? 'border-green-500' : ''
+                      ]"
                     />
                     <CheckCircle v-if="validFields.lastName" class="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-500" />
                   </div>
-                  <p v-if="fieldErrors.lastName" class="text-xs text-red-600">{{ fieldErrors.lastName }}</p>
+                  <p v-if="fieldErrors.lastName" class="text-xs text-destructive">{{ fieldErrors.lastName }}</p>
                 </div>
 
                 <!-- Email -->
                 <div class="space-y-1.5">
-                  <label class="text-sm font-medium text-gray-700">E-mail</label>
+                  <Label for="email">E-mail</Label>
                   <div class="relative">
-                    <input
+                    <Input
+                      id="email"
                       v-model="customer.email"
                       @blur="validateField('email')"
                       @input="validateField('email')"
                       @focus="clearFieldError('email')"
                       type="email"
                       autocomplete="email"
-                      class="w-full rounded-lg border-2 px-4 py-2.5 pr-10 text-gray-900 placeholder-gray-400 transition-colors focus:outline-none"
-                      :class="fieldErrors.email ? 'border-red-400' : validFields.email ? 'border-emerald-400' : 'border-gray-200 focus:border-primary'"
                       placeholder="jan.novak@example.com"
+                      :class="[
+                        'pr-10',
+                        fieldErrors.email ? 'border-destructive' : '',
+                        validFields.email ? 'border-green-500' : ''
+                      ]"
                     />
                     <CheckCircle v-if="validFields.email" class="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-500" />
                   </div>
-                  <p v-if="fieldErrors.email" class="text-xs text-red-600">{{ fieldErrors.email }}</p>
+                  <p v-if="fieldErrors.email" class="text-xs text-destructive">{{ fieldErrors.email }}</p>
                 </div>
 
                 <!-- Phone -->
                 <div class="space-y-1.5">
-                  <label class="text-sm font-medium text-gray-700">Telefon</label>
+                  <Label for="phone">Telefon</Label>
                   <div class="relative">
-                    <input
+                    <Input
+                      id="phone"
                       v-model="customer.phone"
                       @blur="validateField('phone')"
                       @input="validateField('phone')"
                       @focus="clearFieldError('phone')"
                       type="tel"
                       autocomplete="tel"
-                      inputmode="tel"
-                      class="w-full rounded-lg border-2 px-4 py-2.5 pr-10 text-gray-900 placeholder-gray-400 transition-colors focus:outline-none"
-                      :class="fieldErrors.phone ? 'border-red-400' : validFields.phone ? 'border-emerald-400' : 'border-gray-200 focus:border-primary'"
                       placeholder="+420 777 123 456"
+                      :class="[
+                        'pr-10',
+                        fieldErrors.phone ? 'border-destructive' : '',
+                        validFields.phone ? 'border-green-500' : ''
+                      ]"
                     />
                     <CheckCircle v-if="validFields.phone" class="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-500" />
                   </div>
-                  <p v-if="fieldErrors.phone" class="text-xs text-red-600">{{ fieldErrors.phone }}</p>
+                  <p v-if="fieldErrors.phone" class="text-xs text-destructive">{{ fieldErrors.phone }}</p>
                 </div>
 
                 <!-- Note -->
                 <div class="md:col-span-2 space-y-1.5">
-                  <label class="text-sm font-medium text-gray-700">Poznámka (nepovinné)</label>
-                  <textarea
+                  <Label for="note">Poznámka (nepovinné)</Label>
+                  <Textarea
+                    id="note"
                     v-model="customer.note"
                     rows="4"
-                    class="w-full rounded-lg border-2 border-gray-200 px-4 py-2.5 text-gray-900 placeholder-gray-400 transition-colors focus:border-primary focus:outline-none"
                     placeholder="Máte nějaké speciální přání?"
-                  ></textarea>
+                  />
                 </div>
               </div>
 
               <div class="flex justify-between border-t border-gray-100 pt-6">
-                <button 
+                <Button
+                  variant="ghost"
                   @click="step = 1"
-                  class="flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                 >
-                  <ChevronLeft class="h-4 w-4" />
+                  <ChevronLeft class="mr-2 h-4 w-4" />
                   Zpět
-                </button>
-                <button
+                </Button>
+                <Button
                   @click="verifyCustomerAndProceed"
                   :disabled="!formReady"
-                  class="flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Pokračovat
-                  <ChevronRight class="h-4 w-4" />
-                </button>
+                  <ChevronRight class="ml-2 h-4 w-4" />
+                </Button>
               </div>
               <div v-if="customerVerifyError" class="text-sm text-red-700" role="alert" aria-live="polite">{{ customerVerifyError }}</div>
             </div>
@@ -507,22 +521,26 @@
                   </div>
 
                   <div class="flex items-center justify-end gap-3">
-                    <button 
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      class="h-8 w-8 rounded-full"
                       @click="booking.setExtraQuantity(ex.id, Math.max(0, (extraSelection[ex.id] || 0) - 1))"
-                      class="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50"
                       :disabled="(extraSelection[ex.id] || 0) === 0"
                     >
                       -
-                    </button>
+                    </Button>
                     <span class="w-8 text-center font-medium text-gray-900">{{ extraSelection[ex.id] || 0 }}</span>
-                    <button 
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      class="h-8 w-8 rounded-full"
                       @click="booking.setExtraQuantity(ex.id, Math.min(ex.max_quantity, (extraSelection[ex.id] || 0) + 1))"
-                      class="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50"
                       :disabled="(extraSelection[ex.id] || 0) >= ex.max_quantity"
                       :title="(extraSelection[ex.id] || 0) >= ex.max_quantity ? 'Max. ' + ex.max_quantity : ''"
                     >
                       +
-                    </button>
+                    </Button>
                     <span v-if="ex.max_quantity" class="text-xs font-medium text-gray-700">Max. {{ ex.max_quantity }}</span>
                     <span v-if="(extraSelection[ex.id] || 0) >= ex.max_quantity" class="text-xs font-medium text-amber-700">Dosaženo maxima</span>
                   </div>
@@ -539,21 +557,20 @@
               </div>
 
               <div class="flex justify-between border-t border-gray-100 pt-6">
-                <button 
+                <Button
+                  variant="ghost"
                   @click="step = 2"
-                  class="flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                 >
-                  <ChevronLeft class="h-4 w-4" />
+                  <ChevronLeft class="mr-2 h-4 w-4" />
                   Zpět
-                </button>
-                <button
+                </Button>
+                <Button
                   @click="checkExtrasAvailability"
                   :disabled="!canSubmit"
-                  class="flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Pokračovat
-                  <ChevronRight class="h-4 w-4" />
-                </button>
+                  <ChevronRight class="ml-2 h-4 w-4" />
+                </Button>
               </div>
             </div>
 
@@ -595,7 +612,7 @@
                 <div class="rounded-xl border border-gray-200 p-6">
                   <div class="flex items-center justify-between mb-4">
                     <h3 class="font-medium text-gray-900">Kontaktní údaje</h3>
-                    <button @click="step = 2" class="text-sm text-primary hover:underline">Upravit</button>
+                    <Button variant="link" size="sm" @click="step = 2">Upravit</Button>
                   </div>
                   <dl class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
                     <div>
@@ -621,7 +638,7 @@
                 <div v-if="selectedExtras.length > 0" class="rounded-xl border border-gray-200 p-6">
                   <div class="flex items-center justify-between mb-4">
                     <h3 class="font-medium text-gray-900">Vybrané služby</h3>
-                    <button @click="step = 3" class="text-sm text-primary hover:underline">Upravit</button>
+                    <Button variant="link" size="sm" @click="step = 3">Upravit</Button>
                   </div>
                   <ul class="space-y-3">
                     <li v-for="ex in selectedExtras" :key="ex.id" class="flex justify-between text-sm">
@@ -662,22 +679,21 @@
               </div>
 
               <div class="flex justify-between border-t border-gray-100 pt-6">
-                <button 
+                <Button
+                  variant="ghost"
                   @click="step = 3"
-                  class="flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                 >
-                  <ChevronLeft class="h-4 w-4" />
+                  <ChevronLeft class="mr-2 h-4 w-4" />
                   Zpět
-                </button>
-                <button
+                </Button>
+                <Button
                   @click="submit"
                   :disabled="!canSubmit || submitting"
-                  class="flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Loader2 v-if="submitting" class="h-4 w-4 animate-spin" />
+                  <Loader2 v-if="submitting" class="mr-2 h-4 w-4 animate-spin" />
                   <span v-else>Odeslat rezervaci</span>
-                  <Send v-if="!submitting" class="h-4 w-4" />
-                </button>
+                  <Send v-if="!submitting" class="ml-2 h-4 w-4" />
+                </Button>
               </div>
             </div>
 
@@ -692,18 +708,17 @@
               </p>
               
               <div class="flex gap-4">
-                <button 
+                <Button
+                  variant="outline"
                   @click="step = 1"
-                  class="rounded-lg border border-gray-200 px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                 >
                   Nová rezervace
-                </button>
-                <a 
-                  href="/"
-                  class="rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-white hover:bg-primary/90"
-                >
-                  Zpět na úvod
-                </a>
+                </Button>
+                <Button as-child>
+                  <Link :href="route('welcome')">
+                    Zpět na úvod
+                  </Link>
+                </Button>
               </div>
             </div>
 
@@ -723,44 +738,44 @@
           <span class="text-xs text-gray-500">Celková cena</span>
           <span class="text-lg font-semibold text-primary">{{ currency(grandTotalPrice) }}</span>
         </div>
-        <button
+        <Button
           v-if="step === 1"
           @click="verifyAndProceed"
           :disabled="!canProceed || verifying"
-          class="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-6 py-3"
         >
-          <Loader2 v-if="verifying" class="h-4 w-4 animate-spin" />
+          <Loader2 v-if="verifying" class="mr-2 h-4 w-4 animate-spin" />
           <span>{{ verifying ? 'Ověřuji...' : (!canProceed ? 'Vyberte termín' : 'Pokračovat') }}</span>
-          <ChevronRight v-if="!verifying" class="h-4 w-4" />
-        </button>
-        <button
+          <ChevronRight v-if="!verifying" class="ml-2 h-4 w-4" />
+        </Button>
+        <Button
           v-else-if="step === 2"
           @click="verifyCustomerAndProceed"
           :disabled="!formReady"
-          class="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-6 py-3"
         >
           Pokračovat
-          <ChevronRight class="h-4 w-4" />
-        </button>
-        <button
+          <ChevronRight class="ml-2 h-4 w-4" />
+        </Button>
+        <Button
           v-else-if="step === 3"
           @click="checkExtrasAvailability"
           :disabled="!canSubmit"
-          class="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-6 py-3"
         >
           Pokračovat
-          <ChevronRight class="h-4 w-4" />
-        </button>
-        <button
+          <ChevronRight class="ml-2 h-4 w-4" />
+        </Button>
+        <Button
           v-else-if="step === 4"
           @click="submit"
           :disabled="!canSubmit || submitting"
-          class="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-6 py-3"
         >
-          <Loader2 v-if="submitting" class="h-4 w-4 animate-spin" />
+          <Loader2 v-if="submitting" class="mr-2 h-4 w-4 animate-spin" />
           <span v-else>Odeslat</span>
-          <Send v-if="!submitting" class="h-4 w-4" />
-        </button>
+          <Send v-if="!submitting" class="ml-2 h-4 w-4" />
+        </Button>
       </div>
     </div>
   </div>
@@ -772,7 +787,11 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { toast } from "vue-sonner";
 import { useBookingStore } from "@/stores/booking";
 import { Link, usePage } from "@inertiajs/vue3";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   ChevronLeft,
   ChevronRight,
