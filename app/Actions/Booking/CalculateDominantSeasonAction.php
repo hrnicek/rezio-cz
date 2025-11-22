@@ -33,16 +33,9 @@ class CalculateDominantSeasonAction
 
     private function getSeasonForDate(Carbon $date, $seasons): ?Season
     {
-        $customSeason = $seasons->first(function (Season $s) use ($date) {
-            $md = $date->format('m-d');
-            $startMd = $s->start_date->format('m-d');
-            $endMd = $s->end_date->format('m-d');
-
-            if ($startMd <= $endMd) {
-                return !$s->is_default && $md >= $startMd && $md <= $endMd;
-            }
-
-            return !$s->is_default && ($md >= $startMd || $md <= $endMd);
+        // Sort by priority descending to respect season priority
+        $customSeason = $seasons->sortByDesc('priority')->first(function (Season $s) use ($date) {
+            return $s->matchesDate($date);
         });
 
         return $customSeason ?: $seasons->firstWhere('is_default', true);

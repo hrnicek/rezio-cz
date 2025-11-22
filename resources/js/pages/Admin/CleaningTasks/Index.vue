@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { format } from 'date-fns';
 import { ref } from 'vue';
+
+declare const route: any;
 
 const props = defineProps<{
     cleaningTasks: {
@@ -17,10 +19,11 @@ const props = defineProps<{
             updated_at: string;
             booking: {
                 id: number;
-                guest_info: {
-                    name: string;
+                customer: {
+                    first_name: string;
+                    last_name: string;
                     email: string;
-                };
+                } | null;
                 property: {
                     id: number;
                     name: string;
@@ -105,7 +108,10 @@ const markAsComplete = (taskId: number) => {
                                             {{ task.property.name }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            {{ task.booking.guest_info.name }}
+                                            <span v-if="task.booking.customer">
+                                                {{ task.booking.customer.first_name }} {{ task.booking.customer.last_name }}
+                                            </span>
+                                            <span v-else class="italic text-gray-400">No guest info</span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                             {{ format(new Date(task.due_date), 'MMM dd, yyyy') }}

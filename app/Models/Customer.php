@@ -17,6 +17,7 @@ class Customer extends Model
         'last_name',
         'email',
         'phone',
+        'is_registered'
     ];
 
     protected $appends = [

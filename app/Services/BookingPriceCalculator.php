@@ -3,23 +3,25 @@
 namespace App\Services;
 
 use App\Data\PriceBreakdown;
-use App\Models\Season;
 use App\Models\Service;
 use Carbon\Carbon;
 
 class BookingPriceCalculator
 {
+    public function __construct(private SeasonalPricingService $seasonalPricing)
+    {
+    }
+
     public function calculate(
+        int $propertyId,
         Carbon $startDate,
         Carbon $endDate,
         array $serviceSelections = []
     ): PriceBreakdown {
         $nights = max(1, $startDate->copy()->startOfDay()->diffInDays($endDate->copy()->startOfDay()));
 
-        // Calculate accommodation price from seasons
-        $accommodationPrice = $this->calculateAccommodationPrice($startDate, $endDate, $nights);
+        $accommodationPrice = $this->seasonalPricing->calculate_stay_price($propertyId, $startDate, $endDate);
 
-        // Calculate services price
         [$servicesPrice, $serviceDetails] = $this->calculateServicesPrice($serviceSelections, $nights);
 
         return new PriceBreakdown(
@@ -28,20 +30,6 @@ class BookingPriceCalculator
             total: $accommodationPrice + $servicesPrice,
             serviceDetails: $serviceDetails
         );
-    }
-
-    private function calculateAccommodationPrice(Carbon $start, Carbon $end, int $nights): float
-    {
-        $total = 0.0;
-        $current = $start->copy();
-
-        while ($current->lt($end)) {
-            $season = $this->getSeasonForDate($current);
-            $total += $season?->price ?? 0;
-            $current->addDay();
-        }
-
-        return $total;
     }
 
     private function calculateServicesPrice(array $selections, int $nights): array
@@ -75,24 +63,5 @@ class BookingPriceCalculator
         return [$total, $details];
     }
 
-    private function getSeasonForDate(Carbon $date): ?Season
-    {
-        // Find matching season
-        $seasons = Season::all();
-
-        // Find custom season
-        $customSeason = $seasons->first(function (Season $s) use ($date) {
-            $md = $date->format('m-d');
-            $startMd = $s->start_date->format('m-d');
-            $endMd = $s->end_date->format('m-d');
-
-            if ($startMd <= $endMd) {
-                return !$s->is_default && $md >= $startMd && $md <= $endMd;
-            }
-
-            return !$s->is_default && ($md >= $startMd || $md <= $endMd);
-        });
-
-        return $customSeason ?: $seasons->firstWhere('is_default', true);
-    }
+    // Season rules are handled elsewhere; pricing is delegated to SeasonalPricingService
 }

@@ -29,7 +29,7 @@ const props = defineProps<{
         data: Array<{
             id: number;
             property: { name: string };
-            guest_info: { name: string; email: string; phone: string };
+            customer: { first_name: string; last_name: string; email: string; phone: string } | null;
             start_date: string;
             end_date: string;
             total_price: number;
@@ -142,8 +142,13 @@ const getStatusVariant = (status: string) => {
                                 <TableRow v-for="booking in bookings.data" :key="booking.id">
                                     <TableCell class="font-medium">{{ booking.property.name }}</TableCell>
                                     <TableCell>
-                                        <div>{{ booking.guest_info.name }}</div>
-                                        <div class="text-xs text-gray-500">{{ booking.guest_info.email }}</div>
+                                        <div v-if="booking.customer">
+                                            <div>{{ booking.customer.first_name }} {{ booking.customer.last_name }}</div>
+                                            <div class="text-xs text-gray-500">{{ booking.customer.email }}</div>
+                                        </div>
+                                        <div v-else class="text-gray-400 italic">
+                                            No guest info
+                                        </div>
                                     </TableCell>
                                     <TableCell>
                                         {{ booking.start_date }} - {{ booking.end_date }}

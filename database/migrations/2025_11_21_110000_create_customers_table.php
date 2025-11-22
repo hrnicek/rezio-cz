@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
+            $table->boolean('is_registered')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

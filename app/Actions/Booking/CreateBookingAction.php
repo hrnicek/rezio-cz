@@ -30,6 +30,10 @@ class CreateBookingAction
     public function execute(array $data): Booking
     {
         return DB::transaction(function () use ($data) {
+            $propertyId = (int) ($data['property_id'] ?? 0);
+            if ($propertyId === 0) {
+                throw new \InvalidArgumentException('property_id is required');
+            }
             // 1. Always create a new customer (no deduplication)
             $customer = Customer::query()->create([
                 'email' => $data['customer']['email'],
@@ -56,8 +60,9 @@ class CreateBookingAction
             // Validate business rules
             $this->bookingRules->validate($startDate, $endDate, $season);
 
-            // 4. Calculate price
+            // 4. Calculate price (seasonal overlay)
             $priceBreakdown = $this->priceCalculator->calculate(
+                $propertyId,
                 $startDate,
                 $endDate,
                 $data['addons'] ?? []
@@ -65,7 +70,7 @@ class CreateBookingAction
 
             // 6. Create booking
             $booking = Booking::create([
-                'property_id' => $data['property_id'] ?? null,
+                'property_id' => $propertyId,
                 'customer_id' => $customer->id,
                 'season_id' => $season?->id,
                 'start_date' => $data['start_date'],

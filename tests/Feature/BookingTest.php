@@ -144,4 +144,23 @@ class BookingTest extends TestCase
         $response->assertRedirect();
         $this->assertEquals('confirmed', $booking->refresh()->status);
     }
+    public function test_booking_can_be_created_without_user_id(): void
+    {
+        $user = User::factory()->create();
+        $property = Property::factory()->create(['user_id' => $user->id]);
+
+        $booking = Booking::create([
+            'property_id' => $property->id,
+            'user_id' => null,
+            'start_date' => now()->addDays(1),
+            'end_date' => now()->addDays(3),
+            'total_price' => 200,
+            'status' => 'pending',
+        ]);
+
+        $this->assertDatabaseHas('bookings', [
+            'id' => $booking->id,
+            'user_id' => null,
+        ]);
+    }
 }

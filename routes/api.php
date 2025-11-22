@@ -3,9 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Client\Api\ServiceController;
 use App\Http\Controllers\Client\Api\BookingController;
-use App\Http\Controllers\Client\Api\Booking\CalendarController;
 use App\Http\Controllers\Client\Api\Service\ListServicesController;
-use App\Http\Controllers\Client\Api\Booking\VerifyAvailabilityController;
 
 Route::prefix('bookings')->group(function () {
     Route::get('calendar', [BookingController::class, 'calendar'])->name('api.bookings.calendar');

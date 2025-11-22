@@ -1000,9 +1000,10 @@ async function fetchCalendar() {
   loading.value = true;
   error.value = "";
   try {
+    const token = page.props.property?.widget_token;
     const [curr, prev] = await Promise.all([
-      axios.get("/api/bookings/calendar", { params: { month: month.value, year: year.value } }),
-      axios.get("/api/bookings/calendar", {
+      axios.get(`/api/properties/${token}/calendar`, { params: { month: month.value, year: year.value } }),
+      axios.get(`/api/properties/${token}/calendar`, {
         params: { month: prevMonthNum.value, year: prevYear.value },
       }),
     ]);
@@ -1360,8 +1361,9 @@ async function verifyAndProceed() {
       verifyError.value = "Vybraný termín je mezitím obsazen. Vyberte prosím jiné datum.";
       return;
     }
+    const token = page.props.property?.widget_token;
     const requests = monthsForRange.value.map(({ month, year }) =>
-      axios.get("/api/bookings/calendar", { params: { month, year } })
+      axios.get(`/api/properties/${token}/calendar`, { params: { month, year } })
     );
     const responses = await Promise.all(requests);
     const freshDays = responses.flatMap((r) => r.data.days);

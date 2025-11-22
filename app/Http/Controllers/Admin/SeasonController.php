@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Property;
 use App\Models\Season;
+
 use Illuminate\Http\Request;
 
 class SeasonController extends Controller
@@ -28,9 +29,13 @@ class SeasonController extends Controller
             'check_in_days' => 'nullable|array',
             'is_default' => 'nullable|boolean',
             'is_fixed_range' => 'nullable|boolean',
+            'priority' => 'nullable|integer',
+            'is_recurring' => 'nullable|boolean',
         ]);
 
-        $property->seasons()->create($validated);
+        $season = $property->seasons()->create($validated);
+
+
 
         return redirect()->route('admin.properties.seasons.index', $property);
     }
@@ -46,9 +51,13 @@ class SeasonController extends Controller
             'check_in_days' => 'nullable|array',
             'is_default' => 'nullable|boolean',
             'is_fixed_range' => 'nullable|boolean',
+            'priority' => 'nullable|integer',
+            'is_recurring' => 'nullable|boolean',
         ]);
 
         $season->update($validated);
+
+
 
         return redirect()->route('admin.properties.seasons.index', $property);
     }

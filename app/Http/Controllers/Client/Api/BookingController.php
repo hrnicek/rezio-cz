@@ -9,7 +9,6 @@ use App\Http\Requests\Booking\VerifyCustomerRequest;
 use App\Models\BlackoutDate;
 use App\Models\Booking;
 use App\Models\Customer;
-use App\Models\Season;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 
@@ -22,9 +21,6 @@ class BookingController extends Controller
 
         $periodStart = Carbon::create($year, $month, 1)->startOfMonth();
         $periodEnd = Carbon::create($year, $month, 1)->endOfMonth();
-
-        $seasons = Season::query()->get();
-        $defaultSeason = $seasons->firstWhere('is_default', true);
 
         $bookings = Booking::query()
             ->where('status', '!=', 'cancelled')
@@ -46,18 +42,6 @@ class BookingController extends Controller
             ->addDays($minLeadDays);
 
         while ($date->lte($periodEnd)) {
-            $customSeason = $seasons->first(function (Season $s) use ($date) {
-                $md = $date->format('m-d');
-                $startMd = $s->start_date->format('m-d');
-                $endMd = $s->end_date->format('m-d');
-                if ($startMd <= $endMd) {
-                    return ! $s->is_default && $md >= $startMd && $md <= $endMd;
-                }
-
-                return ! $s->is_default && ($md >= $startMd || $md <= $endMd);
-            });
-            $season = $customSeason ?: $defaultSeason;
-
             $isBlackout = $blackouts->contains(function (BlackoutDate $b) use ($date) {
                 return $date->between($b->start_date, $b->end_date);
             });
@@ -74,9 +58,7 @@ class BookingController extends Controller
                 'date' => $date->toDateString(),
                 'available' => $meetsLead && ! ($isBlackout || $isBooked),
                 'blackout' => $isBlackout,
-                'season' => $season?->name,
-                'season_is_default' => (bool) ($season?->is_default ?? false),
-                'price' => $season?->price,
+                'price' => null,
             ];
 
             $date = $date->addDay();
@@ -176,9 +158,88 @@ class BookingController extends Controller
 
     public function calendarByProperty(string $token, CalendarRequest $request): JsonResponse
     {
-        // For now, return calendar for all properties regardless of token
-        // In the future, you could filter by specific property if needed
-        return $this->calendar($request);
+        $validated = $request->validated();
+
+        $month = (int) ($validated['month'] ?? now()->month);
+        $year = (int) ($validated['year'] ?? now()->year);
+
+        /** @var \App\Models\Property $property */
+        $property = \App\Models\Property::where('widget_token', $token)->firstOrFail();
+
+        $periodStart = Carbon::create($year, $month, 1)->startOfMonth();
+        $periodEnd = Carbon::create($year, $month, 1)->endOfMonth();
+
+        $bookings = Booking::query()
+            ->where('property_id', $property->id)
+            ->where('status', '!=', 'cancelled')
+            ->where(function ($query) use ($periodStart, $periodEnd) {
+                $query->whereBetween('start_date', [$periodStart, $periodEnd])
+                    ->orWhereBetween('end_date', [$periodStart, $periodEnd])
+                    ->orWhere(function ($query) use ($periodStart, $periodEnd) {
+                        $query->where('start_date', '<=', $periodStart)
+                            ->where('end_date', '>=', $periodEnd);
+                    });
+            })
+            ->get();
+
+        $seasons = $property->seasons()->get();
+        $defaultSeason = $seasons->firstWhere('is_default', true);
+
+        $blackouts = BlackoutDate::query()
+            ->where('start_date', '<=', $periodEnd->toDateString())
+            ->where('end_date', '>=', $periodStart->toDateString())
+            ->get();
+
+        $days = [];
+        $date = $periodStart->copy();
+
+        $minLeadDays = (int) config('booking.min_lead_days', 1);
+        $earliest = now()->timezone(config('booking.timezone', 'Europe/Prague'))
+            ->startOfDay()
+            ->addDays($minLeadDays);
+
+        while ($date->lte($periodEnd)) {
+            $isBlackout = $blackouts->contains(function (BlackoutDate $b) use ($date) {
+                return $date->between($b->start_date, $b->end_date);
+            });
+
+            $isBooked = $bookings->contains(function (Booking $b) use ($date) {
+                $bookingStart = \Carbon\Carbon::parse($b->start_date)->startOfDay();
+                $bookingEndExclusive = \Carbon\Carbon::parse($b->end_date)->subDay()->startOfDay();
+                return $date->between($bookingStart, $bookingEndExclusive);
+            });
+
+            $meetsLead = $date->gte($earliest);
+
+            $price = null;
+            foreach ($seasons as $season) {
+                if ($season->is_default) {
+                    continue;
+                }
+                if ($season->start_date && $season->end_date && $date->between($season->start_date, $season->end_date)) {
+                    $price = $season->price;
+                    break;
+                }
+            }
+            if ($price === null) {
+                $price = $defaultSeason ? $defaultSeason->price : $property->price_per_night;
+            }
+
+            $days[] = [
+                'date' => $date->toDateString(),
+                'available' => $meetsLead && ! ($isBlackout || $isBooked),
+                'blackout' => $isBlackout,
+                'price' => $price,
+            ];
+
+            $date = $date->addDay();
+        }
+
+        return response()->json([
+            'month' => $month,
+            'year' => $year,
+            'days' => $days,
+        ]);
     }
 
     public function verifyByProperty(string $token, VerifyAvailabilityRequest $request): JsonResponse

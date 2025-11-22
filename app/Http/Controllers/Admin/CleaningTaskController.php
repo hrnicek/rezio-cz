@@ -14,7 +14,7 @@ class CleaningTaskController extends Controller
      */
     public function index(Request $request)
     {
-        $cleaningTasks = CleaningTask::with(['booking.property', 'property'])
+        $cleaningTasks = CleaningTask::with(['booking.property', 'booking.customer', 'property'])
             ->latest()
             ->paginate(10);
 
