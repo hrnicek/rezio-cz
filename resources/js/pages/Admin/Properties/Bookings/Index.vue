@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, router, usePage } from '@inertiajs/vue3';
+import { Head, router, usePage, Link } from '@inertiajs/vue3';
 import {
     Table,
     TableBody,
@@ -21,6 +21,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { ref, watch } from 'vue';
 import { debounce } from 'lodash';
+import { useCurrency } from '@/composables/useCurrency';
+import { Eye, Check, X } from 'lucide-vue-next';
 
 declare const route: any;
 
@@ -47,6 +49,7 @@ const props = defineProps<{
 
 const statusFilter = ref(props.filters.status || 'all');
 const searchQuery = ref(props.filters.search || '');
+const { formatCurrency } = useCurrency();
 
 const updateFilters = debounce(() => {
     router.get(route('admin.bookings.index'), { 
@@ -87,46 +90,41 @@ const getStatusVariant = (status: string) => {
     <Head title="Rezervace" />
 
     <AppLayout>
-        <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                Rezervace
-            </h2>
-        </template>
 
-        <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <div class="flex justify-between items-center mb-6 gap-4">
-                            <div class="flex items-center gap-4 flex-1">
-                                <div class="w-48">
-                                    <Select v-model="statusFilter">
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Filtrovat dle stavu" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="all">Všechny stavy</SelectItem>
-                                            <SelectItem value="pending">Čekající</SelectItem>
-                                            <SelectItem value="confirmed">Potvrzeno</SelectItem>
-                                            <SelectItem value="cancelled">Zrušeno</SelectItem>
-                                            <SelectItem value="paid">Zaplaceno</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div class="w-64">
-                                    <Input 
-                                        v-model="searchQuery" 
-                                        placeholder="Hledat hosty..." 
-                                        class="w-full"
-                                    />
-                                </div>
-                            </div>
-                            <Button variant="outline" @click="exportBookings">
-                                Exportovat CSV
-                            </Button>
-                        </div>
+        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+            <div class="flex items-center justify-between">
+                <h2 class="text-2xl font-bold tracking-tight">Rezervace</h2>
+                <Button variant="outline" @click="exportBookings">
+                    Exportovat CSV
+                </Button>
+            </div>
 
-                        <Table>
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-48">
+                    <Select v-model="statusFilter">
+                        <SelectTrigger>
+                            <SelectValue placeholder="Filtrovat dle stavu" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Všechny stavy</SelectItem>
+                            <SelectItem value="pending">Čekající</SelectItem>
+                            <SelectItem value="confirmed">Potvrzeno</SelectItem>
+                            <SelectItem value="cancelled">Zrušeno</SelectItem>
+                            <SelectItem value="paid">Zaplaceno</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div class="w-64">
+                    <Input 
+                        v-model="searchQuery" 
+                        placeholder="Hledat hosty..." 
+                        class="w-full"
+                    />
+                </div>
+            </div>
+
+            <div class="rounded-md border">
+                <Table>
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Nemovitost</TableHead>
@@ -152,28 +150,38 @@ const getStatusVariant = (status: string) => {
                                     <TableCell>
                                         {{ booking.start_date }} - {{ booking.end_date }}
                                     </TableCell>
-                                    <TableCell>${{ booking.total_price }}</TableCell>
+                                    <TableCell>{{ formatCurrency(booking.total_price) }}</TableCell>
                                     <TableCell>
                                         <Badge :variant="getStatusVariant(booking.status)">
                                             {{ booking.status }}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell class="text-right space-x-2">
-                                        <Button 
-                                            v-if="booking.status === 'pending'" 
-                                            size="sm" 
-                                            @click="updateStatus(booking.id, 'confirmed')"
-                                        >
-                                            Potvrdit
-                                        </Button>
-                                        <Button 
-                                            v-if="booking.status !== 'cancelled'" 
-                                            variant="destructive" 
-                                            size="sm" 
-                                            @click="updateStatus(booking.id, 'cancelled')"
-                                        >
-                                            Zrušit
-                                        </Button>
+                                    <TableCell class="text-right">
+                                        <div class="flex justify-end gap-2">
+                                            <Button variant="outline" size="icon" as-child>
+                                                <Link :href="route('admin.bookings.show', booking.id)">
+                                                    <Eye class="h-4 w-4" />
+                                                </Link>
+                                            </Button>
+                                            <Button 
+                                                v-if="booking.status === 'pending'" 
+                                                variant="default"
+                                                size="icon" 
+                                                @click="updateStatus(booking.id, 'confirmed')"
+                                                title="Potvrdit"
+                                            >
+                                                <Check class="h-4 w-4" />
+                                            </Button>
+                                            <Button 
+                                                v-if="booking.status !== 'cancelled'" 
+                                                variant="destructive" 
+                                                size="icon" 
+                                                @click="updateStatus(booking.id, 'cancelled')"
+                                                title="Zrušit"
+                                            >
+                                                <X class="h-4 w-4" />
+                                            </Button>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                                 <TableRow v-if="bookings.data.length === 0">
@@ -185,7 +193,5 @@ const getStatusVariant = (status: string) => {
                         </Table>
                     </div>
                 </div>
-            </div>
-        </div>
-    </AppLayout>
+        </AppLayout>
 </template>

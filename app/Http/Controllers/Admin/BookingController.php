@@ -44,6 +44,45 @@ class BookingController extends Controller
         ]);
     }
 
+    public function show(Booking $booking)
+    {
+        $booking->load(['property', 'customer', 'payments']);
+
+        return Inertia::render('Admin/Properties/Bookings/Show', [
+            'booking' => [
+                'id' => $booking->id,
+                'code' => $booking->code,
+                'property' => [
+                    'id' => $booking->property->id,
+                    'name' => $booking->property->name,
+                    'address' => $booking->property->address,
+                ],
+                'customer' => $booking->customer ? [
+                    'id' => $booking->customer->id,
+                    'first_name' => $booking->customer->first_name,
+                    'last_name' => $booking->customer->last_name,
+                    'email' => $booking->customer->email,
+                    'phone' => $booking->customer->phone,
+                    'note' => $booking->customer->note,
+                ] : null,
+                'start_date' => $booking->start_date->toDateString(),
+                'end_date' => $booking->end_date->toDateString(),
+                'total_price' => $booking->total_price,
+                'status' => $booking->status,
+                'notes' => $booking->notes,
+                'created_at' => $booking->created_at->toISOString(),
+                'updated_at' => $booking->updated_at->toISOString(),
+                'payments' => $booking->payments->map(fn($payment) => [
+                    'id' => $payment->id,
+                    'amount' => $payment->amount,
+                    'payment_method' => $payment->payment_method,
+                    'paid_at' => $payment->paid_at->toISOString(),
+                    'status' => $payment->status,
+                ]),
+            ],
+        ]);
+    }
+
     public function export(Request $request)
     {
         $status = $request->input('status');

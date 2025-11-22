@@ -32,6 +32,7 @@
         "@headlessui/vue": "^1.7.23",
         "@inertiajs/vue3": "^2.1.0",
         "@popperjs/core": "^2.11.8",
+        "@radix-ui/react-separator": "^1.1.8",
         "@vueuse/core": "^12.8.2",
         "chart.js": "^4.5.1",
         "class-variance-authority": "^0.7.1",

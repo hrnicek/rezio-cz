@@ -24,7 +24,7 @@ Route::middleware(['auth', 'verified'])
         Route::get('reports/data', [ReportController::class, 'data'])->name('reports.data');
 
         Route::get('bookings/export', [BookingController::class, 'export'])->name('bookings.export');
-        Route::resource('bookings', BookingController::class)->only(['index', 'store', 'update', 'destroy']);
+        Route::resource('bookings', BookingController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
 
         Route::resource('cleaning-tasks', CleaningTaskController::class);
         Route::post('cleaning-tasks/{cleaningTask}/complete', [CleaningTaskController::class, 'complete'])
