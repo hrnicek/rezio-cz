@@ -87,7 +87,7 @@ const fetchData = async () => {
             labels: response.data.chart_data.map((d: any) => d.date),
             datasets: [
                 {
-                    label: 'Daily Revenue',
+                    label: 'Denní tržby',
                     backgroundColor: '#3b82f6',
                     borderColor: '#3b82f6',
                     data: response.data.chart_data.map((d: any) => d.revenue),
@@ -111,31 +111,31 @@ watch([startDate, endDate, selectedProperty], () => {
 
 const breadcrumbs = [
     {
-        title: 'Reports',
+        title: 'Reporty',
         href: '/admin/reports',
     },
 ];
 </script>
 
 <template>
-    <Head title="Reports" />
+    <Head title="Reporty" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="flex items-center justify-between">
-                <h2 class="text-2xl font-bold tracking-tight">Reporting Dashboard</h2>
+                <h2 class="text-2xl font-bold tracking-tight">Přehledy a Reporty</h2>
             </div>
 
             <!-- Filters -->
             <div class="grid gap-4 md:grid-cols-4">
                 <div class="space-y-2">
-                    <Label>Property</Label>
+                    <Label>Nemovitost</Label>
                     <Select v-model="selectedProperty">
                         <SelectTrigger>
-                            <SelectValue placeholder="All Properties" />
+                            <SelectValue placeholder="Všechny nemovitosti" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Properties</SelectItem>
+                            <SelectItem value="all">Všechny nemovitosti</SelectItem>
                             <SelectItem v-for="property in properties" :key="property.id" :value="property.id.toString()">
                                 {{ property.name }}
                             </SelectItem>
@@ -143,16 +143,16 @@ const breadcrumbs = [
                     </Select>
                 </div>
                 <div class="space-y-2">
-                    <Label>Start Date</Label>
+                    <Label>Od</Label>
                     <Input type="date" v-model="startDate" />
                 </div>
                 <div class="space-y-2">
-                    <Label>End Date</Label>
+                    <Label>Do</Label>
                     <Input type="date" v-model="endDate" />
                 </div>
                 <div class="flex items-end">
                     <Button @click="fetchData" :disabled="loading" class="w-full">
-                        {{ loading ? 'Loading...' : 'Refresh' }}
+                        {{ loading ? 'Načítání...' : 'Obnovit' }}
                     </Button>
                 </div>
             </div>
@@ -161,7 +161,7 @@ const breadcrumbs = [
             <div class="grid gap-4 md:grid-cols-3">
                 <Card>
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle class="text-sm font-medium">Total Revenue</CardTitle>
+                        <CardTitle class="text-sm font-medium">Celkové tržby</CardTitle>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
@@ -178,13 +178,13 @@ const breadcrumbs = [
                     <CardContent>
                         <div class="text-2xl font-bold">{{ new Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'CZK' }).format(stats.total_revenue) }}</div>
                         <p class="text-xs text-muted-foreground">
-                            For selected period
+                            Za vybrané období
                         </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle class="text-sm font-medium">Bookings</CardTitle>
+                        <CardTitle class="text-sm font-medium">Rezervace</CardTitle>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
@@ -203,13 +203,13 @@ const breadcrumbs = [
                     <CardContent>
                         <div class="text-2xl font-bold">+{{ stats.total_bookings }}</div>
                         <p class="text-xs text-muted-foreground">
-                            Confirmed bookings
+                            Potvrzené rezervace
                         </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle class="text-sm font-medium">Occupancy Rate</CardTitle>
+                        <CardTitle class="text-sm font-medium">Obsazenost</CardTitle>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
@@ -229,7 +229,7 @@ const breadcrumbs = [
                     <CardContent>
                         <div class="text-2xl font-bold">{{ stats.occupancy_rate }}%</div>
                         <p class="text-xs text-muted-foreground">
-                            Of available nights
+                            Z dostupných nocí
                         </p>
                     </CardContent>
                 </Card>
@@ -239,7 +239,7 @@ const breadcrumbs = [
             <div class="grid gap-4 md:grid-cols-1">
                 <Card class="col-span-1">
                     <CardHeader>
-                        <CardTitle>Revenue Overview</CardTitle>
+                        <CardTitle>Přehled tržeb</CardTitle>
                     </CardHeader>
                     <CardContent class="pl-2">
                         <div class="h-[350px]">

@@ -67,7 +67,7 @@ const exportBookings = () => {
 };
 
 const updateStatus = (bookingId: number, status: string) => {
-    if (confirm(`Are you sure you want to mark this booking as ${status}?`)) {
+    if (confirm(`Opravdu chcete označit tuto rezervaci jako ${status}?`)) {
         router.put(route('admin.bookings.update', bookingId), { status });
     }
 };
@@ -84,12 +84,12 @@ const getStatusVariant = (status: string) => {
 </script>
 
 <template>
-    <Head title="Bookings" />
+    <Head title="Rezervace" />
 
     <AppLayout>
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                Bookings
+                Rezervace
             </h2>
         </template>
 
@@ -102,40 +102,40 @@ const getStatusVariant = (status: string) => {
                                 <div class="w-48">
                                     <Select v-model="statusFilter">
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Filter by status" />
+                                            <SelectValue placeholder="Filtrovat dle stavu" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="all">All Statuses</SelectItem>
-                                            <SelectItem value="pending">Pending</SelectItem>
-                                            <SelectItem value="confirmed">Confirmed</SelectItem>
-                                            <SelectItem value="cancelled">Cancelled</SelectItem>
-                                            <SelectItem value="paid">Paid</SelectItem>
+                                            <SelectItem value="all">Všechny stavy</SelectItem>
+                                            <SelectItem value="pending">Čekající</SelectItem>
+                                            <SelectItem value="confirmed">Potvrzeno</SelectItem>
+                                            <SelectItem value="cancelled">Zrušeno</SelectItem>
+                                            <SelectItem value="paid">Zaplaceno</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
                                 <div class="w-64">
                                     <Input 
                                         v-model="searchQuery" 
-                                        placeholder="Search guests..." 
+                                        placeholder="Hledat hosty..." 
                                         class="w-full"
                                     />
                                 </div>
                             </div>
                             <Button variant="outline" @click="exportBookings">
-                                Export CSV
+                                Exportovat CSV
                             </Button>
                         </div>
 
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Property</TableHead>
-                                    <TableHead>Guest</TableHead>
-                                    <TableHead>Dates</TableHead>
-                                    <TableHead>Total</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Notes</TableHead>
-                                    <TableHead class="text-right">Actions</TableHead>
+                                    <TableHead>Nemovitost</TableHead>
+                                    <TableHead>Host</TableHead>
+                                    <TableHead>Termín</TableHead>
+                                    <TableHead>Cena celkem</TableHead>
+                                    <TableHead>Stav</TableHead>
+                                    <TableHead>Poznámky</TableHead>
+                                    <TableHead class="text-right">Akce</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -147,7 +147,7 @@ const getStatusVariant = (status: string) => {
                                             <div class="text-xs text-gray-500">{{ booking.customer.email }}</div>
                                         </div>
                                         <div v-else class="text-gray-400 italic">
-                                            No guest info
+                                            Žádné info o hostovi
                                         </div>
                                     </TableCell>
                                     <TableCell>
@@ -170,7 +170,7 @@ const getStatusVariant = (status: string) => {
                                             size="sm" 
                                             @click="updateStatus(booking.id, 'confirmed')"
                                         >
-                                            Confirm
+                                            Potvrdit
                                         </Button>
                                         <Button 
                                             v-if="booking.status !== 'cancelled'" 
@@ -178,13 +178,13 @@ const getStatusVariant = (status: string) => {
                                             size="sm" 
                                             @click="updateStatus(booking.id, 'cancelled')"
                                         >
-                                            Cancel
+                                            Zrušit
                                         </Button>
                                     </TableCell>
                                 </TableRow>
                                 <TableRow v-if="bookings.data.length === 0">
                                     <TableCell colspan="6" class="text-center py-8 text-gray-500">
-                                        No bookings found.
+                                        Žádné rezervace nenalezeny.
                                     </TableCell>
                                 </TableRow>
                             </TableBody>

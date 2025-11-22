@@ -21,22 +21,22 @@ declare const route: any;
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Nástěnka',
         href: route('admin.dashboard'),
         icon: LayoutGrid,
     },
     {
-        title: 'Properties',
+        title: 'Nemovitosti',
         href: route('admin.properties.index'),
         icon: Building,
     },
     {
-        title: 'Bookings',
+        title: 'Rezervace',
         href: route('admin.bookings.index'),
         icon: Calendar,
     },
     {
-        title: 'Reports',
+        title: 'Reporty',
         href: route('admin.reports.index'),
         icon: BarChart,
     },

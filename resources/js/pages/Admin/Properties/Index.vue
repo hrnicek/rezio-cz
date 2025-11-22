@@ -26,29 +26,29 @@ defineProps<{
 }>();
 
 const deleteProperty = (id: number) => {
-    if (confirm('Are you sure you want to delete this property?')) {
+    if (confirm('Opravdu chcete smazat tuto nemovitost?')) {
         router.delete(route('admin.properties.destroy', id));
     }
 };
 
 const breadcrumbs = [
     {
-        title: 'Properties',
+        title: 'Nemovitosti',
         href: '/properties',
     },
 ];
 </script>
 
 <template>
-    <Head title="Properties" />
+    <Head title="Nemovitosti" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="flex items-center justify-between">
-                <h2 class="text-2xl font-bold tracking-tight">Properties</h2>
+                <h2 class="text-2xl font-bold tracking-tight">Nemovitosti</h2>
                 <Button as-child>
                     <Link :href="route('admin.properties.create')">
-                        <Plus class="mr-2 h-4 w-4" /> Add Property
+                        <Plus class="mr-2 h-4 w-4" /> Přidat nemovitost
                     </Link>
                 </Button>
             </div>
@@ -57,10 +57,10 @@ const breadcrumbs = [
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Address</TableHead>
+                            <TableHead>Název</TableHead>
+                            <TableHead>Adresa</TableHead>
                             <TableHead>Widget Token</TableHead>
-                            <TableHead class="text-right">Actions</TableHead>
+                            <TableHead class="text-right">Akce</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -89,7 +89,7 @@ const breadcrumbs = [
                         </TableRow>
                         <TableRow v-if="properties.length === 0">
                             <TableCell colspan="4" class="h-24 text-center">
-                                No properties found.
+                                Žádné nemovitosti nenalezeny.
                             </TableCell>
                         </TableRow>
                     </TableBody>

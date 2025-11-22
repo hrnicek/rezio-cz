@@ -31,6 +31,8 @@ class BookingFactory extends Factory
             'date_start' => $start,
             'date_end' => $end,
             'total_price' => fake()->randomFloat(2, 100, 1000),
+            'currency' => 'CZK',
+            'exchange_rate' => 1.0000,
             'status' => fake()->randomElement(['pending', 'confirmed', 'paid', 'cancelled']),
         ];
     }

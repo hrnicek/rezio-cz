@@ -46,6 +46,8 @@ class Booking extends Model
         'date_start',
         'date_end',
         'total_price',
+        'currency',
+        'exchange_rate',
         'status',
         'notes',
         'reminders_sent_at',
@@ -59,6 +61,7 @@ class Booking extends Model
             'date_start' => 'datetime',
             'date_end' => 'datetime',
             'total_price' => 'decimal:2',
+            'exchange_rate' => 'decimal:4',
             'status' => BookingState::class,
             'reminders_sent_at' => 'datetime',
         ];

@@ -27,7 +27,7 @@ declare const route: any;
 
 const breadcrumbs = [
     {
-        title: 'Dashboard',
+        title: 'Nástěnka',
         href: '/admin/dashboard',
     },
 ];
@@ -93,7 +93,7 @@ const submitEditBooking = () => {
 const deleteBooking = () => {
     if (!selectedBooking.value) return;
     
-    if (confirm('Are you sure you want to delete this booking?')) {
+    if (confirm('Opravdu chcete smazat tuto rezervaci?')) {
         useForm({}).delete(route('admin.bookings.destroy', selectedBooking.value.key), {
             onSuccess: () => {
                 isBookingDetailsOpen.value = false;
@@ -104,7 +104,7 @@ const deleteBooking = () => {
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head title="Nástěnka" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
@@ -112,7 +112,7 @@ const deleteBooking = () => {
                 <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                     <div class="flex h-full items-center justify-center p-6">
                         <div class="text-center">
-                            <h3 class="text-lg font-medium text-foreground">Total Bookings</h3>
+                            <h3 class="text-lg font-medium text-foreground">Celkem rezervací</h3>
                             <p class="text-3xl font-bold text-foreground">0</p>
                         </div>
                     </div>
@@ -120,15 +120,15 @@ const deleteBooking = () => {
                 <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                      <div class="flex h-full items-center justify-center p-6">
                         <div class="text-center">
-                            <h3 class="text-lg font-medium text-foreground">Revenue</h3>
-                            <p class="text-3xl font-bold text-foreground">$0.00</p>
+                            <h3 class="text-lg font-medium text-foreground">Tržby</h3>
+                            <p class="text-3xl font-bold text-foreground">0,00 Kč</p>
                         </div>
                     </div>
                 </div>
                 <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                      <div class="flex h-full items-center justify-center p-6">
                         <div class="text-center">
-                            <h3 class="text-lg font-medium text-foreground">Pending</h3>
+                            <h3 class="text-lg font-medium text-foreground">Čekající</h3>
                             <p class="text-3xl font-bold text-foreground">0</p>
                         </div>
                     </div>
@@ -137,24 +137,24 @@ const deleteBooking = () => {
             <div class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 dark:border-sidebar-border md:min-h-min">
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-xl font-semibold">Availability Calendar</h2>
+                        <h2 class="text-xl font-semibold">Kalendář dostupnosti</h2>
                         <Dialog v-model:open="isBlockDatesOpen">
                             <DialogTrigger as-child>
-                                <Button>Block Dates</Button>
+                                <Button>Blokovat termín</Button>
                             </DialogTrigger>
                             <DialogContent class="sm:max-w-[425px]">
                                 <DialogHeader>
-                                    <DialogTitle>Block Dates</DialogTitle>
+                                    <DialogTitle>Blokovat termín</DialogTitle>
                                     <DialogDescription>
-                                        Select a property and date range to block.
+                                        Vyberte nemovitost a termín pro blokaci.
                                     </DialogDescription>
                                 </DialogHeader>
                                 <form @submit.prevent="submitBlockDates" class="grid gap-4 py-4">
                                     <div class="grid grid-cols-4 items-center gap-4">
-                                        <Label for="property" class="text-right">Property</Label>
+                                        <Label for="property" class="text-right">Nemovitost</Label>
                                         <Select v-model="form.property_id">
                                             <SelectTrigger class="col-span-3">
-                                                <SelectValue placeholder="Select a property" />
+                                                <SelectValue placeholder="Vyberte nemovitost" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem v-for="property in properties" :key="property.id" :value="property.id.toString()">
@@ -164,11 +164,11 @@ const deleteBooking = () => {
                                         </Select>
                                     </div>
                                     <div class="grid grid-cols-4 items-center gap-4">
-                                        <Label for="start_date" class="text-right">Start Date</Label>
+                                        <Label for="start_date" class="text-right">Od</Label>
                                         <Input id="start_date" type="date" v-model="form.start_date" class="col-span-3" />
                                     </div>
                                     <div class="grid grid-cols-4 items-center gap-4">
-                                        <Label for="end_date" class="text-right">End Date</Label>
+                                        <Label for="end_date" class="text-right">Do</Label>
                                         <Input id="end_date" type="date" v-model="form.end_date" class="col-span-3" />
                                     </div>
                                     <div v-if="form.errors.start_date" class="text-red-500 text-sm col-span-4 text-right">
@@ -176,7 +176,7 @@ const deleteBooking = () => {
                                     </div>
                                 </form>
                                 <DialogFooter>
-                                    <Button type="submit" @click="submitBlockDates" :disabled="form.processing">Block Dates</Button>
+                                    <Button type="submit" @click="submitBlockDates" :disabled="form.processing">Blokovat termín</Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
@@ -185,42 +185,42 @@ const deleteBooking = () => {
                         <Dialog v-model:open="isBookingDetailsOpen">
                             <DialogContent class="sm:max-w-[425px]">
                                 <DialogHeader>
-                                    <DialogTitle>Booking Details</DialogTitle>
+                                    <DialogTitle>Detail rezervace</DialogTitle>
                                     <DialogDescription>
-                                        View and edit booking details.
+                                        Zobrazit a upravit detaily rezervace.
                                     </DialogDescription>
                                 </DialogHeader>
                                 <div v-if="selectedBooking" class="grid gap-4 py-4">
                                     <div class="grid grid-cols-4 items-center gap-4">
-                                        <Label class="text-right font-bold">Guest</Label>
+                                        <Label class="text-right font-bold">Host</Label>
                                         <div class="col-span-3">{{ selectedBooking.customData.title }}</div>
                                     </div>
                                     <form @submit.prevent="submitEditBooking" class="grid gap-4">
                                         <div class="grid grid-cols-4 items-center gap-4">
-                                            <Label for="edit_status" class="text-right">Status</Label>
+                                            <Label for="edit_status" class="text-right">Stav</Label>
                                             <Select v-model="editForm.status">
                                                 <SelectTrigger class="col-span-3">
-                                                    <SelectValue placeholder="Select status" />
+                                                    <SelectValue placeholder="Vyberte stav" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="pending">Pending</SelectItem>
-                                                    <SelectItem value="confirmed">Confirmed</SelectItem>
-                                                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                                                    <SelectItem value="blocked">Blocked</SelectItem>
+                                                    <SelectItem value="pending">Čekající</SelectItem>
+                                                    <SelectItem value="confirmed">Potvrzeno</SelectItem>
+                                                    <SelectItem value="cancelled">Zrušeno</SelectItem>
+                                                    <SelectItem value="blocked">Blokováno</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>
                                         <div class="grid grid-cols-4 items-center gap-4">
-                                            <Label for="edit_start_date" class="text-right">Start</Label>
+                                            <Label for="edit_start_date" class="text-right">Od</Label>
                                             <Input id="edit_start_date" type="date" v-model="editForm.start_date" class="col-span-3" />
                                         </div>
                                         <div class="grid grid-cols-4 items-center gap-4">
-                                            <Label for="edit_end_date" class="text-right">End</Label>
+                                            <Label for="edit_end_date" class="text-right">Do</Label>
                                             <Input id="edit_end_date" type="date" v-model="editForm.end_date" class="col-span-3" />
                                         </div>
                                         <div class="grid grid-cols-4 items-center gap-4">
-                                            <Label for="edit_notes" class="text-right">Notes</Label>
-                                            <Textarea id="edit_notes" v-model="editForm.notes" class="col-span-3" placeholder="Internal notes..." />
+                                            <Label for="edit_notes" class="text-right">Poznámky</Label>
+                                            <Textarea id="edit_notes" v-model="editForm.notes" class="col-span-3" placeholder="Interní poznámky..." />
                                         </div>
                                         <div v-if="editForm.errors.start_date" class="text-red-500 text-sm col-span-4 text-right">
                                             {{ editForm.errors.start_date }}
@@ -228,8 +228,8 @@ const deleteBooking = () => {
                                     </form>
                                 </div>
                                 <DialogFooter class="flex justify-between sm:justify-between">
-                                    <Button variant="destructive" @click="deleteBooking">Delete</Button>
-                                    <Button type="submit" @click="submitEditBooking" :disabled="editForm.processing">Save Changes</Button>
+                                    <Button variant="destructive" @click="deleteBooking">Smazat</Button>
+                                    <Button type="submit" @click="submitEditBooking" :disabled="editForm.processing">Uložit změny</Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>

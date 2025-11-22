@@ -57,12 +57,12 @@ const markAsComplete = (taskId: number) => {
 </script>
 
 <template>
-    <Head title="Cleaning Tasks" />
+    <Head title="Úklid" />
 
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Cleaning Tasks
+                Úklid
             </h2>
         </template>
 
@@ -70,32 +70,32 @@ const markAsComplete = (taskId: number) => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <h3 class="text-lg font-semibold mb-4">Upcoming Cleaning Tasks</h3>
+                        <h3 class="text-lg font-semibold mb-4">Nadcházející úklidy</h3>
 
                         <div v-if="cleaningTasks.data.length > 0" class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Booking ID
+                                            ID Rezervace
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Property
+                                            Nemovitost
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Guest
+                                            Host
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Due Date
+                                            Termín
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Notes
+                                            Poznámky
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Status
+                                            Stav
                                         </th>
                                         <th scope="col" class="relative px-6 py-3">
-                                            <span class="sr-only">Actions</span>
+                                            <span class="sr-only">Akce</span>
                                         </th>
                                     </tr>
                                 </thead>
@@ -111,20 +111,20 @@ const markAsComplete = (taskId: number) => {
                                             <span v-if="task.booking.customer">
                                                 {{ task.booking.customer.first_name }} {{ task.booking.customer.last_name }}
                                             </span>
-                                            <span v-else class="italic text-gray-400">No guest info</span>
+                                            <span v-else class="italic text-gray-400">Žádné info o hostovi</span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            {{ format(new Date(task.due_date), 'MMM dd, yyyy') }}
+                                            {{ format(new Date(task.due_date), 'dd.MM.yyyy') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            {{ task.notes ?? 'N/A' }}
+                                            {{ task.notes ?? '-' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                             <span v-if="task.completed_at" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
-                                                Completed
+                                                Hotovo
                                             </span>
                                             <span v-else class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
-                                                Pending
+                                                Čekající
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -133,7 +133,7 @@ const markAsComplete = (taskId: number) => {
                                                 @click="markAsComplete(task.id)"
                                                 class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600"
                                             >
-                                                Mark as Complete
+                                                Označit jako hotové
                                             </button>
                                         </td>
                                     </tr>
@@ -141,7 +141,7 @@ const markAsComplete = (taskId: number) => {
                             </table>
                         </div>
                         <div v-else class="text-gray-500 dark:text-gray-400">
-                            No cleaning tasks found.
+                            Nebyly nalezeny žádné úkoly úklidu.
                         </div>
 
                         <!-- Pagination -->
