@@ -53,11 +53,18 @@ const breadcrumbs = [
                     </Button>
                     <h2 class="text-2xl font-bold tracking-tight">Edit Property</h2>
                 </div>
-                <Button variant="outline" as-child>
-                    <Link :href="route('admin.properties.seasons.index', property.id)">
-                        Manage Seasons
-                    </Link>
-                </Button>
+                <div class="flex gap-2">
+                    <Button variant="outline" as-child>
+                        <Link :href="route('admin.properties.services.index', property.id)">
+                            Manage Services
+                        </Link>
+                    </Button>
+                    <Button variant="outline" as-child>
+                        <Link :href="route('admin.properties.seasons.index', property.id)">
+                            Manage Seasons
+                        </Link>
+                    </Button>
+                </div>
             </div>
 
             <div class="mx-auto w-full max-w-2xl">

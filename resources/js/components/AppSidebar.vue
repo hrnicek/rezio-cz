@@ -26,11 +26,6 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Nemovitosti',
-        href: route('admin.properties.index'),
-        icon: Building,
-    },
-    {
         title: 'Rezervace',
         href: route('admin.bookings.index'),
         icon: Calendar,
@@ -44,14 +39,9 @@ const mainNavItems: NavItem[] = [
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'Github Repo',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
+        title: 'Nemovitosti',
+        href: route('admin.properties.index'),
+        icon: Building,
     },
 ];
 </script>

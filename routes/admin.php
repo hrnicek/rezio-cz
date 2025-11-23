@@ -19,6 +19,7 @@ Route::middleware(['auth', 'verified'])
 
         Route::resource('properties', PropertyController::class);
         Route::resource('properties.seasons', SeasonController::class)->except(['show', 'create', 'edit']);
+        Route::resource('properties.services', \App\Http\Controllers\Admin\PropertyServiceController::class)->except(['show', 'create', 'edit']);
 
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('reports/data', [ReportController::class, 'data'])->name('reports.data');

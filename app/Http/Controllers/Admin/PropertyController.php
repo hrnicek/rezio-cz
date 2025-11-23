@@ -7,6 +7,7 @@ use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use App\Data\Shared\PropertyData;
 
 class PropertyController extends Controller
 {
@@ -16,7 +17,7 @@ class PropertyController extends Controller
     public function index()
     {
         return Inertia::render('Admin/Properties/Index', [
-            'properties' => Property::all(),
+            'properties' => PropertyData::collect(Property::all()),
         ]);
     }
 
@@ -63,7 +64,7 @@ class PropertyController extends Controller
     public function edit(Property $property)
     {
         return Inertia::render('Admin/Properties/Edit', [
-            'property' => $property->load('seasons'),
+            'property' => PropertyData::from($property->load('seasons')),
         ]);
     }
 

@@ -9,6 +9,7 @@ use App\Models\Property;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
 use App\Data\Admin\BookingDetailData;
+use App\Data\Admin\BookingListData;
 
 class BookingController extends Controller
 {
@@ -37,7 +38,7 @@ class BookingController extends Controller
             ->withQueryString();
 
         return Inertia::render('Admin/Properties/Bookings/Index', [
-            'bookings' => $bookings,
+            'bookings' => BookingListData::collect($bookings),
             'filters' => [
                 'status' => $status,
                 'search' => $search,

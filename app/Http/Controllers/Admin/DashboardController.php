@@ -24,7 +24,7 @@ class DashboardController extends Controller
             ->clone()
             ->whereBetween('start_date', [now()->startOfMonth(), now()->endOfMonth()])
             ->get()
-            ->map(fn($booking) => CalendarBookingData::fromModel($booking));
+            ->map(fn($booking) => CalendarBookingData::fromModel($booking)->toArray());
 
         $upcomingBookings = $bookingsQuery
             ->clone()
@@ -32,7 +32,7 @@ class DashboardController extends Controller
             ->orderBy('start_date')
             ->take(5)
             ->get()
-            ->map(fn($booking) => UpcomingBookingData::fromModel($booking));
+            ->map(fn($booking) => UpcomingBookingData::fromModel($booking)->toArray());
 
         return Inertia::render('Admin/Dashboard', [
             'bookings' => $bookings,

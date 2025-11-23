@@ -13,6 +13,7 @@ class Service extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'property_id',
         'name',
         'description',
         'price_type',
@@ -27,6 +28,11 @@ class Service extends Model
             'price' => 'decimal:2',
             'is_active' => 'boolean',
         ];
+    }
+
+    public function property(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Property::class);
     }
 
     public function bookings(): BelongsToMany

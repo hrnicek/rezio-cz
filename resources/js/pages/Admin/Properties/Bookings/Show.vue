@@ -11,6 +11,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, Calendar, User, Home, CreditCard } from 'lucide-vue-next';
 import { useCurrency } from '@/composables/useCurrency';
@@ -231,23 +240,28 @@ const breadcrumbs = [
           <CardDescription>Historie plateb pro tuto rezervaci</CardDescription>
         </CardHeader>
         <CardContent>
-          <div class="space-y-4">
-            <div 
-              v-for="payment in booking.payments" 
-              :key="payment.id"
-              class="flex items-center justify-between rounded-lg border p-4"
-            >
-              <div>
-                <div class="font-medium">{{ formatCurrency(payment.amount) }}</div>
-                <div class="text-sm text-muted-foreground">
-                  {{ payment.payment_method }} • {{ new Date(payment.paid_at).toLocaleDateString('cs-CZ') }}
-                </div>
-              </div>
-              <Badge :variant="payment.status === 'completed' ? 'default' : 'secondary'">
-                {{ payment.status }}
-              </Badge>
-            </div>
-          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Částka</TableHead>
+                <TableHead>Metoda</TableHead>
+                <TableHead>Datum</TableHead>
+                <TableHead class="text-right">Stav</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow v-for="payment in booking.payments" :key="payment.id">
+                <TableCell class="font-medium">{{ formatCurrency(payment.amount) }}</TableCell>
+                <TableCell>{{ payment.payment_method }}</TableCell>
+                <TableCell>{{ payment.paid_at ? new Date(payment.paid_at).toLocaleDateString('cs-CZ') : '-' }}</TableCell>
+                <TableCell class="text-right">
+                  <Badge :variant="payment.status === 'paid' ? 'default' : 'secondary'">
+                    {{ payment.status }}
+                  </Badge>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>

@@ -35,4 +35,9 @@ class Property extends Model
     {
         return $this->hasMany(Season::class);
     }
+
+    public function services(): HasMany
+    {
+        return $this->hasMany(Service::class);
+    }
 }

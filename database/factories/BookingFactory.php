@@ -23,6 +23,7 @@ class BookingFactory extends Factory
         $customer = \App\Models\Customer::factory()->create();
 
         return [
+            'code' => fake()->uuid(),
             'property_id' => \App\Models\Property::factory(),
             'user_id' => \App\Models\User::factory(),
             'customer_id' => $customer->id,
