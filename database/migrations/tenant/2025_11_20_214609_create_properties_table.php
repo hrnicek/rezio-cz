@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('properties', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            // user_id removed - properties now belong to tenants
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('address')->nullable();

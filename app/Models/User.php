@@ -24,7 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'current_property_id',
+        // 'current_property_id', // Removed - users are now scoped to tenants
     ];
 
     /**
@@ -53,47 +53,11 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Get all properties that the user has access to (many-to-many)
-     */
-    public function properties()
-    {
-        return $this->belongsToMany(Property::class)
-            ->withTimestamps()
-            ->select('properties.*');
-    }
-
-    /**
-     * Get the user's currently selected property
-     */
-    public function currentProperty()
-    {
-        return $this->belongsTo(Property::class, 'current_property_id');
-    }
-
-    /**
-     * Switch to a different property
-     */
-    public function switchProperty(Property $property): bool
-    {
-        if (! $this->hasProperty($property)) {
-            return false;
-        }
-
-        $this->forceFill([
-            'current_property_id' => $property->id,
-        ])->save();
-
-        return true;
-    }
-
-    /**
-     * Check if user has access to a property
-     */
-    public function hasProperty(Property $property): bool
-    {
-        return $this->properties()->where('properties.id', $property->id)->exists();
-    }
+    // Property-related methods removed - users are now scoped to tenants
+    // public function properties() { ... }
+    // public function currentProperty() { ... }
+    // public function switchProperty(Property $property): bool { ... }
+    // public function hasProperty(Property $property): bool { ... }
 
     public function hasEnabledTwoFactorAuthentication(): bool
     {

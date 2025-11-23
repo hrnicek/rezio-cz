@@ -12,7 +12,7 @@ class Property extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        // 'user_id', // Removed - properties now belong to tenants
         'name',
         'slug',
         'address',
@@ -21,10 +21,8 @@ class Property extends Model
         'widget_token',
     ];
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
+    // Removed user() relationship - properties now belong to tenants
+    // public function user(): BelongsTo { ... }
 
     public function bookings(): HasMany
     {
