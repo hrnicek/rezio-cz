@@ -5,7 +5,8 @@ use App\Http\Controllers\Client\Api\ServiceController;
 use App\Http\Controllers\Client\Api\BookingController;
 use App\Http\Controllers\Client\Api\Service\ListServicesController;
 
-// These API routes are loaded in routes/tenant.php to have tenant context
+// Tenant API routes - these run with tenant context and database access
+// All routes here are automatically prefixed with /api/
 
 Route::prefix('bookings')->group(function () {
     Route::get('calendar', [BookingController::class, 'calendar'])->name('api.bookings.calendar');

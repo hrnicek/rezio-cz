@@ -4,11 +4,10 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class DashboardTest extends TestCase
+class DashboardTest extends TenantTestCase
 {
-    use RefreshDatabase;
 
     public function test_guests_are_redirected_to_the_login_page()
     {
@@ -28,7 +27,7 @@ class DashboardTest extends TestCase
     public function test_dashboard_displays_bookings()
     {
         $user = User::factory()->create();
-        $property = \App\Models\Property::factory()->create(['user_id' => $user->id]);
+        $property = \App\Models\Property::factory()->create();
         $booking = \App\Models\Booking::create([
             'property_id' => $property->id,
             'user_id' => $user->id,

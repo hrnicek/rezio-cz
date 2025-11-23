@@ -5,12 +5,10 @@ namespace Tests\Unit;
 use App\Actions\Booking\CalculateDominantSeasonAction;
 use App\Models\Property;
 use App\Models\Season;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class CalculateDominantSeasonActionTest extends TestCase
+class CalculateDominantSeasonActionTest extends TenantTestCase
 {
-    use RefreshDatabase;
 
     public function test_calculates_dominant_season_correctly()
     {

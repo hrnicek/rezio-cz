@@ -7,12 +7,11 @@ use App\Models\CleaningTask;
 use App\Models\Property;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 
-class CleaningTaskControllerTest extends TestCase
+class CleaningTaskControllerTest extends TenantTestCase
 {
-    use RefreshDatabase;
 
     /**
      * Test that an authenticated user can view the cleaning tasks index page.
@@ -32,7 +31,7 @@ class CleaningTaskControllerTest extends TestCase
     public function test_cleaning_tasks_are_displayed_on_index_page(): void
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
         $booking = Booking::factory()->create(['property_id' => $property->id, 'user_id' => $user->id]);
         $booking->update(["status" => 'confirmed']); // Set a status for the booking
         $task = CleaningTask::factory()->create(['booking_id' => $booking->id, 'property_id' => $property->id]);
@@ -54,7 +53,7 @@ class CleaningTaskControllerTest extends TestCase
     public function test_authenticated_user_can_mark_cleaning_task_as_complete(): void
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
         $booking = Booking::factory()->create(['property_id' => $property->id, 'user_id' => $user->id]);
         $booking->update(["status" => 'confirmed']); // Set a status for the booking
         $task = CleaningTask::factory()->create(['booking_id' => $booking->id, 'property_id' => $property->id, 'completed_at' => null]);
@@ -84,7 +83,7 @@ class CleaningTaskControllerTest extends TestCase
     public function test_unauthenticated_user_cannot_mark_cleaning_task_as_complete(): void
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
         $booking = Booking::factory()->create(['property_id' => $property->id, 'user_id' => $user->id]);
         $booking->update(["status" => 'confirmed']); // Set a status for the booking
         $task = CleaningTask::factory()->create(['booking_id' => $booking->id, 'property_id' => $property->id, 'completed_at' => null]);

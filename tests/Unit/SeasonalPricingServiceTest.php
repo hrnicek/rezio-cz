@@ -5,12 +5,10 @@ namespace Tests\Unit;
 use App\Models\Property;
 use App\Models\Season;
 use App\Services\SeasonalPricingService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class SeasonalPricingServiceTest extends TestCase
+class SeasonalPricingServiceTest extends TenantTestCase
 {
-    use RefreshDatabase;
 
     public function test_calculates_price_using_default_season()
     {

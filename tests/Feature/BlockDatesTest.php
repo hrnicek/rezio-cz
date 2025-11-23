@@ -6,18 +6,17 @@ use App\Models\Booking;
 use App\Models\Property;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 
-class BlockDatesTest extends TestCase
+class BlockDatesTest extends TenantTestCase
 {
-    use RefreshDatabase;
     use WithoutMiddleware;
 
     public function test_admin_can_block_dates()
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
 
         $this->actingAs($user);
 
@@ -43,7 +42,7 @@ class BlockDatesTest extends TestCase
     public function test_cannot_block_dates_with_overlap()
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
 
         $existingBooking = Booking::create([ // Assigned to existingBooking
             'property_id' => $property->id,
@@ -70,7 +69,7 @@ class BlockDatesTest extends TestCase
     public function test_blocked_dates_prevent_public_booking()
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
 
         $blockedBooking = Booking::create([ // Assigned to blockedBooking
             'property_id' => $property->id,

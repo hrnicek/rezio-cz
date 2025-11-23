@@ -6,16 +6,15 @@ use App\Models\Booking;
 use App\Models\Property;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class CalendarManagementTest extends TestCase
+class CalendarManagementTest extends TenantTestCase
 {
-    use RefreshDatabase;
 
     public function test_admin_can_update_booking_dates_and_status()
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
         $booking = Booking::create([ // Assigned to booking
             'property_id' => $property->id,
             'user_id' => $user->id,
@@ -46,7 +45,7 @@ class CalendarManagementTest extends TestCase
     public function test_cannot_update_booking_dates_to_overlap()
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
 
         $booking1 = Booking::create([ // Assigned to booking1
             'property_id' => $property->id,
@@ -83,7 +82,7 @@ class CalendarManagementTest extends TestCase
     public function test_admin_can_delete_booking()
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
         $booking = Booking::create([ // Assigned to booking
             'property_id' => $property->id,
             'user_id' => $user->id,

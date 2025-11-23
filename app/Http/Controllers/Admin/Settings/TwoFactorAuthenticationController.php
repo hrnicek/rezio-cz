@@ -22,16 +22,23 @@ class TwoFactorAuthenticationController extends Controller implements HasMiddlew
             : [];
     }
 
-    /**
-     * Show the user's two-factor authentication settings page.
-     */
     public function show(TwoFactorAuthenticationRequest $request): Response
     {
         $request->ensureStateIsValid();
 
-        return Inertia::render('Admin/Settings/TwoFactor', [
-            'twoFactorEnabled' => $request->user()->hasEnabledTwoFactorAuthentication(),
+        $user = $request->user();
+        $twoFactorEnabled = $user->hasEnabledTwoFactorAuthentication();
+
+        $data = [
+            'twoFactorEnabled' => $twoFactorEnabled,
             'requiresConfirmation' => Features::optionEnabled(Features::twoFactorAuthentication(), 'confirm'),
-        ]);
+        ];
+
+        if ($twoFactorEnabled) {
+            $data['qrCode'] = $user->twoFactorQrCodeSvg();
+            $data['recoveryCodes'] = $user->recoveryCodes();
+        }
+
+        return Inertia::render('Admin/Settings/TwoFactor', $data);
     }
 }

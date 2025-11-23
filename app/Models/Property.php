@@ -12,7 +12,6 @@ class Property extends Model
     use HasFactory;
 
     protected $fillable = [
-        // 'user_id', // Removed - properties now belong to tenants
         'name',
         'slug',
         'address',
@@ -20,9 +19,6 @@ class Property extends Model
         'price_per_night',
         'widget_token',
     ];
-
-    // Removed user() relationship - properties now belong to tenants
-    // public function user(): BelongsTo { ... }
 
     public function bookings(): HasMany
     {

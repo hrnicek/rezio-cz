@@ -39,14 +39,18 @@ class HandleInertiaRequests extends Middleware
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
         $user = $request->user();
-        $properties = $user ? $user->properties()->get(['id', 'name', 'slug']) : collect();
+
+        $properties = collect();
+        if (function_exists('tenancy') && tenancy()->initialized) {
+            $properties = \App\Models\Property::all(['id', 'name', 'slug']);
+        }
 
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
-                'user' => $user ? $user->load('currentProperty') : null,
+                'user' => $user,
                 'properties' => $properties,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',

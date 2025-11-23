@@ -6,12 +6,10 @@ use App\Models\Property;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class PropertyTest extends TestCase
+class PropertyTest extends TenantTestCase
 {
-    use RefreshDatabase;
-
     public function test_properties_page_is_displayed(): void
     {
         $user = User::factory()->create();
@@ -34,14 +32,14 @@ class PropertyTest extends TestCase
         $response->assertRedirect(route('admin.properties.index'));
         $this->assertDatabaseHas('properties', [
             'name' => 'Test Property',
-            'user_id' => $user->id,
+            // 'user_id' => $user->id, // Removed
         ]);
     }
 
     public function test_property_can_be_updated(): void
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
 
         $response = $this->actingAs($user)->from(route('admin.properties.index'))->put(route('admin.properties.update', $property->id), [
             'name' => 'Updated Property',
@@ -59,7 +57,7 @@ class PropertyTest extends TestCase
     public function test_property_can_be_deleted(): void
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
 
         $response = $this->actingAs($user)->from(route('admin.properties.index'))->delete(route('admin.properties.destroy', $property->id));
 
@@ -73,7 +71,7 @@ class PropertyTest extends TestCase
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user1->id]);
+        $property = Property::factory()->create();
 
         $response = $this->actingAs($user2)
             ->from(route('admin.properties.index'))

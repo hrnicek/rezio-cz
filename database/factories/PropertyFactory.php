@@ -19,7 +19,7 @@ class PropertyFactory extends Factory
     {
         $name = $this->faker->words(3, true);
         return [
-            'user_id' => \App\Models\User::factory(),
+            // 'user_id' => \App\Models\User::factory(), // Removed
             'name' => $name,
             'slug' => Str::slug($name) . '-' . Str::random(6),
             'address' => $this->faker->address(),

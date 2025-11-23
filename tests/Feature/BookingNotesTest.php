@@ -6,17 +6,16 @@ use App\Models\Booking;
 use App\Models\Property;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 
-class BookingNotesTest extends TestCase
+class BookingNotesTest extends TenantTestCase
 {
-    use RefreshDatabase;
 
     public function test_admin_can_add_notes_to_booking(): void
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
 
         $booking = Booking::factory()->create([
             'property_id' => $property->id,
@@ -43,7 +42,7 @@ class BookingNotesTest extends TestCase
     public function test_notes_appear_in_csv_export(): void
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
 
         $booking = Booking::factory()->create([
             'property_id' => $property->id,
@@ -66,7 +65,7 @@ class BookingNotesTest extends TestCase
     public function test_notes_are_optional(): void
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
 
         $booking = Booking::factory()->create([
             'property_id' => $property->id,

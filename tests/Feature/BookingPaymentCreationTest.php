@@ -6,11 +6,10 @@ use App\Models\Booking;
 use App\Models\BookingPayment;
 use App\Models\PaymentStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class BookingPaymentCreationTest extends TestCase
+class BookingPaymentCreationTest extends TenantTestCase
 {
-    use RefreshDatabase;
 
     /** @test */
     public function it_creates_a_payment_when_booking_is_created()

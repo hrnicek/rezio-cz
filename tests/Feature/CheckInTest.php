@@ -7,11 +7,10 @@ use App\Models\Guest;
 use App\Models\Property;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class CheckInTest extends TestCase
+class CheckInTest extends TenantTestCase
 {
-    use RefreshDatabase;
 
     public function test_checkin_page_can_be_rendered()
     {

@@ -8,17 +8,15 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Inertia\Testing\AssertableInertia as Assert;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class BookingTest extends TestCase
+class BookingTest extends TenantTestCase
 {
-    use RefreshDatabase;
-
     public function test_bookings_index_is_displayed(): void
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
-        $user->update(['current_property_id' => $property->id]);
+        $property = Property::factory()->create();
+        // $user->update(['current_property_id' => $property->id]); // Removed as current_property_id is removed
 
         $booking = Booking::create([
             'property_id' => $property->id,
@@ -42,8 +40,8 @@ class BookingTest extends TestCase
     public function test_bookings_can_be_filtered_by_status(): void
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
-        $user->update(['current_property_id' => $property->id]);
+        $property = Property::factory()->create();
+        // $user->update(['current_property_id' => $property->id]);
 
         $bookingPending = Booking::create([
             'property_id' => $property->id,
@@ -81,7 +79,7 @@ class BookingTest extends TestCase
     public function test_booking_status_can_be_updated(): void
     {
         $user = User::factory()->create(['email_verified_at' => now()]);
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
         $booking = Booking::factory()->create([
             'property_id' => $property->id,
             'user_id' => $user->id,
@@ -103,7 +101,7 @@ class BookingTest extends TestCase
     public function test_booking_can_be_deleted(): void
     {
         $user = User::factory()->create(['email_verified_at' => now()]);
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
         $booking = Booking::factory()->create([
             'property_id' => $property->id,
             'user_id' => $user->id,
@@ -125,7 +123,7 @@ class BookingTest extends TestCase
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user1->id]);
+        $property = Property::factory()->create();
         $booking = Booking::create([
             'property_id' => $property->id,
             'user_id' => $user1->id,
@@ -147,7 +145,7 @@ class BookingTest extends TestCase
     public function test_booking_can_be_created_without_user_id(): void
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
 
         $booking = Booking::create([
             'property_id' => $property->id,

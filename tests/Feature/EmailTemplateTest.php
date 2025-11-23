@@ -8,16 +8,15 @@ use App\Models\EmailTemplate;
 use App\Models\Property;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class EmailTemplateTest extends TestCase
+class EmailTemplateTest extends TenantTestCase
 {
-    use RefreshDatabase;
 
     public function test_it_can_list_email_templates_for_a_property()
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
         $template = EmailTemplate::create([
             'property_id' => $property->id,
             'type' => 'booking_confirmation',
@@ -40,7 +39,7 @@ class EmailTemplateTest extends TestCase
     public function test_it_can_create_an_email_template()
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
 
         $response = $this->actingAs($user)->post(route('admin.properties.email-templates.store', $property), [
             'type' => 'booking_confirmation',
@@ -60,7 +59,7 @@ class EmailTemplateTest extends TestCase
     public function test_it_can_update_an_email_template()
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
         $template = EmailTemplate::create([
             'property_id' => $property->id,
             'type' => 'booking_confirmation',

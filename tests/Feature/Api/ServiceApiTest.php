@@ -6,16 +6,16 @@ use App\Models\Booking;
 use App\Models\Service;
 use App\Models\Customer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class ServiceApiTest extends TestCase
+class ServiceApiTest extends TenantTestCase
 {
-    use RefreshDatabase;
 
     public function test_lists_active_services()
     {
-        Service::create(['name' => 'Pes', 'is_active' => true, 'price' => 100, 'price_type' => 'per_stay', 'max_quantity' => 5]);
-        Service::create(['name' => 'Postýlka', 'is_active' => false, 'price' => 50, 'price_type' => 'per_stay', 'max_quantity' => 2]);
+        $property = \App\Models\Property::factory()->create();
+        Service::create(['property_id' => $property->id, 'name' => 'Pes', 'is_active' => true, 'price' => 100, 'price_type' => 'per_stay', 'max_quantity' => 5]);
+        Service::create(['property_id' => $property->id, 'name' => 'Postýlka', 'is_active' => false, 'price' => 50, 'price_type' => 'per_stay', 'max_quantity' => 2]);
 
         $res = $this->getJson(route('api.services.index'));
         $res->assertSuccessful();
@@ -28,7 +28,9 @@ class ServiceApiTest extends TestCase
 
     public function test_checks_availability_and_respects_max_quantity()
     {
+        $property = \App\Models\Property::factory()->create();
         $service = Service::create([
+            'property_id' => $property->id,
             'name' => 'Postýlka',
             'price_type' => 'per_stay',
             'price' => 300,

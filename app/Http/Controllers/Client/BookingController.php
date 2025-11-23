@@ -65,7 +65,7 @@ class BookingController extends Controller
 
         $booking = Booking::create([
             'property_id' => $property->id,
-            'user_id' => $property->user_id,
+            'user_id' => null, // $property->user_id removed
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
             'total_price' => $totalPrice,
@@ -73,7 +73,7 @@ class BookingController extends Controller
         ]);
 
         \Illuminate\Support\Facades\Mail::to($validated['guest_email'])->queue(new \App\Mail\BookingConfirmation($booking));
-        \Illuminate\Support\Facades\Mail::to($property->user->email)->queue(new \App\Mail\NewBookingAlert($booking));
+        // \Illuminate\Support\Facades\Mail::to($property->user->email)->queue(new \App\Mail\NewBookingAlert($booking));
 
         return redirect()->back()->with('success', 'Booking request sent successfully!');
     }

@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Schema;
 
 class SetCurrentProperty
 {
@@ -18,12 +19,14 @@ class SetCurrentProperty
         $user = $request->user();
 
         if ($user && ! $user->current_property_id) {
-            $firstProperty = $user->properties()->first();
+            if (Schema::hasTable('properties') && Schema::hasColumn('users', 'current_property_id')) {
+                $firstProperty = $user->properties()->first();
 
-            if ($firstProperty) {
-                $user->forceFill([
-                    'current_property_id' => $firstProperty->id,
-                ])->save();
+                if ($firstProperty) {
+                    $user->forceFill([
+                        'current_property_id' => $firstProperty->id,
+                    ])->save();
+                }
             }
         }
 

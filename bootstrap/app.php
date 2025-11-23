@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
             __DIR__ . '/../routes/admin.php',
             __DIR__ . '/../routes/client.php',
         ],
-        api: __DIR__ . '/../routes/api.php',
+        // API routes are loaded in routes/tenant.php for tenant context
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
@@ -24,7 +24,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(append: [
             HandleAppearance::class,
-            SetCurrentProperty::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);

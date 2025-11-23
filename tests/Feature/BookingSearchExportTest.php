@@ -6,16 +6,15 @@ use App\Models\Booking;
 use App\Models\Property;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class BookingSearchExportTest extends TestCase
+class BookingSearchExportTest extends TenantTestCase
 {
-    use RefreshDatabase;
 
     public function test_admin_can_search_bookings(): void
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
         $user->update(['current_property_id' => $property->id]);
 
         $john = \App\Models\Customer::create([
@@ -71,7 +70,7 @@ class BookingSearchExportTest extends TestCase
     public function test_admin_can_export_bookings_csv()
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
 
         $exportCustomer = \App\Models\Customer::create([
             'first_name' => 'Export',

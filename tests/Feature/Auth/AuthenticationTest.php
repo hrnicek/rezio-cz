@@ -3,14 +3,12 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Fortify\Features;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class AuthenticationTest extends TestCase
+class AuthenticationTest extends TenantTestCase
 {
-    use RefreshDatabase;
 
     public function test_login_screen_can_be_rendered()
     {
@@ -80,7 +78,7 @@ class AuthenticationTest extends TestCase
         $response = $this->actingAs($user)->from(route('admin.dashboard'))->post(route('logout')); // Added ->from()
 
         $this->assertGuest();
-        $response->assertRedirect(route('welcome'));
+        $response->assertRedirect('/');
     }
 
     public function test_users_are_rate_limited()

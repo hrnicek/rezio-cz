@@ -6,17 +6,16 @@ use App\Models\Property;
 use App\Models\Service;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class PropertyServiceTest extends TestCase
+class PropertyServiceTest extends TenantTestCase
 {
-    use RefreshDatabase;
 
     /** @test */
     public function it_can_list_services_for_a_property()
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
         $service = Service::create([
             'property_id' => $property->id,
             'name' => 'Breakfast',
@@ -39,7 +38,7 @@ class PropertyServiceTest extends TestCase
     public function it_can_create_a_service()
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
 
         $response = $this->actingAs($user)->post(route('admin.properties.services.store', $property), [
             'name' => 'Parking',
@@ -61,7 +60,7 @@ class PropertyServiceTest extends TestCase
     public function it_can_update_a_service()
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
         $service = Service::create([
             'property_id' => $property->id,
             'name' => 'Old Name',
@@ -89,7 +88,7 @@ class PropertyServiceTest extends TestCase
     public function it_can_delete_a_service()
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
         $service = Service::create([
             'property_id' => $property->id,
             'name' => 'To Delete',

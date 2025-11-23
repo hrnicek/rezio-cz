@@ -6,12 +6,10 @@ use App\Models\Booking;
 use App\Models\Property;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class ReportingTest extends TestCase
+class ReportingTest extends TenantTestCase
 {
-    use RefreshDatabase;
-
     public function test_can_access_reports_page()
     {
         $user = User::factory()->create();
@@ -29,7 +27,7 @@ class ReportingTest extends TestCase
     public function test_can_fetch_report_data()
     {
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id, 'price_per_night' => 100]);
+        $property = Property::factory()->create(['price_per_night' => 100]);
 
         // Create a booking for 5 nights: 2025-01-01 to 2025-01-06
         $booking = Booking::factory()->create([ // Assigned to booking
@@ -60,8 +58,8 @@ class ReportingTest extends TestCase
     public function test_occupancy_calculation_with_multiple_properties()
     {
         $user = User::factory()->create();
-        $property1 = Property::factory()->create(['user_id' => $user->id]);
-        $property2 = Property::factory()->create(['user_id' => $user->id]);
+        $property1 = Property::factory()->create();
+        $property2 = Property::factory()->create();
 
         // Property 1: 10 nights booked
         $booking1 = Booking::factory()->create([ // Assigned to booking1

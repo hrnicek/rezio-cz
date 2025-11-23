@@ -8,11 +8,10 @@ use App\Models\Property;
 use App\Models\User; // Import User model
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class CleaningTaskTest extends TestCase
+class CleaningTaskTest extends TenantTestCase
 {
-    use RefreshDatabase;
     use WithFaker;
 
     /**
@@ -21,7 +20,7 @@ class CleaningTaskTest extends TestCase
     public function test_cleaning_task_can_be_created(): void
     {
         $user = User::factory()->create(); //Create user
-        $property = Property::factory()->create(['user_id' => $user->id]); // Link property to user
+        $property = Property::factory()->create(); // Link property to user
         $booking = Booking::factory()->create(['property_id' => $property->id, 'user_id' => $user->id]); // Link booking to property and user
         $booking->update(["status" => 'confirmed']); // Set a status for the booking
 
@@ -54,7 +53,7 @@ class CleaningTaskTest extends TestCase
     public function test_cleaning_task_can_be_marked_as_completed(): void
     {
         $user = User::factory()->create(); // Create user
-        $property = Property::factory()->create(['user_id' => $user->id]); // Link property to user
+        $property = Property::factory()->create(); // Link property to user
         $booking = Booking::factory()->create(['property_id' => $property->id, 'user_id' => $user->id]); // Link booking to property and user
         $booking->update(["status" => 'confirmed']); // Set a status for the booking
 
@@ -73,7 +72,7 @@ class CleaningTaskTest extends TestCase
     public function test_cleaning_task_is_deleted_when_booking_is_deleted(): void
     {
         $user = User::factory()->create(); // Create user
-        $property = Property::factory()->create(['user_id' => $user->id]); // Link property to user
+        $property = Property::factory()->create(); // Link property to user
         $booking = Booking::factory()->create(['property_id' => $property->id, 'user_id' => $user->id]); // Link booking to property and user
         $booking->update(["status" => 'confirmed']); // Set a status for the booking
 

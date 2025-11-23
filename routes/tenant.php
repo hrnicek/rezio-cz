@@ -23,15 +23,31 @@ Route::middleware([
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    // Admin routes (from routes/admin.php)
+    Route::get('login', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'create'])
+        ->name('login')
+        ->middleware('guest');
+
+    Route::post('login', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'store'])
+        ->name('login.store')
+        ->middleware('guest');
+
+    Route::post('logout', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])
+        ->name('logout')
+        ->middleware('auth');
+
     Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(base_path('routes/admin.php'));
 
-    // Client routes (from routes/client.php)
     if (file_exists(base_path('routes/client.php'))) {
         require base_path('routes/client.php');
     }
 
-    // Check-in routes (public, no auth required)
+    // Tenant API routes with /api/ prefix
+    Route::prefix('api')->group(function () {
+        if (file_exists(base_path('routes/tenant_api.php'))) {
+            require base_path('routes/tenant_api.php');
+        }
+    });
+
     Route::prefix('check-in/{token}')->name('check-in.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Guest\CheckInController::class, 'show'])->name('show');
         Route::post('/guests', [\App\Http\Controllers\Guest\CheckInController::class, 'store'])->name('guests.store');
@@ -39,7 +55,6 @@ Route::middleware([
         Route::delete('/guests/{guest}', [\App\Http\Controllers\Guest\CheckInController::class, 'destroy'])->name('guests.destroy');
     });
 
-    // Default tenant home page
     Route::get('/', function () {
         return redirect()->route('admin.bookings.index');
     })->middleware('auth');

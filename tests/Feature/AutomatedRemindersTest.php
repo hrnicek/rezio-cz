@@ -8,18 +8,17 @@ use App\Models\Property;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class AutomatedRemindersTest extends TestCase
+class AutomatedRemindersTest extends TenantTestCase
 {
-    use RefreshDatabase;
 
     public function test_sends_reminders_for_bookings_starting_in_3_days()
     {
         Mail::fake();
 
         $user = User::factory()->create();
-        $property = Property::factory()->create(['user_id' => $user->id]);
+        $property = Property::factory()->create();
 
         // Booking starting in 3 days
         $bookingToRemind = Booking::factory()->create([

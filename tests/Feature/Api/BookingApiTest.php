@@ -6,11 +6,10 @@ use App\Models\BlackoutDate;
 use App\Models\Booking;
 use App\Models\Customer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class BookingApiTest extends TestCase
+class BookingApiTest extends TenantTestCase
 {
-    use RefreshDatabase;
 
     public function test_verify_availability_returns_true_when_free()
     {

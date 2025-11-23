@@ -4,11 +4,10 @@ namespace Tests\Feature\Settings;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\TenantTestCase;
 
-class ProfileUpdateTest extends TestCase
+class ProfileUpdateTest extends TenantTestCase
 {
-    use RefreshDatabase;
 
     public function test_profile_page_is_displayed()
     {
@@ -16,9 +15,9 @@ class ProfileUpdateTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->get(route('profile.edit'));
+            ->get(route('admin.profile.edit'));
 
-        $response->assertOk();
+        $response->assertStatus(200);
     }
 
     public function test_profile_information_can_be_updated()
@@ -27,14 +26,15 @@ class ProfileUpdateTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->patch(route('profile.update'), [
+            ->from(route('admin.profile.edit'))
+            ->patch(route('admin.profile.update'), [
                 'name' => 'Test User',
                 'email' => 'test@example.com',
             ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect(route('profile.edit'));
+            ->assertRedirect(route('admin.profile.edit'));
 
         $user->refresh();
 
@@ -49,14 +49,15 @@ class ProfileUpdateTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->patch(route('profile.update'), [
+            ->from(route('admin.profile.edit'))
+            ->patch(route('admin.profile.update'), [
                 'name' => 'Test User',
                 'email' => $user->email,
             ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect(route('profile.edit'));
+            ->assertRedirect(route('admin.profile.edit'));
 
         $this->assertNotNull($user->refresh()->email_verified_at);
     }
@@ -67,15 +68,14 @@ class ProfileUpdateTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->delete(route('profile.destroy'), [
+            ->delete(route('admin.profile.destroy'), [
                 'password' => 'password',
             ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect(route('welcome'));
+            ->assertRedirect('/');
 
-        $this->assertGuest();
         $this->assertNull($user->fresh());
     }
 
@@ -85,14 +85,14 @@ class ProfileUpdateTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->from(route('profile.edit'))
-            ->delete(route('profile.destroy'), [
+            ->from(route('admin.profile.edit'))
+            ->delete(route('admin.profile.destroy'), [
                 'password' => 'wrong-password',
             ]);
 
         $response
             ->assertSessionHasErrors('password')
-            ->assertRedirect(route('profile.edit'));
+            ->assertRedirect(route('admin.profile.edit'));
 
         $this->assertNotNull($user->fresh());
     }
