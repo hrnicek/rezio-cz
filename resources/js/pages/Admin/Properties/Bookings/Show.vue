@@ -107,163 +107,178 @@ const breadcrumbs = [
         </Badge>
       </div>
 
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <!-- Informace o Rezervaci -->
-        <Card>
-          <CardHeader>
-            <CardTitle class="flex items-center gap-2">
-              <Calendar class="h-4 w-4" />
-              Informace o Rezervaci
-            </CardTitle>
-          </CardHeader>
-          <CardContent class="space-y-4">
-            <div>
-              <div class="text-sm font-medium text-muted-foreground">Kód rezervace</div>
-              <div class="text-lg font-semibold">{{ booking.code }}</div>
-            </div>
-            <Separator />
-            <div>
-              <div class="text-sm font-medium text-muted-foreground">Příjezd</div>
-              <div>{{ new Date(booking.start_date).toLocaleDateString('cs-CZ') }}</div>
-            </div>
-            <div>
-              <div class="text-sm font-medium text-muted-foreground">Odjezd</div>
-              <div>{{ new Date(booking.end_date).toLocaleDateString('cs-CZ') }}</div>
-            </div>
-            <Separator />
-            <div>
-              <div class="text-sm font-medium text-muted-foreground">Celková cena</div>
-              <div class="text-2xl font-bold text-primary">{{ formatCurrency(booking.total_price) }}</div>
-            </div>
-            <Separator />
-            <div>
-              <div class="text-sm font-medium text-muted-foreground mb-2">Stav</div>
-              <Select v-model="selectedStatus" @update:model-value="updateStatus">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">Čekající</SelectItem>
-                  <SelectItem value="confirmed">Potvrzeno</SelectItem>
-                  <SelectItem value="cancelled">Zrušeno</SelectItem>
-                  <SelectItem value="paid">Zaplaceno</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div v-if="booking.notes">
-              <div class="text-sm font-medium text-muted-foreground">Poznámky</div>
-              <div class="text-sm text-gray-600">{{ booking.notes }}</div>
-            </div>
-          </CardContent>
-        </Card>
+      <div class="grid gap-6 lg:grid-cols-3">
+        <!-- Left Column (2/3) -->
+        <div class="space-y-6 lg:col-span-2">
+          <!-- Informace o Rezervaci -->
+          <Card>
+            <CardHeader>
+              <CardTitle class="flex items-center gap-2">
+                <Calendar class="h-4 w-4" />
+                Informace o Rezervaci
+              </CardTitle>
+            </CardHeader>
+            <CardContent class="space-y-4">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <div class="text-sm font-medium text-muted-foreground">Kód rezervace</div>
+                  <div class="text-lg font-semibold">{{ booking.code }}</div>
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-muted-foreground mb-2">Stav</div>
+                  <Select v-model="selectedStatus" @update:model-value="updateStatus">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Čekající</SelectItem>
+                      <SelectItem value="confirmed">Potvrzeno</SelectItem>
+                      <SelectItem value="cancelled">Zrušeno</SelectItem>
+                      <SelectItem value="paid">Zaplaceno</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <Separator />
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <div class="text-sm font-medium text-muted-foreground">Příjezd</div>
+                  <div>{{ new Date(booking.start_date).toLocaleDateString('cs-CZ') }}</div>
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-muted-foreground">Odjezd</div>
+                  <div>{{ new Date(booking.end_date).toLocaleDateString('cs-CZ') }}</div>
+                </div>
+              </div>
+              <Separator />
+              <div>
+                <div class="text-sm font-medium text-muted-foreground">Celková cena</div>
+                <div class="text-2xl font-bold text-primary">{{ formatCurrency(booking.total_price) }}</div>
+              </div>
+              <div v-if="booking.notes">
+                <Separator class="my-4" />
+                <div class="text-sm font-medium text-muted-foreground">Poznámky</div>
+                <div class="text-sm text-gray-600 mt-1">{{ booking.notes }}</div>
+              </div>
+            </CardContent>
+          </Card>
 
-        <!-- Informace o Nemovitosti -->
-        <Card>
-          <CardHeader>
-            <CardTitle class="flex items-center gap-2">
-              <Home class="h-4 w-4" />
-              Nemovitost
-            </CardTitle>
-          </CardHeader>
-          <CardContent class="space-y-4">
-            <div>
-              <div class="text-sm font-medium text-muted-foreground">Název</div>
-              <div class="font-semibold">{{ booking.property.name }}</div>
-            </div>
-            <Separator />
-            <div>
-              <div class="text-sm font-medium text-muted-foreground">Adresa</div>
-              <div class="text-sm">{{ booking.property.address }}</div>
-            </div>
-            <Separator />
-            <Button variant="outline" size="sm" as-child class="w-full">
-              <Link :href="route('admin.properties.edit', booking.property.id)">
-                Zobrazit nemovitost
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+          <!-- Platby -->
+          <Card>
+            <CardHeader>
+              <CardTitle class="flex items-center gap-2">
+                <CreditCard class="h-4 w-4" />
+                Platby
+              </CardTitle>
+              <CardDescription>Historie plateb pro tuto rezervaci</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div v-if="booking.payments.length > 0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Částka</TableHead>
+                      <TableHead>Metoda</TableHead>
+                      <TableHead>Datum</TableHead>
+                      <TableHead class="text-right">Stav</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow v-for="payment in booking.payments" :key="payment.id">
+                      <TableCell class="font-medium">{{ formatCurrency(payment.amount) }}</TableCell>
+                      <TableCell>{{ payment.payment_method }}</TableCell>
+                      <TableCell>{{ payment.paid_at ? new Date(payment.paid_at).toLocaleDateString('cs-CZ') : '-' }}</TableCell>
+                      <TableCell class="text-right">
+                        <Badge :variant="payment.status === 'paid' ? 'default' : 'secondary'">
+                          {{ payment.status }}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
+              <div v-else class="text-center py-8 text-muted-foreground">
+                Žádné platby pro tuto rezervaci.
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-        <!-- Informace o Zákazníkovi -->
-        <Card>
-          <CardHeader>
-            <CardTitle class="flex items-center gap-2">
-              <User class="h-4 w-4" />
-              Zákazník
-            </CardTitle>
-          </CardHeader>
-          <CardContent class="space-y-4">
-            <div v-if="booking.customer">
-              <div>
-                <div class="text-sm font-medium text-muted-foreground">Jméno</div>
-                <div class="font-semibold">
-                  {{ booking.customer.first_name }} {{ booking.customer.last_name }}
+        <!-- Right Column (1/3) -->
+        <div class="space-y-6">
+          <!-- Informace o Zákazníkovi -->
+          <Card>
+            <CardHeader>
+              <CardTitle class="flex items-center gap-2">
+                <User class="h-4 w-4" />
+                Zákazník
+              </CardTitle>
+            </CardHeader>
+            <CardContent class="space-y-4">
+              <div v-if="booking.customer">
+                <div>
+                  <div class="text-sm font-medium text-muted-foreground">Jméno</div>
+                  <div class="font-semibold">
+                    {{ booking.customer.first_name }} {{ booking.customer.last_name }}
+                  </div>
+                </div>
+                <Separator class="my-4" />
+                <div>
+                  <div class="text-sm font-medium text-muted-foreground">Email</div>
+                  <div class="text-sm">
+                    <a :href="`mailto:${booking.customer.email}`" class="text-primary hover:underline">
+                      {{ booking.customer.email }}
+                    </a>
+                  </div>
+                </div>
+                <Separator class="my-4" />
+                <div>
+                  <div class="text-sm font-medium text-muted-foreground">Telefon</div>
+                  <div class="text-sm">
+                    <a :href="`tel:${booking.customer.phone}`" class="text-primary hover:underline">
+                      {{ booking.customer.phone }}
+                    </a>
+                  </div>
+                </div>
+                <div v-if="booking.customer.note" class="mt-4">
+                  <div class="text-sm font-medium text-muted-foreground">Poznámka zákazníka</div>
+                  <div class="text-sm text-gray-600 italic">"{{ booking.customer.note }}"</div>
                 </div>
               </div>
-              <Separator class="my-4" />
+              <div v-else class="text-sm text-muted-foreground italic">
+                Žádné informace o zákazníkovi
+              </div>
+            </CardContent>
+          </Card>
+
+          <!-- Informace o Nemovitosti -->
+          <Card>
+            <CardHeader>
+              <CardTitle class="flex items-center gap-2">
+                <Home class="h-4 w-4" />
+                Nemovitost
+              </CardTitle>
+            </CardHeader>
+            <CardContent class="space-y-4">
               <div>
-                <div class="text-sm font-medium text-muted-foreground">Email</div>
-                <div class="text-sm">
-                  <a :href="`mailto:${booking.customer.email}`" class="text-primary hover:underline">
-                    {{ booking.customer.email }}
-                  </a>
-                </div>
+                <div class="text-sm font-medium text-muted-foreground">Název</div>
+                <div class="font-semibold">{{ booking.property.name }}</div>
               </div>
-              <Separator class="my-4" />
+              <Separator />
               <div>
-                <div class="text-sm font-medium text-muted-foreground">Telefon</div>
-                <div class="text-sm">
-                  <a :href="`tel:${booking.customer.phone}`" class="text-primary hover:underline">
-                    {{ booking.customer.phone }}
-                  </a>
-                </div>
+                <div class="text-sm font-medium text-muted-foreground">Adresa</div>
+                <div class="text-sm">{{ booking.property.address }}</div>
               </div>
-              <div v-if="booking.customer.note" class="mt-4">
-                <div class="text-sm font-medium text-muted-foreground">Poznámka zákazníka</div>
-                <div class="text-sm text-gray-600 italic">"{{ booking.customer.note }}"</div>
-              </div>
-            </div>
-            <div v-else class="text-sm text-muted-foreground italic">
-              Žádné informace o zákazníkovi
-            </div>
-          </CardContent>
-        </Card>
+              <Separator />
+              <Button variant="outline" size="sm" as-child class="w-full">
+                <Link :href="route('admin.properties.edit', booking.property.id)">
+                  Zobrazit nemovitost
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-
-      <!-- Platby -->
-      <Card v-if="booking.payments.length > 0">
-        <CardHeader>
-          <CardTitle class="flex items-center gap-2">
-            <CreditCard class="h-4 w-4" />
-            Platby
-          </CardTitle>
-          <CardDescription>Historie plateb pro tuto rezervaci</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Částka</TableHead>
-                <TableHead>Metoda</TableHead>
-                <TableHead>Datum</TableHead>
-                <TableHead class="text-right">Stav</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow v-for="payment in booking.payments" :key="payment.id">
-                <TableCell class="font-medium">{{ formatCurrency(payment.amount) }}</TableCell>
-                <TableCell>{{ payment.payment_method }}</TableCell>
-                <TableCell>{{ payment.paid_at ? new Date(payment.paid_at).toLocaleDateString('cs-CZ') : '-' }}</TableCell>
-                <TableCell class="text-right">
-                  <Badge :variant="payment.status === 'paid' ? 'default' : 'secondary'">
-                    {{ payment.status }}
-                  </Badge>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
     </div>
   </AppLayout>
 </template>
