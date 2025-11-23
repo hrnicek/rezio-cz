@@ -5,12 +5,15 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { createPinia } from 'pinia';
-import { initializeTheme } from './composables/useAppearance';
 import VCalendar from 'v-calendar';
 import 'v-calendar/style.css';
 import { ZiggyVue } from 'ziggy-js';
+import { DarkModeManager } from './utils/darkMode';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+// Dark mode temporarily disabled - using light mode only
+// DarkModeManager.initialize();
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
@@ -27,6 +30,3 @@ createInertiaApp({
         color: '#4B5563',
     },
 });
-
-// This will set light / dark mode on page load...
-// initializeTheme();
