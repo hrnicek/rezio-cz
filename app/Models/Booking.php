@@ -52,6 +52,7 @@ class Booking extends Model
         'status',
         'notes',
         'reminders_sent_at',
+        'checkin_token',
     ];
 
     protected function casts(): array
@@ -93,5 +94,10 @@ class Booking extends Model
     public function cleaningTask(): HasOne
     {
         return $this->hasOne(CleaningTask::class);
+    }
+
+    public function guests(): HasMany
+    {
+        return $this->hasMany(Guest::class);
     }
 }

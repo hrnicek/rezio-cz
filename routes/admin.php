@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EmailTemplateController;
 use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\Admin\SeasonController;
 use App\Http\Controllers\Admin\ReportController;
@@ -20,6 +21,7 @@ Route::middleware(['auth', 'verified'])
         Route::resource('properties', PropertyController::class);
         Route::resource('properties.seasons', SeasonController::class)->except(['show', 'create', 'edit']);
         Route::resource('properties.services', \App\Http\Controllers\Admin\PropertyServiceController::class)->except(['show', 'create', 'edit']);
+        Route::resource('properties.email-templates', EmailTemplateController::class)->only(['index', 'store', 'update']); // Added this line
 
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('reports/data', [ReportController::class, 'data'])->name('reports.data');

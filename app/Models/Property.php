@@ -40,4 +40,9 @@ class Property extends Model
     {
         return $this->hasMany(Service::class);
     }
+
+    public function emailTemplates(): HasMany
+    {
+        return $this->hasMany(EmailTemplate::class);
+    }
 }

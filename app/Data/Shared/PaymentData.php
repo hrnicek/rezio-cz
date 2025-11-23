@@ -10,7 +10,7 @@ class PaymentData extends Data
         public int $id,
         public int $amount,
         public string $payment_method,
-        public string $paid_at,
+        public ?string $paid_at,
         public string $status,
     ) {}
 
@@ -20,8 +20,8 @@ class PaymentData extends Data
             id: $payment->id,
             amount: (int) $payment->amount,
             payment_method: $payment->payment_method,
-            paid_at: $payment->paid_at->toISOString(),
-            status: $payment->status,
+            paid_at: $payment?->paid_at?->toISOString(),
+            status: $payment->status instanceof \BackedEnum ? $payment->status->value : $payment->status,
         );
     }
 }

@@ -24,8 +24,8 @@ class BookingDetailData extends Data
         public ?string $notes,
         public string $created_at,
         public string $updated_at,
-        /** @var array<PaymentData> */
-        public array $payments,
+        /** @var DataCollection<PaymentData> */
+        public DataCollection $payments,
     ) {}
 
     public static function fromModel($booking): self
@@ -42,7 +42,7 @@ class BookingDetailData extends Data
             notes: $booking->notes,
             created_at: $booking->created_at->toISOString(),
             updated_at: $booking->updated_at->toISOString(),
-            payments: $booking->payments->map(fn($payment) => PaymentData::fromModel($payment))->toArray(),
+            payments: PaymentData::collect($booking->payments, DataCollection::class),
         );
     }
 }

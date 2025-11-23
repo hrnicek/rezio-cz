@@ -27,8 +27,13 @@ class BookingConfirmation extends Mailable implements ShouldQueue
      */
     public function envelope(): Envelope
     {
+        $template = $this->booking->property->emailTemplates()
+            ->where('type', 'booking_confirmation')
+            ->where('is_active', true)
+            ->first();
+
         return new Envelope(
-            subject: 'Booking Confirmation - ' . $this->booking->property->name,
+            subject: $template ? $this->replacePlaceholders($template->subject) : 'Booking Confirmation - ' . $this->booking->property->name,
         );
     }
 
@@ -37,9 +42,34 @@ class BookingConfirmation extends Mailable implements ShouldQueue
      */
     public function content(): Content
     {
+        $template = $this->booking->property->emailTemplates()
+            ->where('type', 'booking_confirmation')
+            ->where('is_active', true)
+            ->first();
+
+        if ($template) {
+            return new Content(
+                markdown: 'emails.bookings.dynamic',
+                with: [
+                    'body' => $this->replacePlaceholders($template->body),
+                ],
+            );
+        }
+
         return new Content(
             markdown: 'emails.bookings.confirmation',
         );
+    }
+
+    protected function replacePlaceholders(string $content): string
+    {
+        $placeholders = [
+            '{{ customer_name }}' => $this->booking->customer ? $this->booking->customer->first_name . ' ' . $this->booking->customer->last_name : 'Guest',
+            '{{ booking_code }}' => $this->booking->code,
+            '{{ property_name }}' => $this->booking->property->name,
+        ];
+
+        return str_replace(array_keys($placeholders), array_values($placeholders), $content);
     }
 
     /**

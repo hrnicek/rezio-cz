@@ -7,6 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronLeft } from 'lucide-vue-next';
+import { ref } from 'vue';
+
+declare const route: any;
 
 const props = defineProps<{
     property: {
@@ -56,7 +59,12 @@ const breadcrumbs = [
                 <div class="flex gap-2">
                     <Button variant="outline" as-child>
                         <Link :href="route('admin.properties.services.index', property.id)">
-                            Manage Services
+                            Spravovat služby
+                        </Link>
+                    </Button>
+                    <Button variant="outline" as-child>
+                        <Link :href="route('admin.properties.email-templates.index', property.id)">
+                            Emailové šablony
                         </Link>
                     </Button>
                     <Button variant="outline" as-child>
