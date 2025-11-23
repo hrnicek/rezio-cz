@@ -5,6 +5,7 @@ namespace App\Data\Admin;
 use App\Data\Shared\CustomerData;
 use App\Data\Shared\PropertyData;
 use App\Data\Shared\PaymentData;
+use App\Data\Shared\GuestData;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\DataCollection;
 use Spatie\LaravelData\Attributes\WithCast;
@@ -26,6 +27,9 @@ class BookingDetailData extends Data
         public string $updated_at,
         /** @var DataCollection<PaymentData> */
         public DataCollection $payments,
+        public ?string $checkin_token,
+        /** @var DataCollection<GuestData> */
+        public DataCollection $guests,
     ) {}
 
     public static function fromModel($booking): self
@@ -43,6 +47,8 @@ class BookingDetailData extends Data
             created_at: $booking->created_at->toISOString(),
             updated_at: $booking->updated_at->toISOString(),
             payments: PaymentData::collect($booking->payments, DataCollection::class),
+            checkin_token: $booking->checkin_token,
+            guests: GuestData::collect($booking->guests, DataCollection::class),
         );
     }
 }
