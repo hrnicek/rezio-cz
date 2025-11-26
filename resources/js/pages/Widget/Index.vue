@@ -1,22 +1,24 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive } from "vue";
-import { Link } from "@inertiajs/vue3";
 import { toast } from "vue-sonner";
 import axios from "axios";
 import { storeToRefs } from "pinia"; 
 import { useBookingStore } from "@/stores/booking";
+import { useWidgetCalendar } from "@/composables/useWidgetCalendar";
+import { useCurrency } from "@/composables/useCurrency";
+
+// Partials
+import StepDates from "./partials/StepDates.vue";
+import StepGuest from "./partials/StepGuest.vue";
+import StepServices from "./partials/StepServices.vue";
+import StepReview from "./partials/StepReview.vue";
+import StepSuccess from "./partials/StepSuccess.vue";
+import BookingSummary from "./partials/BookingSummary.vue";
 
 // UI Components
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import {
-  ChevronLeft, ChevronRight, CheckCircle,
-  Calendar, User, StickyNote, PawPrint, Loader2
-} from "lucide-vue-next";
+import { Calendar, User, StickyNote, PawPrint, Info, X, ChevronUp, ChevronLeft, Loader2 } from "lucide-vue-next";
+import type { Customer } from "./types";
 
 // --- PROPS ---
 const props = defineProps({
@@ -28,15 +30,9 @@ const booking = useBookingStore();
 const { customer, startDate, endDate, extras, extraSelection } = storeToRefs(booking);
 
 // --- UTILS ---
-const currencyFormatter = new Intl.NumberFormat("cs-CZ", {
-  style: "currency",
-  currency: "CZK",
-  maximumFractionDigits: 0,
-});
-const currency = (n) => currencyFormatter.format(Number(n));
+const { formatCurrency } = useCurrency();
 
 // --- CONSTANTS ---
-const WEEK_DAYS = ["Po", "Út", "St", "Čt", "Pá", "So", "Ne"];
 const STEPS = [
   { id: 1, label: "Termín", icon: Calendar },
   { id: 2, label: "Údaje", icon: User },
@@ -47,81 +43,21 @@ const STEPS = [
 // --- STATE ---
 const currentStep = ref(1);
 const processing = ref(false);
+const showMobilePriceDetails = ref(false);
 
-function navigateTo(id) {
+const calendar = useWidgetCalendar(props.property?.id);
+
+const dateSelectionHint = computed(() => {
+  if (!startDate.value) return "Vyberte datum příjezdu";
+  if (startDate.value && !endDate.value) return "Nyní vyberte datum odjezdu";
+  return "Termín vybrán";
+});
+
+function navigateTo(id: number) {
   if (id < currentStep.value) currentStep.value = id;
 }
 
-// --- LOGIC: CALENDAR ---
-const useCalendar = () => {
-  const now = new Date();
-  const month = ref(now.getMonth() + 1);
-  const year = ref(now.getFullYear());
-  const daysData = ref([]); 
-  const loading = ref(false);
-
-  const pad = (n) => String(n).padStart(2, "0");
-  const parseISO = (s) => { const [Y, M, D] = s.split("-").map(Number); return new Date(Y, M - 1, D); };
-  const formatDate = (iso) => iso ? new Date(iso).toLocaleDateString("cs-CZ", { day: 'numeric', month: 'long', year: 'numeric' }) : "";
-  const toISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-  
-  const monthLabel = computed(() => new Date(year.value, month.value - 1, 1).toLocaleString("cs-CZ", { month: "long" }));
-  
-  const changeMonth = (delta) => {
-    let newM = month.value + delta;
-    if (newM > 12) { newM = 1; year.value++; }
-    else if (newM < 1) { newM = 12; year.value--; }
-    month.value = newM;
-    fetchCalendarData();
-  };
-
-  const fetchCalendarData = async () => {
-    if (!props.property?.id) return;
-    loading.value = true;
-    try {
-      const prevM = month.value === 1 ? 12 : month.value - 1;
-      const prevY = month.value === 1 ? year.value - 1 : year.value;
-      const [curr, prev] = await Promise.all([
-        axios.get(`/api/widgets/${props.property.id}`, { params: { month: month.value, year: year.value } }),
-        axios.get(`/api/widgets/${props.property.id}`, { params: { month: prevM, year: prevY } }),
-      ]);
-      daysData.value = [...prev.data.days, ...curr.data.days];
-    } catch {
-      toast.error("Chyba načítání kalendáře");
-    } finally {
-      loading.value = false;
-    }
-  };
-
-  const cells = computed(() => {
-    const firstDayIdx = new Date(year.value, month.value - 1, 1).getDay() || 7; 
-    const offset = firstDayIdx - 1; 
-    const prevM = month.value === 1 ? 12 : month.value - 1;
-    const prevY = month.value === 1 ? year.value - 1 : year.value;
-    const prevDaysCount = new Date(prevY, prevM, 0).getDate();
-    
-    const prevCells = Array.from({ length: offset }, (_, i) => {
-      const d = prevDaysCount - offset + 1 + i;
-      return { date: `${prevY}-${pad(prevM)}-${pad(d)}`, day: d, inCurrent: false };
-    });
-    
-    const daysInMonth = new Date(year.value, month.value, 0).getDate();
-    const currCells = Array.from({ length: daysInMonth }, (_, i) => {
-       return { date: `${year.value}-${pad(month.value)}-${pad(i + 1)}`, day: i + 1, inCurrent: true };
-    });
-    return [...prevCells, ...currCells];
-  });
-
-  const getDayInfo = (dateStr) => daysData.value.find(x => x.date === dateStr);
-  
-  return { month, year, loading, monthLabel, cells, daysData, changeMonth, fetchCalendarData, getDayInfo, parseISO, formatDate, toISO };
-};
-
-const calendar = useCalendar();
-
-// --- LOGIC: DATE SELECTION ---
-const hoverDate = ref(null);
-
+// --- LOGIC: DATE HELPER ---
 const rangeDates = computed(() => {
   if (!startDate.value || !endDate.value) return [];
   const start = calendar.parseISO(startDate.value);
@@ -135,55 +71,13 @@ const rangeDates = computed(() => {
 
 const selectedNights = computed(() => Math.max(0, rangeDates.value.length - 1));
 
-const getCellStyles = (dateStr) => {
-  const info = calendar.getDayInfo(dateStr);
-  const isAvailable = info?.available !== false; 
-  const isBlackout = !!info?.blackout;
-
-  if (isBlackout) return 'bg-slate-100 text-slate-300 cursor-not-allowed';
-  if (!isAvailable) return 'bg-red-50 text-red-300 cursor-not-allowed';
-
-  const d = calendar.parseISO(dateStr);
-  const s = startDate.value ? calendar.parseISO(startDate.value) : null;
-  const e = endDate.value ? calendar.parseISO(endDate.value) : null;
-  const h = hoverDate.value ? calendar.parseISO(hoverDate.value) : null;
-
-  if (s && d.getTime() === s.getTime()) return 'bg-primary text-white font-medium';
-  if (e && d.getTime() === e.getTime()) return 'bg-primary text-white font-medium';
-  if (s && e && d > s && d < e) return 'bg-primary/10 text-primary border-primary/20';
-  if (s && !e && h) {
-    const min = Math.min(s, h);
-    const max = Math.max(s, h);
-    if (d >= min && d <= max) return 'bg-primary/5 text-primary dashed-border';
-  }
-
-  return 'bg-white hover:bg-slate-50 text-slate-700 border-slate-100';
-};
-
-const handleDateClick = (date) => {
-  const info = calendar.getDayInfo(date);
-  if (info?.blackout || info?.available === false) return;
-
-  if (!startDate.value || (startDate.value && endDate.value)) {
-    booking.setStartDate(date);
-    booking.setEndDate(null);
-  } else {
-    if (new Date(date) < new Date(startDate.value)) {
-       booking.setEndDate(startDate.value);
-       booking.setStartDate(date);
-    } else {
-       booking.setEndDate(date);
-    }
-  }
-};
-
 const selectedTotalPrice = computed(() => {
    const nights = rangeDates.value.slice(0, -1);
    return nights.reduce((sum, iso) => sum + Number(calendar.getDayInfo(iso)?.price || 0), 0);
 });
 
 // --- LOGIC: EXTRAS ---
-const fieldErrors = reactive({});
+const fieldErrors = reactive<Record<string, string>>({});
 const agreeGdpr = ref(false);
 const agreeTerms = ref(false);
 
@@ -218,7 +112,6 @@ const seasonLabel = computed(() => {
 const nextStep = async () => {
   if (processing.value) return;
 
-  // --- Helper to format customer data for API (camelCase -> snake_case) ---
   const getApiCustomerData = () => ({
     first_name: customer.value.firstName,
     last_name: customer.value.lastName,
@@ -227,7 +120,6 @@ const nextStep = async () => {
     note: customer.value.note
   });
 
-  // STEP 1: DATE VERIFICATION
   if (currentStep.value === 1) {
     if (!startDate.value || !endDate.value) {
       toast.error("Prosím vyberte datum příjezdu a odjezdu.");
@@ -241,7 +133,7 @@ const nextStep = async () => {
       });
       if (!res.data.available) throw new Error("Vybraný termín je obsazen.");
       currentStep.value = 2;
-    } catch (e) {
+    } catch (e: any) {
       toast.error(e.response?.data?.message || e.message || "Chyba ověření dostupnosti.");
     } finally {
       processing.value = false;
@@ -249,10 +141,10 @@ const nextStep = async () => {
     return;
   }
 
-  // STEP 2: CUSTOMER VALIDATION
   if (currentStep.value === 2) {
     let isValid = true;
-    ['firstName', 'lastName', 'email', 'phone'].forEach(field => {
+    const requiredFields: (keyof Customer)[] = ['firstName', 'lastName', 'email', 'phone'];
+    requiredFields.forEach(field => {
        if (!customer.value[field] || customer.value[field].length < 2) {
          fieldErrors[field] = "Povinné pole"; isValid = false;
        } else {
@@ -267,14 +159,12 @@ const nextStep = async () => {
     
     processing.value = true;
     try {
-       // FIX: Use mapped object here
        const res = await axios.post(`/api/widgets/${props.property.id}/verify-customer`, { 
          customer: getApiCustomerData() 
        });
        if (res.data.valid) currentStep.value = 3;
        else throw new Error("Neplatné údaje");
-    } catch(e) {
-      console.error(e);
+    } catch(e: any) {
       toast.error(e.response?.data?.message || "Ověření údajů se nezdařilo.");
     } finally {
       processing.value = false;
@@ -282,7 +172,6 @@ const nextStep = async () => {
     return;
   }
 
-  // STEP 3: EXTRAS CHECK
   if (currentStep.value === 3) {
     if (selectedExtras.value.length > 0) {
       processing.value = true;
@@ -292,7 +181,7 @@ const nextStep = async () => {
           start_date: startDate.value, end_date: endDate.value, selections
         });
         if (!res.data.available) throw new Error("Některé služby nejsou dostupné.");
-      } catch(e) {
+      } catch(e: any) {
         toast.error(e.message || "Chyba dostupnosti služeb.");
         processing.value = false;
         return;
@@ -303,8 +192,8 @@ const nextStep = async () => {
     return;
   }
 
-  // STEP 4: SUBMIT
   if (currentStep.value === 4) {
+    console.log('Finalizing reservation:', { gdpr: agreeGdpr.value, terms: agreeTerms.value });
     if (!agreeGdpr.value || !agreeTerms.value) {
       toast.error("Musíte souhlasit s podmínkami.");
       return;
@@ -319,7 +208,7 @@ const nextStep = async () => {
         grand_total: grandTotalPrice.value
       });
       currentStep.value = 5;
-    } catch (e) {
+    } catch (e: any) {
       toast.error(e.response?.data?.message || "Rezervaci se nepodařilo odeslat.");
     } finally {
       processing.value = false;
@@ -340,286 +229,209 @@ onMounted(async () => {
   <div class="min-h-screen w-full bg-white text-gray-900 font-sans pb-24 lg:pb-8">
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       
-      <div class="mb-10 hidden lg:block">
-        <nav aria-label="Progress">
-          <ol role="list" class="flex items-center justify-between w-full border-b border-gray-200 pb-4">
-            <li v-for="(step, index) in STEPS" :key="step.id" class="flex items-center">
-               <button 
-                  @click="navigateTo(step.id)"
-                  :disabled="step.id > currentStep"
-                  class="flex items-center gap-3 group disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <span class="flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition-colors"
-                    :class="[
-                      step.id < currentStep ? 'bg-primary text-white' : 
-                      step.id === currentStep ? 'bg-primary/10 text-primary ring-2 ring-primary' : 'bg-gray-100 text-gray-500'
-                    ]">
-                    <span v-if="step.id < currentStep">✓</span>
-                    <span v-else>{{ step.id }}</span>
-                  </span>
-                  <span class="text-sm font-medium" :class="step.id === currentStep ? 'text-primary' : 'text-gray-600'">
-                    {{ step.label }}
-                  </span>
-               </button>
-               <div v-if="index !== STEPS.length - 1" class="h-px w-24 bg-gray-200 mx-4"></div>
-            </li>
-          </ol>
-        </nav>
+      <!-- SUCCESS PAGE (Clean Layout) -->
+      <div v-if="currentStep === 5">
+        <StepSuccess 
+           :customer="customer"
+           :start-date="startDate"
+           :end-date="endDate"
+           :calendar="calendar"
+        />
       </div>
 
-      <div class="grid grid-cols-1 gap-12 lg:grid-cols-12">
-        
-        <aside class="lg:col-span-4 xl:col-span-3 order-2 lg:order-1">
-          <div class="sticky top-8">
-            <Card>
-              <CardHeader>
-                <CardTitle class="flex items-center gap-2">
-                  <StickyNote class="h-5 w-5 text-primary" />
-                  Rezervace
-                </CardTitle>
-                <CardDescription>Souhrn vašeho pobytu</CardDescription>
-              </CardHeader>
-              <CardContent class="space-y-4 text-sm">
-                <div class="pb-4 border-b border-gray-100">
-                  <div class="flex justify-between text-gray-500 mb-1">
-                    <span>Termín pobytu</span>
-                  </div>
-                  <div class="font-medium text-lg text-gray-900">
-                     <div v-if="startDate">{{ calendar.formatDate(startDate) }}</div>
-                     <div v-if="endDate" class="text-gray-400 text-xs">—</div>
-                     <div v-if="endDate">{{ calendar.formatDate(endDate) }}</div>
-                     <div v-if="!startDate" class="text-gray-400 italic text-sm">Vyberte termín pobytu</div>
-                  </div>
-                </div>
+      <!-- WIZARD LAYOUT -->
+      <div v-else>
+        <!-- Progress Steps -->
+        <div class="mb-10 hidden lg:block">
+          <nav aria-label="Progress">
+            <ol role="list" class="flex items-center justify-between w-full border-b border-gray-200 pb-4">
+              <li v-for="(step, index) in STEPS" :key="step.id" class="flex items-center">
+                 <button 
+                    @click="navigateTo(step.id)"
+                    :disabled="step.id > currentStep"
+                    class="flex items-center gap-3 group disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <span class="flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition-colors"
+                      :class="[
+                        step.id < currentStep ? 'bg-primary text-white' : 
+                        step.id === currentStep ? 'bg-primary/10 text-primary ring-2 ring-primary' : 'bg-gray-100 text-gray-500'
+                      ]">
+                      <span v-if="step.id < currentStep">✓</span>
+                      <span v-else>{{ step.id }}</span>
+                    </span>
+                    <span class="text-sm font-medium" :class="step.id === currentStep ? 'text-primary' : 'text-gray-600'">
+                      {{ step.label }}
+                    </span>
+                 </button>
+                 <div v-if="index !== STEPS.length - 1" class="h-px w-24 bg-gray-200 mx-4"></div>
+              </li>
+            </ol>
+          </nav>
+        </div>
 
-                <div class="space-y-2">
-                  <div class="flex justify-between text-gray-600">
-                    <span>Počet nocí</span>
-                    <span class="font-medium text-gray-900">{{ selectedNights }}</span>
-                  </div>
-                  <div class="flex justify-between text-gray-600">
-                    <span>Cena ubytování</span>
-                    <span class="font-medium text-gray-900">{{ currency(selectedTotalPrice) }}</span>
-                  </div>
-                  <div class="flex justify-between text-gray-600">
-                    <span>Sezóna</span>
-                    <span class="font-medium text-gray-900">{{ seasonLabel }}</span>
-                  </div>
-                  <div v-if="addonsTotalPrice > 0" class="flex justify-between text-gray-600">
-                    <span>Služby</span>
-                    <span class="font-medium text-gray-900">{{ currency(addonsTotalPrice) }}</span>
-                  </div>
-                </div>
-
-                <div class="border-t border-gray-200 pt-4 mt-4">
-                  <div class="flex items-end justify-between">
-                    <span class="font-medium text-gray-900">Celkem</span>
-                    <span class="text-xl font-bold text-primary">{{ currency(grandTotalPrice) }}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <div class="mt-6 text-xs text-gray-400 px-2">
-               <div class="flex items-center gap-2 mb-2"><span class="h-2 w-2 rounded-full bg-primary"></span> Vybráno</div>
-               <div class="flex items-center gap-2 mb-2"><span class="h-2 w-2 rounded-full bg-red-300"></span> Obsazeno</div>
-               <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-gray-200"></span> Nedostupné</div>
-            </div>
-          </div>
-        </aside>
-
-        <main class="lg:col-span-8 xl:col-span-9 order-1 lg:order-2">
+        <div class="grid grid-cols-1 gap-12 lg:grid-cols-12">
           
-          <div class="mb-6 lg:hidden">
-            <div class="h-1 w-full bg-gray-100">
-              <div class="h-full bg-primary transition-all" :style="{ width: (currentStep/4)*100 + '%' }"></div>
-            </div>
-          </div>
+          <!-- SIDEBAR SUMMARY -->
+          <aside class="lg:col-span-4 xl:col-span-3 order-2 lg:order-1 hidden lg:block">
+            <BookingSummary 
+               :calendar="calendar"
+               :start-date="startDate"
+               :end-date="endDate"
+               :selected-nights="selectedNights"
+               :selected-total-price="selectedTotalPrice"
+               :season-label="seasonLabel as string"
+               :addons-total-price="addonsTotalPrice"
+               :grand-total-price="grandTotalPrice"
+            />
+          </aside>
 
-          <div v-if="currentStep === 1" class="space-y-6">
-            <div class="flex items-center justify-between">
-              <h1 class="text-2xl font-medium text-gray-900">Vyberte termín pobytu</h1>
-              <div class="flex items-center gap-1 bg-white border border-gray-200 rounded-md">
-                 <Button variant="ghost" size="icon" @click="calendar.changeMonth(-1)" class="h-9 w-9 text-gray-500 hover:text-primary">
-                   <ChevronLeft class="h-4 w-4" />
-                 </Button>
-                 <span class="w-32 text-center text-sm font-semibold text-gray-700">
-                    {{ calendar.monthLabel.value }} {{ calendar.year.value }}
-                 </span>
-                 <Button variant="ghost" size="icon" @click="calendar.changeMonth(1)" class="h-9 w-9 text-gray-500 hover:text-primary">
-                   <ChevronRight class="h-4 w-4" />
-                 </Button>
+          <!-- MAIN CONTENT -->
+          <main class="lg:col-span-8 xl:col-span-9 order-1 lg:order-2 space-y-8">
+            
+            <!-- Mobile Progress Bar -->
+            <div class="mb-6 lg:hidden">
+              <div class="h-1 w-full bg-gray-100">
+                <div class="h-full bg-primary transition-all" :style="{ width: (currentStep/4)*100 + '%' }"></div>
               </div>
             </div>
 
-            <div class="border border-gray-200 rounded-lg overflow-hidden select-none">
-               <div class="grid grid-cols-7 bg-gray-50 border-b border-gray-200">
-                  <div v-for="d in WEEK_DAYS" :key="d" class="py-2 text-center text-xs font-semibold text-gray-500">
-                    {{ d }}
-                  </div>
-               </div>
-               
-               <div class="grid grid-cols-7 bg-white relative">
-                  <div v-if="calendar.loading.value" class="absolute inset-0 bg-white/80 z-10 flex items-center justify-center">
-                     <Loader2 class="h-6 w-6 animate-spin text-primary" />
-                  </div>
+            <StepDates 
+               v-if="currentStep === 1"
+               :calendar="calendar"
+               :start-date="startDate"
+               :end-date="endDate"
+               :date-selection-hint="dateSelectionHint"
+               @update:start-date="(v) => booking.setStartDate(v)"
+               @update:end-date="(v) => booking.setEndDate(v)"
+            />
 
-                  <button
-                      v-for="(cell, idx) in calendar.cells.value"
-                      :key="idx"
-                      @click="handleDateClick(cell.date)"
-                      @mouseenter="hoverDate = cell.date"
-                      @mouseleave="hoverDate = null"
-                      class="h-20 sm:h-24 border-r border-b border-gray-100 p-2 flex flex-col justify-between transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
-                      :class="[
-                        getCellStyles(cell.date), 
-                        (idx + 1) % 7 === 0 ? 'border-r-0' : '' 
-                      ]"
-                  >
-                      <span class="text-sm font-medium self-end" :class="{'opacity-25': !cell.inCurrent}">{{ cell.day }}</span>
-                      <span v-if="calendar.getDayInfo(cell.date)?.price" class="text-xs font-medium self-start">
-                         {{ currency(calendar.getDayInfo(cell.date).price) }}
-                      </span>
-                  </button>
+            <StepGuest 
+               v-if="currentStep === 2"
+               :customer="customer"
+               :field-errors="fieldErrors"
+            />
+
+            <StepServices 
+               v-if="currentStep === 3"
+               :valid-extras="validExtras"
+               :extra-selection="extraSelection"
+               @update:extraSelection="(id, qty) => booking.setExtraQuantity(id, qty)"
+            />
+
+            <StepReview 
+               v-if="currentStep === 4"
+               :customer="customer"
+               :start-date="startDate"
+               :end-date="endDate"
+               :selected-nights="selectedNights"
+               :selected-extras="selectedExtras"
+               :extra-selection="extraSelection"
+               :grand-total-price="grandTotalPrice"
+               :calendar="calendar"
+               :agree-gdpr="agreeGdpr"
+               :agree-terms="agreeTerms"
+               @update:agree-gdpr="(v) => agreeGdpr = v"
+               @update:agree-terms="(v) => agreeTerms = v"
+               @navigate="navigateTo"
+            />
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between pt-6 border-t border-gray-100">
+              <Button 
+                v-if="currentStep > 1"
+                variant="outline" 
+                @click="currentStep--"
+                class="hidden lg:flex"
+              >
+                Zpět
+              </Button>
+              <div class="flex-1 lg:hidden"></div> <!-- Spacer on mobile -->
+              
+              <Button 
+                @click="nextStep" 
+                :disabled="processing"
+                class="w-full lg:w-auto ml-auto hidden lg:flex"
+              >
+                <Loader2 v-if="processing" class="mr-2 h-4 w-4 animate-spin" />
+                {{ currentStep === 4 ? 'Dokončit rezervaci' : 'Pokračovat' }}
+              </Button>
+            </div>
+          </main>
+        </div>
+      </div>
+
+      <!-- Mobile Price Detail Sheet (Fixed Bottom) -->
+      <div v-if="currentStep < 5" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 lg:hidden z-50 safe-area-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+        <!-- Backdrop -->
+        <div v-if="showMobilePriceDetails" class="fixed inset-0 bg-black/20 z-[-1]" @click="showMobilePriceDetails = false"></div>
+        
+        <!-- Expanded Details -->
+        <div v-if="showMobilePriceDetails" class="absolute bottom-full left-0 right-0 bg-white border-t border-gray-200 p-4 rounded-t-xl shadow-xl animate-in slide-in-from-bottom-10">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-gray-100">
+               <span class="font-semibold text-gray-900">Rozpis ceny</span>
+               <Button variant="ghost" size="icon" @click="showMobilePriceDetails = false" class="h-8 w-8 text-gray-400">
+                 <X class="h-4 w-4" />
+               </Button>
+            </div>
+            <div class="space-y-3 text-sm">
+               <div class="flex justify-between text-gray-600">
+                  <span>Ubytování ({{ selectedNights }} nocí)</span>
+                  <span class="font-medium text-gray-900">{{ formatCurrency(selectedTotalPrice) }}</span>
+               </div>
+               <div v-if="addonsTotalPrice > 0" class="flex justify-between text-gray-600">
+                  <span>Služby a poplatky</span>
+                  <span class="font-medium text-gray-900">{{ formatCurrency(addonsTotalPrice) }}</span>
+               </div>
+               <div class="pt-3 border-t border-gray-100 flex justify-between items-end">
+                  <span class="font-bold text-gray-900">Celkem</span>
+                  <span class="text-xl font-bold text-primary">{{ formatCurrency(grandTotalPrice) }}</span>
                </div>
             </div>
-          </div>
+        </div>
 
-          <div v-if="currentStep === 2" class="space-y-8">
-             <h1 class="text-2xl font-medium text-gray-900">Kontaktní údaje hosta</h1>
-             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div v-for="field in ['firstName', 'lastName', 'email', 'phone']" :key="field" class="space-y-1">
-                   <Label class="text-sm text-gray-600 capitalize">
-                      {{ {firstName:'Jméno', lastName:'Příjmení', email:'E-mail', phone:'Telefon'}[field] }}
-                   </Label>
-                   <Input 
-                      v-model="customer[field]" 
-                      class="rounded-md border-gray-300 focus:border-green-500 focus:ring-green-500"
-                      :class="{'border-red-500': fieldErrors[field]}"
-                   />
-                   <span class="text-xs text-red-500 min-h-[16px] block">{{ fieldErrors[field] }}</span>
-                </div>
-                <div class="md:col-span-2 space-y-1">
-                   <Label class="text-sm text-gray-600">Poznámka</Label>
-                   <Textarea v-model="customer.note" class="rounded-md border-gray-300 focus:border-green-500 focus:ring-green-500" rows="3" />
-                </div>
-             </div>
-          </div>
-
-          <div v-if="currentStep === 3" class="space-y-8">
-             <h1 class="text-2xl font-medium text-gray-900">Doplňkové služby k pobytu</h1>
-             <div class="grid gap-4 sm:grid-cols-2">
-                <div 
-                  v-for="ex in validExtras" 
-                  :key="ex.id"
-                  class="flex flex-col justify-between rounded-lg border p-5 transition-colors"
-                  :class="extraSelection[ex.id] > 0 ? 'border-primary bg-primary/5' : 'border-gray-200 bg-white hover:border-primary'"
-                >
-                   <div>
-                      <div class="flex justify-between items-start mb-2">
-                         <h4 class="font-medium text-gray-900">{{ ex.name }}</h4>
-                         <span class="font-bold text-primary">{{ currency(ex.price) }}</span>
-                      </div>
-                      <p class="text-sm text-gray-500 mb-4">{{ ex.description }}</p>
-                   </div>
-                   <div class="flex items-center justify-end gap-3 pt-4 mt-auto border-t border-gray-100">
-                      <Button variant="outline" size="sm" class="h-8 w-8 p-0 rounded-full" 
-                        @click="booking.setExtraQuantity(ex.id, (extraSelection[ex.id]||0) - 1)" :disabled="!extraSelection[ex.id]">-</Button>
-                      <span class="font-medium w-6 text-center">{{ extraSelection[ex.id] || 0 }}</span>
-                      <Button variant="outline" size="sm" class="h-8 w-8 p-0 rounded-full" 
-                        @click="booking.setExtraQuantity(ex.id, (extraSelection[ex.id]||0) + 1)" :disabled="(extraSelection[ex.id]||0) >= ex.max_quantity">+</Button>
-                   </div>
-                </div>
-             </div>
-          </div>
-
-          <div v-if="currentStep === 4" class="space-y-8">
-             <h1 class="text-2xl font-medium text-gray-900">Kontrola a souhrn</h1>
-             <Card>
-               <CardContent class="grid sm:grid-cols-2 gap-6 p-6">
-                <div>
-                   <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Termín</h4>
-                   <p class="text-gray-900 font-medium">{{ calendar.formatDate(startDate) }} — {{ calendar.formatDate(endDate) }}</p>
-                   <p class="text-sm text-gray-500">{{ selectedNights }} nocí</p>
-                </div>
-                <div>
-                   <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Host</h4>
-                   <p class="text-gray-900 font-medium">{{ customer.firstName }} {{ customer.lastName }}</p>
-                   <p class="text-sm text-gray-500">{{ customer.email }}</p>
-                </div>
-                <div class="sm:col-span-2">
-                   <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Sezóna</h4>
-                   <p class="text-gray-900 font-medium">{{ seasonsInRange.length > 1 ? 'Více sezón' : (seasonLabel || '-') }}</p>
-                   <p v-if="seasonsInRange.length > 1" class="text-sm text-gray-500">{{ seasonsInRange.join(', ') }}</p>
-                </div>
-               </CardContent>
-             </Card>
-
-                <div class="space-y-4">
-                  <div class="flex items-center gap-3">
-                   <Checkbox id="gdpr" v-model="agreeGdpr" class="text-primary focus:ring-primary" />
-                   <Label for="gdpr" class="text-gray-700 cursor-pointer">Souhlasím se zpracováním osobních údajů</Label>
-                  </div>
-                  <div class="flex items-center gap-3">
-                   <Checkbox id="terms" v-model="agreeTerms" class="text-primary focus:ring-primary" />
-                   <Label for="terms" class="text-gray-700 cursor-pointer">Souhlasím s obchodními podmínkami</Label>
-                  </div>
-                </div>
-          </div>
-
-          <div v-if="currentStep === 5" class="py-16 text-center">
-             <div class="inline-flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-green-600 mb-6">
-                <CheckCircle class="h-10 w-10" />
-             </div>
-             <h2 class="text-3xl font-medium text-gray-900 mb-4">Rezervace úspěšně odeslána</h2>
-             <p class="text-gray-500 mb-8 max-w-md mx-auto">Potvrzení jsme odeslali na <strong>{{ customer.email }}</strong>.</p>
-             <Button as-child class="bg-primary hover:bg-primary/90 text-white">
-               <Link :href="route('welcome')">Zpět na úvod</Link>
-             </Button>
-          </div>
-
-          <div v-if="currentStep < 5" class="mt-8 pt-8 border-t border-gray-100 flex justify-between">
+        <!-- Collapsed Bar -->
+        <div class="flex items-center gap-4">
+           <div class="flex-1 cursor-pointer" @click="showMobilePriceDetails = !showMobilePriceDetails">
+              <div class="text-xs text-gray-500 flex items-center gap-1">
+                 Celkem za pobyt <Info class="h-3 w-3" />
+              </div>
+              <div class="flex items-center gap-2">
+                 <span class="text-lg font-bold text-primary">{{ formatCurrency(grandTotalPrice) }}</span>
+                 <ChevronUp class="h-4 w-4 text-gray-400 transition-transform duration-200" :class="{'rotate-180': showMobilePriceDetails}" />
+              </div>
+           </div>
+           
+           <div class="flex gap-2">
              <Button 
-               v-if="currentStep > 1" 
-               variant="outline" 
-               @click="navigateTo(currentStep - 1)"
-               class="border-gray-300 text-gray-700 hover:bg-gray-50"
-             >
-               Zpět
-             </Button>
-             <div v-else></div>
-
+                v-if="currentStep > 1"
+                variant="outline" 
+                size="icon"
+                @click="currentStep--"
+                class="h-11 w-11 shrink-0"
+              >
+                <ChevronLeft class="h-5 w-5" />
+              </Button>
              <Button 
-               @click="nextStep" 
-               :disabled="processing"
-               class="bg-primary hover:bg-primary/90 text-white min-w-[150px]"
+                @click="nextStep" 
+                :disabled="processing"
+                class="h-11 px-6 font-semibold shadow-lg shadow-primary/20"
              >
-               <Loader2 v-if="processing" class="mr-2 h-4 w-4 animate-spin" />
-               <span v-else>{{ currentStep === 4 ? 'Dokončit rezervaci' : 'Pokračovat' }}</span>
-               <ChevronRight v-if="!processing" class="ml-2 h-4 w-4" />
+                <Loader2 v-if="processing" class="mr-2 h-4 w-4 animate-spin" />
+                {{ currentStep === 4 ? 'Dokončit' : 'Pokračovat' }}
              </Button>
-          </div>
-
-        </main>
+           </div>
+        </div>
       </div>
-    </div>
 
-    <div v-if="currentStep < 5" class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 p-4 lg:hidden z-50">
-       <div class="flex items-center justify-between gap-4 max-w-md mx-auto">
-          <div>
-             <div class="text-xs text-gray-500 uppercase">Celkem</div>
-             <div class="text-lg font-bold text-primary">{{ currency(grandTotalPrice) }}</div>
-          </div>
-          <Button 
-             @click="nextStep" 
-             :disabled="processing"
-             class="bg-primary hover:bg-primary/90 text-white px-8"
-          >
-             <Loader2 v-if="processing" class="h-4 w-4 animate-spin" />
-             <span v-else>{{ currentStep === 4 ? 'Odeslat' : 'Dále' }}</span>
-          </Button>
-       </div>
     </div>
-
   </div>
 </template>
+
+<style scoped>
+.dashed-border {
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='0' ry='0' stroke='%2310B981FF' stroke-width='2' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+}
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 1rem);
+}
+</style>

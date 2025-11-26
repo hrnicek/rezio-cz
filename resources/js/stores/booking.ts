@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import type { Customer, ExtraService } from '@/pages/Widget/types';
 
 export const useBookingStore = defineStore('booking', {
   state: () => ({
@@ -8,10 +9,10 @@ export const useBookingStore = defineStore('booking', {
       email: 'jakub@novak.com',
       phone: '+420 731 786 686',
       note: 'test',
-    },
+    } as Customer,
     startDate: null as string | null,
     endDate: null as string | null,
-    extras: [] as Array<any>,
+    extras: [] as ExtraService[],
     extraSelection: {} as Record<number | string, number>,
   }),
   getters: {
@@ -25,7 +26,7 @@ export const useBookingStore = defineStore('booking', {
     },
   },
   actions: {
-    updateCustomer(partial: Partial<{ firstName: string; lastName: string; email: string; phone: string; note: string }>) {
+    updateCustomer(partial: Partial<Customer>) {
       this.customer = { ...this.customer, ...partial };
     },
     resetCustomer() {
@@ -41,7 +42,7 @@ export const useBookingStore = defineStore('booking', {
       this.startDate = null;
       this.endDate = null;
     },
-    setExtras(list: Array<any>) {
+    setExtras(list: ExtraService[]) {
       this.extras = Array.isArray(list) ? list : [];
     },
     setExtraQuantity(id: number | string, qty: number) {

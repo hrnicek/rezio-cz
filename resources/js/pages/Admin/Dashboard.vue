@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/select';
 import { ref } from 'vue';
 import { Textarea } from '@/components/ui/textarea';
+import { useCurrency } from '@/composables/useCurrency';
 
 declare const route: any;
 
@@ -35,7 +36,14 @@ const breadcrumbs = [
 const props = defineProps<{
     bookings: Array<any>;
     properties: Array<{ id: number; name: string }>;
+    stats: {
+        total_revenue: number;
+        total_bookings: number;
+        pending_bookings: number;
+    };
 }>();
+
+const { formatCurrency } = useCurrency();
 
 const isBlockDatesOpen = ref(false);
 const isBookingDetailsOpen = ref(false);
@@ -112,24 +120,24 @@ const deleteBooking = () => {
                 <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                     <div class="flex h-full items-center justify-center p-6">
                         <div class="text-center">
-                            <h3 class="text-lg font-medium text-foreground">Celkem rezervací</h3>
-                            <p class="text-3xl font-bold text-foreground">0</p>
+                            <h3 class="text-lg font-medium text-foreground">Celkem rezervací (Tento měsíc)</h3>
+                            <p class="text-3xl font-bold text-foreground">{{ stats.total_bookings }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                      <div class="flex h-full items-center justify-center p-6">
                         <div class="text-center">
-                            <h3 class="text-lg font-medium text-foreground">Tržby</h3>
-                            <p class="text-3xl font-bold text-foreground">0,00 Kč</p>
+                            <h3 class="text-lg font-medium text-foreground">Tržby (Tento měsíc)</h3>
+                            <p class="text-3xl font-bold text-foreground">{{ formatCurrency(stats.total_revenue) }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                      <div class="flex h-full items-center justify-center p-6">
                         <div class="text-center">
-                            <h3 class="text-lg font-medium text-foreground">Čekající</h3>
-                            <p class="text-3xl font-bold text-foreground">0</p>
+                            <h3 class="text-lg font-medium text-foreground">Čekající rezervace</h3>
+                            <p class="text-3xl font-bold text-foreground">{{ stats.pending_bookings }}</p>
                         </div>
                     </div>
                 </div>

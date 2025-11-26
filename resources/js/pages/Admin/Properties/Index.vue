@@ -1,27 +1,23 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import AppDataTable from '@/components/AppDataTable.vue';
 import { Plus, Pencil, Trash2 } from 'lucide-vue-next';
 
 declare const route: any;
 
 defineProps<{
-    properties: Array<{
-        id: number;
-        name: string;
-        address: string;
-        description: string;
-    }>;
+    properties: {
+        data: Array<{
+            id: number;
+            name: string;
+            address: string;
+            description: string;
+        }>;
+        links: any;
+        meta: any;
+    };
 }>();
 
 const deleteProperty = (id: number) => {
@@ -35,6 +31,12 @@ const breadcrumbs = [
         title: 'Nemovitosti',
         href: '/properties',
     },
+];
+
+const columns = [
+    { key: 'name', label: 'Název', sortable: true },
+    { key: 'address', label: 'Adresa', sortable: true },
+    { key: 'actions', label: 'Akce', align: 'right' as const },
 ];
 </script>
 
@@ -52,40 +54,28 @@ const breadcrumbs = [
                 </Button>
             </div>
 
-            <div class="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Název</TableHead>
-                            <TableHead>Adresa</TableHead>
-                            <TableHead class="text-right">Akce</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        <TableRow v-for="property in properties" :key="property.id">
-                            <TableCell class="font-medium">{{ property.name }}</TableCell>
-                            <TableCell>{{ property.address }}</TableCell>
-                            <TableCell class="text-right">
-                                <div class="flex justify-end gap-2">
-                                    <Button variant="outline" size="icon" as-child>
-                                        <Link :href="route('admin.properties.edit', property.id)">
-                                            <Pencil class="h-4 w-4" />
-                                        </Link>
-                                    </Button>
-                                    <Button variant="destructive" size="icon" @click="deleteProperty(property.id)">
-                                        <Trash2 class="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </TableCell>
-                        </TableRow>
-                        <TableRow v-if="properties.length === 0">
-                            <TableCell colspan="4" class="h-24 text-center">
-                                Žádné nemovitosti nenalezeny.
-                            </TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </div>
+            <AppDataTable 
+                :data="properties" 
+                :columns="columns"
+                no-results-message="Žádné nemovitosti nenalezeny."
+            >
+                <template #name="{ item }">
+                    <span class="font-medium">{{ item.name }}</span>
+                </template>
+                
+                <template #actions="{ item }">
+                    <div class="flex justify-end gap-2">
+                        <Button variant="outline" size="icon" as-child>
+                            <Link :href="route('admin.properties.edit', item.id)">
+                                <Pencil class="h-4 w-4" />
+                            </Link>
+                        </Button>
+                        <Button variant="destructive" size="icon" @click="deleteProperty(item.id)">
+                            <Trash2 class="h-4 w-4" />
+                        </Button>
+                    </div>
+                </template>
+            </AppDataTable>
         </div>
     </AppLayout>
 </template>

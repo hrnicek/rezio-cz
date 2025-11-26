@@ -1,14 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, router, usePage, Link } from '@inertiajs/vue3';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
+import { Head, router, Link } from '@inertiajs/vue3';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,6 +11,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import AppDataTable from '@/components/AppDataTable.vue';
 import { ref, watch } from 'vue';
 import { debounce } from 'lodash';
 import { useCurrency } from '@/composables/useCurrency';
@@ -84,13 +77,21 @@ const getStatusVariant = (status: string) => {
         default: return 'secondary';
     }
 };
+
+const columns = [
+    { key: 'property', label: 'Nemovitost' },
+    { key: 'customer', label: 'Host' },
+    { key: 'dates', label: 'Termín' },
+    { key: 'total_price', label: 'Cena celkem' },
+    { key: 'status', label: 'Stav' },
+    { key: 'actions', label: 'Akce', align: 'right' as const },
+];
 </script>
 
 <template>
     <Head title="Rezervace" />
 
     <AppLayout>
-
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="flex items-center justify-between">
                 <h2 class="text-2xl font-bold tracking-tight">Rezervace</h2>
@@ -123,75 +124,67 @@ const getStatusVariant = (status: string) => {
                 </div>
             </div>
 
-            <div class="rounded-md border">
-                <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Nemovitost</TableHead>
-                                    <TableHead>Host</TableHead>
-                                    <TableHead>Termín</TableHead>
-                                    <TableHead>Cena celkem</TableHead>
-                                    <TableHead>Stav</TableHead>
-                                    <TableHead class="text-right">Akce</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow v-for="booking in bookings.data" :key="booking.id">
-                                    <TableCell class="font-medium">{{ booking.property.name }}</TableCell>
-                                    <TableCell>
-                                        <div v-if="booking.customer">
-                                            <div>{{ booking.customer.first_name }} {{ booking.customer.last_name }}</div>
-                                            <div class="text-xs text-gray-500">{{ booking.customer.email }}</div>
-                                        </div>
-                                        <div v-else class="text-gray-400 italic">
-                                            Žádné info o hostovi
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        {{ booking.start_date }} - {{ booking.end_date }}
-                                    </TableCell>
-                                    <TableCell>{{ formatCurrency(booking.total_price) }}</TableCell>
-                                    <TableCell>
-                                        <Badge :variant="getStatusVariant(booking.status)">
-                                            {{ booking.status }}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell class="text-right">
-                                        <div class="flex justify-end gap-2">
-                                            <Button variant="outline" size="icon" as-child>
-                                                <Link :href="route('admin.bookings.show', booking.id)">
-                                                    <Eye class="h-4 w-4" />
-                                                </Link>
-                                            </Button>
-                                            <Button 
-                                                v-if="booking.status === 'pending'" 
-                                                variant="default"
-                                                size="icon" 
-                                                @click="updateStatus(booking.id, 'confirmed')"
-                                                title="Potvrdit"
-                                            >
-                                                <Check class="h-4 w-4" />
-                                            </Button>
-                                            <Button 
-                                                v-if="booking.status !== 'cancelled'" 
-                                                variant="destructive" 
-                                                size="icon" 
-                                                @click="updateStatus(booking.id, 'cancelled')"
-                                                title="Zrušit"
-                                            >
-                                                <X class="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow v-if="bookings.data.length === 0">
-                                    <TableCell colspan="6" class="text-center py-8 text-gray-500">
-                                        Žádné rezervace nenalezeny.
-                                    </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
+            <AppDataTable 
+                :data="bookings" 
+                :columns="columns"
+                no-results-message="Žádné rezervace nenalezeny."
+            >
+                <template #property="{ item }">
+                    <span class="font-medium">{{ item.property.name }}</span>
+                </template>
+                
+                <template #customer="{ item }">
+                    <div v-if="item.customer">
+                        <div>{{ item.customer.first_name }} {{ item.customer.last_name }}</div>
+                        <div class="text-xs text-muted-foreground">{{ item.customer.email }}</div>
                     </div>
-                </div>
-        </AppLayout>
+                    <div v-else class="text-muted-foreground italic">
+                        Žádné info o hostovi
+                    </div>
+                </template>
+                
+                <template #dates="{ item }">
+                    {{ item.start_date }} - {{ item.end_date }}
+                </template>
+                
+                <template #total_price="{ item }">
+                    {{ formatCurrency(item.total_price) }}
+                </template>
+                
+                <template #status="{ item }">
+                    <Badge :variant="getStatusVariant(item.status)">
+                        {{ item.status }}
+                    </Badge>
+                </template>
+                
+                <template #actions="{ item }">
+                    <div class="flex justify-end gap-2">
+                        <Button variant="outline" size="icon" as-child>
+                            <Link :href="route('admin.bookings.show', item.id)">
+                                <Eye class="h-4 w-4" />
+                            </Link>
+                        </Button>
+                        <Button 
+                            v-if="item.status === 'pending'" 
+                            variant="default"
+                            size="icon" 
+                            @click="updateStatus(item.id, 'confirmed')"
+                            title="Potvrdit"
+                        >
+                            <Check class="h-4 w-4" />
+                        </Button>
+                        <Button 
+                            v-if="item.status !== 'cancelled'" 
+                            variant="destructive" 
+                            size="icon" 
+                            @click="updateStatus(item.id, 'cancelled')"
+                            title="Zrušit"
+                        >
+                            <X class="h-4 w-4" />
+                        </Button>
+                    </div>
+                </template>
+            </AppDataTable>
+        </div>
+    </AppLayout>
 </template>

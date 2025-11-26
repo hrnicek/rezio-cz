@@ -20,10 +20,18 @@ class DashboardController extends Controller
                 return $query->where('property_id', $propertyId);
             });
 
-        $bookings = $bookingsQuery
+        $bookingsCollection = $bookingsQuery
             ->clone()
             ->whereBetween('start_date', [now()->startOfMonth(), now()->endOfMonth()])
-            ->get()
+            ->get();
+
+        $stats = [
+            'total_revenue' => $bookingsCollection->where('status', '!=', 'cancelled')->sum('total_price'),
+            'total_bookings' => $bookingsCollection->count(),
+            'pending_bookings' => $bookingsCollection->where('status', 'pending')->count(),
+        ];
+
+        $bookings = $bookingsCollection
             ->map(fn($booking) => CalendarBookingData::fromModel($booking)->toArray());
 
         $upcomingBookings = $bookingsQuery
@@ -38,6 +46,7 @@ class DashboardController extends Controller
             'bookings' => $bookings,
             'upcomingBookings' => $upcomingBookings,
             'properties' => \App\Models\Property::get(['id', 'name']),
+            'stats' => $stats,
         ]);
     }
 }

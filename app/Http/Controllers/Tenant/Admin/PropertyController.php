@@ -16,8 +16,10 @@ class PropertyController extends Controller
      */
     public function index()
     {
+        $properties = Property::latest()->paginate(10)->withQueryString();
+
         return Inertia::render('Admin/Properties/Index', [
-            'properties' => PropertyData::collect(Property::all()),
+            'properties' => PropertyData::collect($properties),
         ]);
     }
 
