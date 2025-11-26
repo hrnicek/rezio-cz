@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Building, Calendar, Folder, LayoutGrid, BarChart, CogIcon } from 'lucide-vue-next';
+import { BookOpen, Building, Calendar, Folder, LayoutGrid, BarChart, CogIcon, Users } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import PropertySwitcher from './PropertySwitcher.vue';
 
@@ -36,6 +36,11 @@ const mainNavItems: NavItem[] = [
         icon: Calendar,
     },
     {
+        title: 'Zákazníci',
+        href: route('admin.customers.index'),
+        icon: Users,
+    },
+    {
         title: 'Statistiky',
         href: route('admin.reports.index'),
         icon: BarChart,
@@ -54,7 +59,7 @@ const mainNavItems: NavItem[] = [
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'Ubytování',
+        title: 'Objekty',
         href: route('admin.properties.index'),
         icon: Building,
     },

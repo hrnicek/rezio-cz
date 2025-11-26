@@ -20,7 +20,11 @@ Route::post('/switch-property', SwitchPropertyController::class)->name('switch-p
 Route::resource('properties', PropertyController::class);
 Route::resource('properties.seasons', SeasonController::class)->except(['show', 'create', 'edit']);
 Route::resource('properties.services', \App\Http\Controllers\Tenant\Admin\PropertyServiceController::class)->except(['show', 'create', 'edit']);
-Route::resource('properties.email-templates', EmailTemplateController::class)->only(['index', 'store', 'update']); // Added this line
+Route::resource('properties.email-templates', EmailTemplateController::class)->only(['index', 'store', 'update']);
+
+Route::get('customers/export', [\App\Http\Controllers\Tenant\Admin\CustomerController::class, 'export'])->name('customers.export');
+Route::post('customers/import', [\App\Http\Controllers\Tenant\Admin\CustomerController::class, 'import'])->name('customers.import');
+Route::resource('customers', \App\Http\Controllers\Tenant\Admin\CustomerController::class);
 
 Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
 Route::get('reports/data', [ReportController::class, 'data'])->name('reports.data');
