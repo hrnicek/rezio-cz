@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, Plus, Pencil, Trash2 } from 'lucide-vue-next';
 import { ref, h } from 'vue';
 import { Checkbox } from '@/components/ui/checkbox';
+import { ServicePriceType, ServicePriceTypeLabels } from '@/lib/enums';
 import {
   Select,
   SelectContent,
@@ -21,6 +22,14 @@ import AppDataTable from '@/components/AppDataTable.vue';
 
 declare const route: any;
 
+const availablePriceTypes = [
+    ServicePriceType.PerNight,
+    ServicePriceType.PerPerson,
+    ServicePriceType.PerStay,
+    ServicePriceType.Fixed,
+    ServicePriceType.PerHour
+];
+
 const props = defineProps<{
     property: {
         id: number;
@@ -31,7 +40,7 @@ const props = defineProps<{
             id: number;
             name: string;
             description: string | null;
-            price_type: 'per_day' | 'flat' | 'per_stay';
+            price_type: string;
             price: number;
             max_quantity: number;
             is_active: boolean;
@@ -47,7 +56,7 @@ const isAdding = ref(false);
 const form = useForm({
     name: '',
     description: '',
-    price_type: 'flat',
+    price_type: ServicePriceType.Fixed,
     price: 0,
     max_quantity: 0,
     is_active: true,
@@ -103,15 +112,6 @@ const breadcrumbs = [
     { title: props.property.name, href: `/admin/properties/${props.property.id}/edit` },
     { title: 'Služby', href: `/admin/properties/${props.property.id}/services` },
 ];
-
-const getPriceTypeLabel = (type: string) => {
-    switch (type) {
-        case 'per_day': return 'Za den';
-        case 'flat': return 'Fixní poplatek';
-        case 'per_stay': return 'Za pobyt';
-        default: return type;
-    }
-};
 
 const columns = [
     {
@@ -199,9 +199,9 @@ const columns = [
                                         <SelectValue placeholder="Vyberte typ ceny" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="flat">Fixní poplatek</SelectItem>
-                                        <SelectItem value="per_day">Za den</SelectItem>
-                                        <SelectItem value="per_stay">Za pobyt</SelectItem>
+                                        <SelectItem v-for="type in availablePriceTypes" :key="type" :value="type">
+                                            {{ ServicePriceTypeLabels[type] }}
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <div v-if="form.errors.price_type" class="text-sm text-red-500">{{ form.errors.price_type }}</div>
@@ -251,7 +251,7 @@ const columns = [
                     {{ value }} Kč
                 </template>
                 <template #price_type="{ value }">
-                    {{ getPriceTypeLabel(value) }}
+                    {{ ServicePriceTypeLabels[value] || value }}
                 </template>
                 <template #max_quantity="{ value }">
                     {{ value === 0 ? 'Neomezeně' : value }}

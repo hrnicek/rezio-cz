@@ -10,4 +10,9 @@ class Pending extends BookingState
     {
         return 'gray';
     }
+
+    public function label(): string
+    {
+        return 'Čekající';
+    }
 }

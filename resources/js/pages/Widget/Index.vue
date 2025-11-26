@@ -6,6 +6,7 @@ import { storeToRefs } from "pinia";
 import { useBookingStore } from "@/stores/booking";
 import { useWidgetCalendar } from "@/composables/useWidgetCalendar";
 import { useCurrency } from "@/composables/useCurrency";
+import { ServicePriceType } from "@/lib/enums";
 
 // Partials
 import StepDates from "./partials/StepDates.vue";
@@ -87,7 +88,7 @@ const selectedExtras = computed(() => validExtras.value.filter(e => (extraSelect
 const addonsTotalPrice = computed(() => {
   return selectedExtras.value.reduce((sum, ex) => {
     const qty = extraSelection.value[ex.id] || 0;
-    const cost = ex.price_type === 'per_day' ? (ex.price * qty * selectedNights.value) : (ex.price * qty);
+    const cost = ex.price_type === ServicePriceType.PerNight ? (ex.price * qty * selectedNights.value) : (ex.price * qty);
     return sum + cost;
   }, 0);
 });

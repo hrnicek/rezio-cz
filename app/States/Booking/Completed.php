@@ -10,4 +10,9 @@ class Completed extends BookingState
     {
         return 'info';
     }
+
+    public function label(): string
+    {
+        return 'Dokončeno';
+    }
 }

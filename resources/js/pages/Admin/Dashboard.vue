@@ -31,6 +31,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ref, computed } from 'vue';
 import { Textarea } from '@/components/ui/textarea';
 import { useCurrency } from '@/composables/useCurrency';
+import { BookingStatusLabels } from '@/lib/enums';
 import { Calendar as CalendarIcon, CreditCard, Users, Activity, DollarSign } from 'lucide-vue-next';
 
 declare const route: any;
@@ -296,7 +297,7 @@ const getInitials = (name: string) => {
                                         'text-green-600': booking.status === 'confirmed',
                                         'text-red-600': booking.status === 'cancelled',
                                     }">
-                                        {{ booking.status === 'pending' ? 'Čekající' : (booking.status === 'confirmed' ? 'Potvrzeno' : booking.status) }}
+                                        {{ BookingStatusLabels[booking.status] || booking.status }}
                                     </span>
                                 </div>
                             </div>
@@ -328,10 +329,9 @@ const getInitials = (name: string) => {
                                     <SelectValue placeholder="Vyberte stav" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="pending">Čekající</SelectItem>
-                                    <SelectItem value="confirmed">Potvrzeno</SelectItem>
-                                    <SelectItem value="cancelled">Zrušeno</SelectItem>
-                                    <SelectItem value="blocked">Blokováno</SelectItem>
+                                    <SelectItem v-for="(label, value) in BookingStatusLabels" :key="value" :value="value">
+                                        {{ label }}
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

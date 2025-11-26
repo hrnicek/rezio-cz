@@ -10,4 +10,9 @@ class Cancelled extends BookingState
     {
         return 'danger';
     }
+
+    public function label(): string
+    {
+        return 'Zrušeno';
+    }
 }

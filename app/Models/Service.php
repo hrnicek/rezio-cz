@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ServicePriceType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -27,6 +28,7 @@ class Service extends Model
         return [
             'price' => 'decimal:2',
             'is_active' => 'boolean',
+            'price_type' => ServicePriceType::class,
         ];
     }
 

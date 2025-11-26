@@ -41,6 +41,7 @@ import {
 } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { BookingStatusLabels, PaymentStatus } from '@/lib/enums';
 
 declare const route: any;
 
@@ -93,16 +94,6 @@ const getStatusColor = (status: string) => {
     }
 };
 
-const getStatusLabel = (status: string) => {
-    const labels: Record<string, string> = {
-        confirmed: 'Potvrzeno',
-        pending: 'Čeká na potvrzení',
-        cancelled: 'Zrušeno',
-        paid: 'Zaplaceno',
-    };
-    return labels[status] || status;
-};
-
 const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     // Ideal place for a toast
@@ -118,7 +109,7 @@ const calculateNights = (start: string, end: string) => {
 
 const paidAmount = computed(() => {
     return props.booking.payments.reduce((sum: number, payment: any) => {
-        return payment.status === 'paid' ? sum + Number(payment.amount) : sum;
+        return payment.status === PaymentStatus.Paid ? sum + Number(payment.amount) : sum;
     }, 0);
 });
 
@@ -132,7 +123,7 @@ const getInitials = (firstName: string, lastName: string) => {
 };
 
 const updateStatus = (status: string) => {
-    if (confirm(`Opravdu chcete změnit stav na "${getStatusLabel(status)}"?`)) {
+    if (confirm(`Opravdu chcete změnit stav na "${BookingStatusLabels[status] || status}"?`)) {
         router.put(route('admin.bookings.update', props.booking.id), { status });
     }
 };
@@ -169,7 +160,7 @@ const submitEdit = () => {
                         <div class="flex items-center gap-3">
                             <h1 class="text-2xl font-bold tracking-tight">Rezervace #{{ booking.code }}</h1>
                             <Badge :variant="getStatusColor(booking.status)">
-                                {{ getStatusLabel(booking.status) }}
+                                {{ BookingStatusLabels[booking.status] || booking.status }}
                             </Badge>
                         </div>
                         <p class="text-sm text-muted-foreground mt-1">

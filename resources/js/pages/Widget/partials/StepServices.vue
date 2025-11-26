@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Plus, Minus, PawPrint } from "lucide-vue-next";
 import { useCurrency } from "@/composables/useCurrency";
+import { ServicePriceTypeLabels } from "@/lib/enums";
 
 import type { ExtraService } from "../types";
 
@@ -25,8 +26,7 @@ const updateExtra = (id: number, delta: number) => {
 
 <template>
   <div class="space-y-8">
-    <h1 class="text-2xl font-medium text-gray-900">Doplňkové služby</h1>
-    
+    <h1 class="text-2xl font-medium text-gray-900">Příplatky a služby</h1>
     <div v-if="validExtras.length === 0" class="text-center py-12 text-gray-500 bg-gray-50 rounded-lg">
       <PawPrint class="h-12 w-12 mx-auto mb-3 text-gray-300" />
       <p>Pro tento termín nejsou dostupné žádné doplňkové služby.</p>
@@ -44,7 +44,7 @@ const updateExtra = (id: number, delta: number) => {
           </div>
           <div class="text-right">
             <div class="font-bold text-primary">{{ formatCurrency(extra.price) }}</div>
-            <div class="text-xs text-gray-400">{{ extra.price_type === 'per_day' ? 'den/noc' : 'jednorázově' }}</div>
+            <div class="text-xs text-gray-400">{{ ServicePriceTypeLabels[extra.price_type] }}</div>
           </div>
         </div>
 

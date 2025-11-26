@@ -6,12 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-enum PaymentStatus: string
-{
-    case Pending = 'pending';
-    case Paid = 'paid';
-    case Refunded = 'refunded';
-}
+use App\Enums\PaymentStatus;
 
 class BookingPayment extends Model
 {

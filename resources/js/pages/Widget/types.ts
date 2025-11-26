@@ -1,4 +1,5 @@
 import type { Ref, ComputedRef } from "vue";
+import { ServicePriceType } from "@/lib/enums";
 
 export interface Customer {
     firstName: string;
@@ -12,7 +13,7 @@ export interface ExtraService {
     id: number;
     name: string;
     price: number;
-    price_type: 'per_day' | 'per_stay' | 'per_person' | string;
+    price_type: typeof ServicePriceType[keyof typeof ServicePriceType];
     description?: string;
 }
 

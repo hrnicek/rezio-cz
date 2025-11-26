@@ -10,4 +10,9 @@ class Blocked extends BookingState
     {
         return 'gray';
     }
+
+    public function label(): string
+    {
+        return 'Blokováno';
+    }
 }

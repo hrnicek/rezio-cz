@@ -10,4 +10,9 @@ class Confirmed extends BookingState
     {
         return 'success';
     }
+
+    public function label(): string
+    {
+        return 'Potvrzeno';
+    }
 }

@@ -16,6 +16,7 @@ import { ref, watch } from 'vue';
 import { debounce } from 'lodash';
 import { useCurrency } from '@/composables/useCurrency';
 import { Eye, Check, X } from 'lucide-vue-next';
+import { BookingStatusLabels } from '@/lib/enums';
 
 declare const route: any;
 
@@ -63,7 +64,7 @@ const exportBookings = () => {
 };
 
 const updateStatus = (bookingId: number, status: string) => {
-    if (confirm(`Opravdu chcete označit tuto rezervaci jako ${status}?`)) {
+    if (confirm(`Opravdu chcete označit tuto rezervaci jako "${BookingStatusLabels[status] || status}"?`)) {
         router.put(route('admin.bookings.update', bookingId), { status });
     }
 };
@@ -108,10 +109,9 @@ const columns = [
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">Všechny stavy</SelectItem>
-                            <SelectItem value="pending">Čekající</SelectItem>
-                            <SelectItem value="confirmed">Potvrzeno</SelectItem>
-                            <SelectItem value="cancelled">Zrušeno</SelectItem>
-                            <SelectItem value="paid">Zaplaceno</SelectItem>
+                            <SelectItem v-for="(label, value) in BookingStatusLabels" :key="value" :value="value">
+                                {{ label }}
+                            </SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -153,7 +153,7 @@ const columns = [
                 
                 <template #status="{ item }">
                     <Badge :variant="getStatusVariant(item.status)">
-                        {{ item.status }}
+                        {{ BookingStatusLabels[item.status] || item.status }}
                     </Badge>
                 </template>
                 

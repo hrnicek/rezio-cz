@@ -10,4 +10,9 @@ class Paid extends BookingState
     {
         return 'success';
     }
+
+    public function label(): string
+    {
+        return 'Zaplaceno';
+    }
 }

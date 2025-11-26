@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Check } from "lucide-vue-next";
 import { Calendar, User, PawPrint } from "lucide-vue-next";
 import { useCurrency } from "@/composables/useCurrency";
+import { ServicePriceType } from "@/lib/enums";
 
 import type { Customer, ExtraService, CalendarService } from "../types";
 
@@ -86,7 +87,7 @@ const emit = defineEmits<{
                 <span class="text-gray-700">{{ ex.name }}</span>
               </div>
               <span class="font-medium text-gray-900">
-                {{ formatCurrency(ex.price_type === 'per_day' ? (ex.price * extraSelection[ex.id] * selectedNights) : (ex.price * extraSelection[ex.id])) }}
+                {{ formatCurrency(ex.price_type === ServicePriceType.PerNight ? (ex.price * extraSelection[ex.id] * selectedNights) : (ex.price * extraSelection[ex.id])) }}
               </span>
             </div>
           </div>
