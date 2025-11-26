@@ -14,7 +14,10 @@ class SeasonController extends Controller
     {
         return inertia('Admin/Properties/Seasons/Index', [
             'property' => $property,
-            'seasons' => $property->seasons()->orderBy('start_date')->get(),
+            'seasons' => $property->seasons()
+                ->orderBy('start_date')
+                ->paginate(request('per_page', 10))
+                ->withQueryString(),
         ]);
     }
 
@@ -37,7 +40,7 @@ class SeasonController extends Controller
             $property->seasons()->where('is_default', true)->update(['is_default' => false]);
         }
 
-        $season = $property->seasons()->create($validated);
+        $property->seasons()->create($validated);
 
         return redirect()->route('admin.properties.seasons.index', $property);
     }

@@ -13,7 +13,10 @@ class PropertyServiceController extends Controller
     {
         return inertia('Admin/Properties/Services/Index', [
             'property' => $property,
-            'services' => $property->services()->orderBy('name')->get(),
+            'services' => $property->services()
+                ->orderBy('name')
+                ->paginate(request('per_page', 10))
+                ->withQueryString(),
         ]);
     }
 

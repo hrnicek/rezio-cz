@@ -32,18 +32,18 @@ const submit = () => {
 
 const breadcrumbs = [
     {
-        title: 'Properties',
+        title: 'Nemovitosti',
         href: '/admin/properties',
     },
     {
-        title: 'Edit',
+        title: 'Upravit',
         href: `/admin/properties/${props.property.id}/edit`,
     },
 ];
 </script>
 
 <template>
-    <Head title="Edit Property" />
+    <Head title="Upravit nemovitost" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
@@ -54,7 +54,7 @@ const breadcrumbs = [
                             <ChevronLeft class="h-4 w-4" />
                         </Link>
                     </Button>
-                    <h2 class="text-2xl font-bold tracking-tight">Edit Property</h2>
+                    <h2 class="text-2xl font-bold tracking-tight">Upravit nemovitost</h2>
                 </div>
                 <div class="flex gap-2">
                     <Button variant="outline" as-child>
@@ -69,7 +69,7 @@ const breadcrumbs = [
                     </Button>
                     <Button variant="outline" as-child>
                         <Link :href="route('admin.properties.seasons.index', property.id)">
-                            Manage Seasons
+                            Spravovat sezóny
                         </Link>
                     </Button>
                 </div>
@@ -78,34 +78,34 @@ const breadcrumbs = [
             <div class="mx-auto w-full max-w-2xl">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Edit Property</CardTitle>
+                        <CardTitle>Upravit nemovitost</CardTitle>
                         <CardDescription>
-                            Update the details of the property.
+                            Aktualizujte detaily nemovitosti.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form @submit.prevent="submit" class="space-y-6">
                             <div class="space-y-2">
-                                <Label for="name">Name</Label>
-                                <Input id="name" v-model="form.name" placeholder="e.g. Mountain Cabin" required />
+                                <Label for="name">Název</Label>
+                                <Input id="name" v-model="form.name" placeholder="např. Horská chata" required />
                                 <div v-if="form.errors.name" class="text-sm text-red-500">{{ form.errors.name }}</div>
                             </div>
 
                             <div class="space-y-2">
-                                <Label for="address">Address</Label>
-                                <Textarea id="address" v-model="form.address" placeholder="Full address of the property" />
+                                <Label for="address">Adresa</Label>
+                                <Textarea id="address" v-model="form.address" placeholder="Celá adresa nemovitosti" />
                                 <div v-if="form.errors.address" class="text-sm text-red-500">{{ form.errors.address }}</div>
                             </div>
 
                             <div class="space-y-2">
-                                <Label for="description">Description</Label>
-                                <Textarea id="description" v-model="form.description" placeholder="Short description for the widget" />
+                                <Label for="description">Popis</Label>
+                                <Textarea id="description" v-model="form.description" placeholder="Krátký popis pro widget" />
                                 <div v-if="form.errors.description" class="text-sm text-red-500">{{ form.errors.description }}</div>
                             </div>
 
                             <div class="flex justify-end">
                                 <Button type="submit" :disabled="form.processing">
-                                    Update Property
+                                    Aktualizovat nemovitost
                                 </Button>
                             </div>
                         </form>

@@ -6,10 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, Plus, Pencil, Trash2 } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, h } from 'vue';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
@@ -18,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import AppDataTable from '@/components/AppDataTable.vue';
 
 declare const route: any;
 
@@ -26,15 +26,19 @@ const props = defineProps<{
         id: number;
         name: string;
     };
-    services: Array<{
-        id: number;
-        name: string;
-        description: string | null;
-        price_type: 'per_day' | 'flat' | 'per_stay';
-        price: number;
-        max_quantity: number;
-        is_active: boolean;
-    }>;
+    services: {
+        data: Array<{
+            id: number;
+            name: string;
+            description: string | null;
+            price_type: 'per_day' | 'flat' | 'per_stay';
+            price: number;
+            max_quantity: number;
+            is_active: boolean;
+        }>;
+        links: any[];
+        meta: any;
+    };
 }>();
 
 const editingId = ref<number | null>(null);
@@ -89,29 +93,62 @@ const submit = () => {
 };
 
 const deleteService = (serviceId: number) => {
-    if (confirm('Are you sure you want to delete this service?')) {
+    if (confirm('Opravdu chcete smazat tuto službu?')) {
         router.delete(route('admin.properties.services.destroy', [props.property.id, serviceId]));
     }
 };
 
 const breadcrumbs = [
-    { title: 'Properties', href: '/admin/properties' },
+    { title: 'Nemovitosti', href: '/admin/properties' },
     { title: props.property.name, href: `/admin/properties/${props.property.id}/edit` },
-    { title: 'Services', href: `/admin/properties/${props.property.id}/services` },
+    { title: 'Služby', href: `/admin/properties/${props.property.id}/services` },
 ];
 
 const getPriceTypeLabel = (type: string) => {
     switch (type) {
-        case 'per_day': return 'Per Day';
-        case 'flat': return 'Flat Fee';
-        case 'per_stay': return 'Per Stay';
+        case 'per_day': return 'Za den';
+        case 'flat': return 'Fixní poplatek';
+        case 'per_stay': return 'Za pobyt';
         default: return type;
     }
 };
+
+const columns = [
+    {
+        key: 'name',
+        label: 'Název',
+        sortable: true
+    },
+    {
+        key: 'price',
+        label: 'Cena',
+        sortable: true
+    },
+    {
+        key: 'price_type',
+        label: 'Typ',
+        sortable: true
+    },
+    {
+        key: 'max_quantity',
+        label: 'Max. množství',
+        sortable: true
+    },
+    {
+        key: 'is_active',
+        label: 'Stav',
+        sortable: true
+    },
+    {
+        key: 'actions',
+        label: 'Akce',
+        align: 'right' as const
+    }
+];
 </script>
 
 <template>
-    <Head :title="`Services - ${property.name}`" />
+    <Head :title="`Služby - ${property.name}`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
@@ -122,78 +159,78 @@ const getPriceTypeLabel = (type: string) => {
                             <ChevronLeft class="h-4 w-4" />
                         </Link>
                     </Button>
-                    <h2 class="text-2xl font-bold tracking-tight">Services - {{ property.name }}</h2>
+                    <h2 class="text-2xl font-bold tracking-tight">Služby - {{ property.name }}</h2>
                 </div>
                 <Button @click="startAdding" v-if="!isAdding && !editingId">
                     <Plus class="mr-2 h-4 w-4" />
-                    Add Service
+                    Přidat službu
                 </Button>
             </div>
 
             <!-- Add/Edit Form -->
-            <Card v-if="isAdding || editingId">
+            <Card v-if="isAdding || editingId" class="mb-6 border-2 border-primary/20">
                 <CardHeader>
-                    <CardTitle>{{ editingId ? 'Edit Service' : 'Add New Service' }}</CardTitle>
+                    <CardTitle>{{ editingId ? 'Upravit službu' : 'Přidat novou službu' }}</CardTitle>
                     <CardDescription>
-                        {{ editingId ? 'Update service details' : 'Create a new service for this property' }}
+                        {{ editingId ? 'Úprava detailů služby' : 'Vytvoření nové doplňkové služby pro tuto nemovitost' }}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form @submit.prevent="submit" class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-2">
-                                <Label for="name">Name</Label>
-                                <Input id="name" v-model="form.name" placeholder="e.g. Breakfast" required />
+                                <Label for="name">Název</Label>
+                                <Input id="name" v-model="form.name" placeholder="např. Snídaně" required />
                                 <div v-if="form.errors.name" class="text-sm text-red-500">{{ form.errors.name }}</div>
                             </div>
 
                             <div class="space-y-2">
-                                <Label for="price">Price (Kč)</Label>
+                                <Label for="price">Cena (Kč)</Label>
                                 <Input id="price" v-model.number="form.price" type="number" step="0.01" required />
                                 <div v-if="form.errors.price" class="text-sm text-red-500">{{ form.errors.price }}</div>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-2">
-                                <Label for="price_type">Price Type</Label>
+                                <Label for="price_type">Typ ceny</Label>
                                 <Select v-model="form.price_type">
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select price type" />
+                                        <SelectValue placeholder="Vyberte typ ceny" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="flat">Flat Fee</SelectItem>
-                                        <SelectItem value="per_day">Per Day</SelectItem>
-                                        <SelectItem value="per_stay">Per Stay</SelectItem>
+                                        <SelectItem value="flat">Fixní poplatek</SelectItem>
+                                        <SelectItem value="per_day">Za den</SelectItem>
+                                        <SelectItem value="per_stay">Za pobyt</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <div v-if="form.errors.price_type" class="text-sm text-red-500">{{ form.errors.price_type }}</div>
                             </div>
 
                             <div class="space-y-2">
-                                <Label for="max_quantity">Max Quantity (0 for unlimited)</Label>
+                                <Label for="max_quantity">Max. množství (0 pro neomezeně)</Label>
                                 <Input id="max_quantity" v-model.number="form.max_quantity" type="number" min="0" required />
                                 <div v-if="form.errors.max_quantity" class="text-sm text-red-500">{{ form.errors.max_quantity }}</div>
                             </div>
                         </div>
 
                         <div class="space-y-2">
-                            <Label for="description">Description</Label>
-                            <Textarea id="description" v-model="form.description" placeholder="Service description..." />
+                            <Label for="description">Popis</Label>
+                            <Textarea id="description" v-model="form.description" placeholder="Popis služby..." />
                             <div v-if="form.errors.description" class="text-sm text-red-500">{{ form.errors.description }}</div>
                         </div>
 
                         <div class="flex items-center space-x-2">
                             <Checkbox id="is_active" v-model:checked="form.is_active" />
-                            <Label for="is_active" class="cursor-pointer">Active</Label>
+                            <Label for="is_active" class="cursor-pointer">Aktivní</Label>
                         </div>
 
                         <div class="flex justify-end gap-2">
                             <Button type="button" variant="outline" @click="cancelEdit">
-                                Cancel
+                                Zrušit
                             </Button>
                             <Button type="submit" :disabled="form.processing">
-                                {{ editingId ? 'Update' : 'Create' }} Service
+                                {{ editingId ? 'Upravit' : 'Vytvořit' }} službu
                             </Button>
                         </div>
                     </form>
@@ -201,59 +238,40 @@ const getPriceTypeLabel = (type: string) => {
             </Card>
 
             <!-- Services Table -->
-            <Card>
-                <CardHeader>
-                    <CardTitle>Existing Services</CardTitle>
-                    <CardDescription>
-                        Manage services available for this property
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Price</TableHead>
-                                <TableHead>Type</TableHead>
-                                <TableHead>Max Qty</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead class="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            <TableRow v-for="service in services" :key="service.id">
-                                <TableCell class="font-medium">
-                                    <div>{{ service.name }}</div>
-                                    <div class="text-xs text-muted-foreground truncate max-w-[200px]">{{ service.description }}</div>
-                                </TableCell>
-                                <TableCell>{{ service.price }} Kč</TableCell>
-                                <TableCell>{{ getPriceTypeLabel(service.price_type) }}</TableCell>
-                                <TableCell>{{ service.max_quantity === 0 ? 'Unlimited' : service.max_quantity }}</TableCell>
-                                <TableCell>
-                                    <Badge :variant="service.is_active ? 'default' : 'secondary'">
-                                        {{ service.is_active ? 'Active' : 'Inactive' }}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell class="text-right">
-                                    <div class="flex justify-end gap-2">
-                                        <Button size="sm" variant="outline" @click="startEditing(service)">
-                                            <Pencil class="h-3 w-3" />
-                                        </Button>
-                                        <Button size="sm" variant="destructive" @click="deleteService(service.id)">
-                                            <Trash2 class="h-3 w-3" />
-                                        </Button>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow v-if="services.length === 0">
-                                <TableCell colspan="6" class="text-center py-8 text-gray-500">
-                                    No services created yet. Click "Add Service" to create one.
-                                </TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+            <AppDataTable
+                :data="services"
+                :columns="columns"
+                search-placeholder="Hledat služby..."
+            >
+                <template #name="{ item }">
+                    <div class="font-medium">{{ item.name }}</div>
+                    <div v-if="item.description" class="text-xs text-muted-foreground truncate max-w-[200px]">{{ item.description }}</div>
+                </template>
+                <template #price="{ value }">
+                    {{ value }} Kč
+                </template>
+                <template #price_type="{ value }">
+                    {{ getPriceTypeLabel(value) }}
+                </template>
+                <template #max_quantity="{ value }">
+                    {{ value === 0 ? 'Neomezeně' : value }}
+                </template>
+                <template #is_active="{ value }">
+                    <Badge :variant="value ? 'default' : 'secondary'">
+                        {{ value ? 'Aktivní' : 'Neaktivní' }}
+                    </Badge>
+                </template>
+                <template #actions="{ item }">
+                    <div class="flex justify-end gap-2">
+                        <Button size="sm" variant="outline" @click="startEditing(item)">
+                            <Pencil class="h-3 w-3" />
+                        </Button>
+                        <Button size="sm" variant="destructive" @click="deleteService(item.id)">
+                            <Trash2 class="h-3 w-3" />
+                        </Button>
+                    </div>
+                </template>
+            </AppDataTable>
         </div>
     </AppLayout>
 </template>

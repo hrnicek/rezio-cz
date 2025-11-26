@@ -38,17 +38,17 @@ class EmailTemplateController extends Controller
                 ],
                 [
                     'type' => 'booking_cancelled',
-                    'name' => 'Vaše rezervace byla stornována',
+                    'name' => 'Zrušení rezervace',
                     'description' => 'Úprava obsahu e-mailu odeslaného při stornování rezervace.',
                 ],
                 [
                     'type' => 'booking_rejected',
-                    'name' => 'Je nám líto, ale neuvidíme se',
+                    'name' => 'Zamítnutí rezervace',
                     'description' => 'Úprava obsahu e-mailu odeslaného při zamítnutí rezervace.',
                 ],
                 [
                     'type' => 'pre_arrival_info',
-                    'name' => 'Už se těšíte?',
+                    'name' => 'Informace před příjezdem',
                     'description' => 'Máme pro Vás důležité informace před příjezdem.',
                 ],
             ],
