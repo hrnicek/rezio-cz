@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Tenant\Client\Api\Booking;
+namespace App\Http\Controllers\Tenant\Widgets\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
@@ -8,18 +8,16 @@ use App\Models\Property;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class ListBookingsController extends Controller
+class WidgetReservationController extends Controller
 {
-    public function __invoke(Request $request, string $token): JsonResponse
-    {
+    public function __invoke(Request $request, Property $property): JsonResponse
+    {        
         $validated = $request->validate([
             'start_date' => ['nullable', 'date'],
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'status' => ['nullable', 'string'],
             'with_services' => ['nullable', 'boolean'],
         ]);
-
-        $property = Property::where('widget_token', $token)->firstOrFail();
 
         $query = Booking::query()
             ->where('property_id', $property->id)

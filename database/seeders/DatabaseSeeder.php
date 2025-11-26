@@ -98,7 +98,6 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Apartmán Praha',
                 'slug' => 'apartman-praha',
                 'description' => 'Moderní apartmán v centru Prahy',
-                'widget_token' => \Illuminate\Support\Str::random(32),
                 'price_per_night' => 3500,
             ]);
 

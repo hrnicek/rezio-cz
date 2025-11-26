@@ -11,9 +11,9 @@ use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: [
-            __DIR__ . '/../routes/web.php',
-            __DIR__ . '/../routes/admin.php',
-            __DIR__ . '/../routes/client.php',
+            __DIR__ . '/../routes/web.php', // Central routes
+            __DIR__ . '/../routes/admin.php', // Tenant routes
+            __DIR__ . '/../routes/widget.php', // Tenant Widget routes
         ],
         // API routes are loaded in routes/tenant.php for tenant context
         commands: __DIR__ . '/../routes/console.php',
@@ -30,6 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'allow-iframe' => \App\Http\Middleware\AllowIframe::class,
+            'validate.widget.cors' => \App\Http\Middleware\ValidateWidgetCors::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

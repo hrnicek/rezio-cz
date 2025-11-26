@@ -1,38 +1,31 @@
 <?php
 
-namespace App\Http\Controllers\Tenant\Client\Api;
+namespace App\Http\Controllers\Tenant\Widgets\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Service\CheckAvailabilityRequest;
 use App\Models\Booking;
 use App\Models\Service;
-use Illuminate\Http\JsonResponse;
+use App\Models\Property;
 use Illuminate\Support\Carbon;
+use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Service\CheckAvailabilityRequest;
 
-class ServiceController extends Controller
+class WidgetServiceController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Property $property): JsonResponse
     {
         $services = Service::query()
+            ->where('property_id', $property->id)
             ->where('is_active', true)
             ->orderBy('name')
             ->get(['id', 'name', 'price_type', 'price', 'max_quantity']);
 
         return response()->json([
             'services' => $services,
-            // Backward compatibility
-            'extras' => $services,
         ]);
     }
 
-    public function indexByProperty(string $token): JsonResponse
-    {
-        // For now, return all active services regardless of property
-        // In the future, you could filter services by property if needed
-        return $this->index();
-    }
-
-    public function availability(CheckAvailabilityRequest $request): JsonResponse
+    public function availability(CheckAvailabilityRequest $request, Property $property): JsonResponse
     {
         $data = $request->validated();
 

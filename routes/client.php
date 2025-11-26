@@ -12,15 +12,6 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
     'web',
 ])->group(function () {
-Route::name('client.')
-    ->group(function () {
-        Route::middleware(['allow-iframe'])->group(function () {
-            Route::get('app/widget/{token}', [BookingController::class, 'show'])->name('widget.show');
-            Route::post('app/widget/{token}', [BookingController::class, 'store'])->name('widget.store');
-        });
-    });
-
-
     Route::prefix('app/check-in/{token}')->name('check-in.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Tenant\Guest\CheckInController::class, 'show'])->name('show');
         Route::post('/guests', [\App\Http\Controllers\Tenant\Guest\CheckInController::class, 'store'])->name('guests.store');

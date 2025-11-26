@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use App\Models\Tenant;
+use App\Models\Central\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 abstract class TenantTestCase extends TestCase

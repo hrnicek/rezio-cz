@@ -25,7 +25,6 @@ class PropertyFactory extends Factory
             'address' => $this->faker->address(),
             'description' => $this->faker->sentence(),
             'price_per_night' => $this->faker->numberBetween(50, 500),
-            'widget_token' => Str::random(32),
         ];
     }
 }

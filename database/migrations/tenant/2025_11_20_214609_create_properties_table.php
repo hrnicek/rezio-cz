@@ -13,13 +13,11 @@ return new class extends Migration
     {
         Schema::create('properties', function (Blueprint $table) {
             $table->id();
-            // user_id removed - properties now belong to tenants
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('address')->nullable();
             $table->text('description')->nullable();
             $table->decimal('price_per_night', 10, 2)->default(0);
-            $table->string('widget_token')->unique();
             $table->timestamps();
         });
     }

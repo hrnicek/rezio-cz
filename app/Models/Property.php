@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Property extends Model
 {
@@ -17,7 +18,6 @@ class Property extends Model
         'address',
         'description',
         'price_per_night',
-        'widget_token',
     ];
 
     public function bookings(): HasMany
@@ -38,5 +38,18 @@ class Property extends Model
     public function emailTemplates(): HasMany
     {
         return $this->hasMany(EmailTemplate::class);
+    }
+
+    public function widget(): HasOne
+    {
+        return $this->hasOne(Widget::class)->withDefault([
+        'settings' => [
+            'primary_color' => '#3b82f6',
+            'font_family' => 'Roboto, sans-serif',
+            'layout' => 'standard',
+        ],
+        'allowed_domains' => [], 
+        'is_active' => true,
+    ]);
     }
 }

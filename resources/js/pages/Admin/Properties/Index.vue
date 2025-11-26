@@ -21,7 +21,6 @@ defineProps<{
         name: string;
         address: string;
         description: string;
-        widget_token: string;
     }>;
 }>();
 
@@ -59,7 +58,6 @@ const breadcrumbs = [
                         <TableRow>
                             <TableHead>Název</TableHead>
                             <TableHead>Adresa</TableHead>
-                            <TableHead>Widget Token</TableHead>
                             <TableHead class="text-right">Akce</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -67,13 +65,6 @@ const breadcrumbs = [
                         <TableRow v-for="property in properties" :key="property.id">
                             <TableCell class="font-medium">{{ property.name }}</TableCell>
                             <TableCell>{{ property.address }}</TableCell>
-                            <TableCell>
-                                <Link :href="route('client.widget.show', property.widget_token)" class="inline-block">
-                                    <code class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold hover:bg-muted/80 transition-colors cursor-pointer">
-                                        {{ property.widget_token }}
-                                    </code>
-                                </Link>
-                            </TableCell>
                             <TableCell class="text-right">
                                 <div class="flex justify-end gap-2">
                                     <Button variant="outline" size="icon" as-child>
