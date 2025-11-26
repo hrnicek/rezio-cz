@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -19,6 +18,20 @@ class Property extends Model
         'description',
         'price_per_night',
     ];
+
+    protected static function booted(): void
+    {
+        static::created(function (Property $property) {
+            $property->seasons()->create([
+                'name' => 'Výchozí sezóna',
+                'is_default' => true,
+                'price' => $property->price_per_night,
+                'min_stay' => 1,
+                'priority' => 0,
+                // Default season doesn't need dates as it's a fallback
+            ]);
+        });
+    }
 
     public function bookings(): HasMany
     {

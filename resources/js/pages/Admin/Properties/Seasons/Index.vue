@@ -28,6 +28,8 @@ const props = defineProps<{
         check_in_days: number[] | null;
         is_default: boolean;
         is_fixed_range: boolean;
+        priority: number;
+        is_recurring: boolean;
     }>;
 }>();
 
@@ -43,6 +45,8 @@ const form = useForm({
     check_in_days: [] as number[],
     is_default: false,
     is_fixed_range: false,
+    priority: 0,
+    is_recurring: false,
 });
 
 const weekDays = [
@@ -72,6 +76,8 @@ const startEditing = (season: any) => {
     form.check_in_days = season.check_in_days || [];
     form.is_default = season.is_default || false;
     form.is_fixed_range = season.is_fixed_range || false;
+    form.priority = season.priority || 0;
+    form.is_recurring = season.is_recurring || false;
 };
 
 const cancelEdit = () => {
@@ -165,24 +171,32 @@ const breadcrumbs = [
                         <div class="grid grid-cols-2 gap-4">
                             <div class="space-y-2">
                                 <Label for="start_date">Start Date</Label>
-                                <Input id="start_date" v-model="form.start_date" type="date" required />
+                                <Input id="start_date" v-model="form.start_date" type="date" :required="!form.is_default" :disabled="form.is_default" />
                                 <div v-if="form.errors.start_date" class="text-sm text-red-500">{{ form.errors.start_date }}</div>
                             </div>
 
                             <div class="space-y-2">
                                 <Label for="end_date">End Date</Label>
-                                <Input id="end_date" v-model="form.end_date" type="date" required />
+                                <Input id="end_date" v-model="form.end_date" type="date" :required="!form.is_default" :disabled="form.is_default" />
                                 <div v-if="form.errors.end_date" class="text-sm text-red-500">{{ form.errors.end_date }}</div>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-3 gap-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <Label for="priority">Priority</Label>
+                                <Input id="priority" v-model.number="form.priority" type="number" />
+                                <div v-if="form.errors.priority" class="text-sm text-red-500">{{ form.errors.priority }}</div>
+                            </div>
+                            
                             <div class="space-y-2">
                                 <Label for="min_stay">Minimum Stay (nights)</Label>
                                 <Input id="min_stay" v-model.number="form.min_stay" type="number" min="1" />
                                 <div v-if="form.errors.min_stay" class="text-sm text-red-500">{{ form.errors.min_stay }}</div>
                             </div>
+                        </div>
 
+                        <div class="grid grid-cols-3 gap-4 pt-2">
                             <div class="flex items-center space-x-2">
                                 <Checkbox id="is_default" v-model:checked="form.is_default" />
                                 <Label for="is_default" class="cursor-pointer">Default Season</Label>
@@ -191,6 +205,11 @@ const breadcrumbs = [
                             <div class="flex items-center space-x-2">
                                 <Checkbox id="is_fixed_range" v-model:checked="form.is_fixed_range" />
                                 <Label for="is_fixed_range" class="cursor-pointer">Fixed Range</Label>
+                            </div>
+
+                            <div class="flex items-center space-x-2">
+                                <Checkbox id="is_recurring" v-model:checked="form.is_recurring" />
+                                <Label for="is_recurring" class="cursor-pointer">Recurring (Annual)</Label>
                             </div>
                         </div>
 
@@ -233,6 +252,7 @@ const breadcrumbs = [
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Name</TableHead>
+                                <TableHead>Priority</TableHead>
                                 <TableHead>Period</TableHead>
                                 <TableHead>Price</TableHead>
                                 <TableHead>Min Stay</TableHead>
@@ -244,7 +264,11 @@ const breadcrumbs = [
                         <TableBody>
                             <TableRow v-for="season in seasons" :key="season.id">
                                 <TableCell class="font-medium">{{ season.name }}</TableCell>
-                                <TableCell>{{ season.start_date }} - {{ season.end_date }}</TableCell>
+                                <TableCell>{{ season.priority || 0 }}</TableCell>
+                                <TableCell>
+                                    <span v-if="season.is_default">N/A</span>
+                                    <span v-else>{{ season.start_date }} - {{ season.end_date }}</span>
+                                </TableCell>
                                 <TableCell>{{ season.price }} Kč</TableCell>
                                 <TableCell>{{ season.min_stay || 1 }} nights</TableCell>
                                 <TableCell>
@@ -252,9 +276,10 @@ const breadcrumbs = [
                                     <span v-else>{{ season.check_in_days.map(d => weekDays[d].label.substring(0, 2)).join(', ') }}</span>
                                 </TableCell>
                                 <TableCell>
-                                    <div class="flex gap-1">
+                                    <div class="flex gap-1 flex-wrap">
                                         <Badge v-if="season.is_default" variant="default">Default</Badge>
                                         <Badge v-if="season.is_fixed_range" variant="secondary">Fixed</Badge>
+                                        <Badge v-if="season.is_recurring" variant="outline">Recurring</Badge>
                                     </div>
                                 </TableCell>
                                 <TableCell class="text-right">
@@ -269,7 +294,7 @@ const breadcrumbs = [
                                 </TableCell>
                             </TableRow>
                             <TableRow v-if="seasons.length === 0">
-                                <TableCell colspan="7" class="text-center py-8 text-gray-500">
+                                <TableCell colspan="8" class="text-center py-8 text-gray-500">
                                     No seasons created yet. Click "Add Season" to create one.
                                 </TableCell>
                             </TableRow>

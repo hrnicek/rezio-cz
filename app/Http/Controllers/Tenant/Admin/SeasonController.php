@@ -22,20 +22,22 @@ class SeasonController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
+            'is_default' => 'boolean',
+            'start_date' => 'exclude_if:is_default,true|required|date',
+            'end_date' => 'exclude_if:is_default,true|required|date|after:start_date',
             'price' => 'required|numeric|min:0',
             'min_stay' => 'nullable|integer|min:1',
             'check_in_days' => 'nullable|array',
-            'is_default' => 'nullable|boolean',
-            'is_fixed_range' => 'nullable|boolean',
+            'is_fixed_range' => 'boolean',
             'priority' => 'nullable|integer',
-            'is_recurring' => 'nullable|boolean',
+            'is_recurring' => 'boolean',
         ]);
 
+        if ($request->boolean('is_default')) {
+            $property->seasons()->where('is_default', true)->update(['is_default' => false]);
+        }
+
         $season = $property->seasons()->create($validated);
-
-
 
         return redirect()->route('admin.properties.seasons.index', $property);
     }
@@ -44,20 +46,22 @@ class SeasonController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
+            'is_default' => 'boolean',
+            'start_date' => 'exclude_if:is_default,true|required|date',
+            'end_date' => 'exclude_if:is_default,true|required|date|after:start_date',
             'price' => 'required|numeric|min:0',
             'min_stay' => 'nullable|integer|min:1',
             'check_in_days' => 'nullable|array',
-            'is_default' => 'nullable|boolean',
-            'is_fixed_range' => 'nullable|boolean',
+            'is_fixed_range' => 'boolean',
             'priority' => 'nullable|integer',
-            'is_recurring' => 'nullable|boolean',
+            'is_recurring' => 'boolean',
         ]);
 
+        if ($request->boolean('is_default') && !$season->is_default) {
+            $property->seasons()->where('is_default', true)->update(['is_default' => false]);
+        }
+
         $season->update($validated);
-
-
 
         return redirect()->route('admin.properties.seasons.index', $property);
     }

@@ -66,10 +66,13 @@ class SeasonalPricingService
         // Find a matching specific season for this date
         // Priority: Higher priority wins.
         // We sort seasons by priority descending, so the first match is the best one.
-
-        return $seasons->sortByDesc('priority')->first(function (Season $season) use ($date) {
+        
+        $matchingSeason = $seasons->sortByDesc('priority')->first(function (Season $season) use ($date) {
             return $season->matchesDate($date);
         });
+
+        // Fallback to default season if no specific season matches
+        return $matchingSeason ?: $seasons->firstWhere('is_default', true);
     }
 
     public function getPriceForDate(int $propertyId, $date): float
