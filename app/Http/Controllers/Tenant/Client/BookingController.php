@@ -15,7 +15,7 @@ class BookingController extends Controller
     {
         $property = Property::where('widget_token', $token)->firstOrFail();
 
-        return Inertia::render('Client/Booking/Index', [
+        return Inertia::render('Booking/Index', [
             'property' => $property,
             'bookingConfig' => [
                 'minLeadDays' => (int) config('booking.min_lead_days', 1),
