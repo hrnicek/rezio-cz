@@ -9,13 +9,18 @@ use App\Http\Requests\Booking\VerifyCustomerRequest;
 use App\Models\BlackoutDate;
 use App\Models\Booking;
 use App\Models\Customer;
+use App\Models\Property;
+use App\Services\SeasonalPricingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 
 class WidgetController extends Controller
 {
-    public function index(CalendarRequest $request): JsonResponse
+    public function index(Property $id, CalendarRequest $request): JsonResponse
     {
+        $property = $id;
+        $pricingService = new SeasonalPricingService();
+
         $month = (int) ($request->validated()['month'] ?? now()->month);
         $year = (int) ($request->validated()['year'] ?? now()->year);
 
@@ -23,12 +28,14 @@ class WidgetController extends Controller
         $periodEnd = Carbon::create($year, $month, 1)->endOfMonth();
 
         $bookings = Booking::query()
+            ->where('property_id', $property->id)
             ->where('status', '!=', 'cancelled')
             ->where('date_start', '<', $periodEnd->copy()->endOfDay())
             ->where('date_end', '>', $periodStart->copy()->startOfDay())
             ->get();
 
         $blackouts = BlackoutDate::query()
+            ->where('property_id', $property->id)
             ->where('start_date', '<=', $periodEnd->toDateString())
             ->where('end_date', '>=', $periodStart->toDateString())
             ->get();
@@ -54,11 +61,13 @@ class WidgetController extends Controller
 
             $meetsLead = $date->gte($earliest);
 
+            $price = $pricingService->getPriceForDate($property->id, $date);
+
             $days[] = [
                 'date' => $date->toDateString(),
                 'available' => $meetsLead && ! ($isBlackout || $isBooked),
                 'blackout' => $isBlackout,
-                'price' => 3000,
+                'price' => $price,
             ];
 
             $date = $date->addDay();
@@ -71,8 +80,9 @@ class WidgetController extends Controller
         ]);
     }
 
-    public function verify(VerifyAvailabilityRequest $request): JsonResponse
+    public function verify(Property $id, VerifyAvailabilityRequest $request): JsonResponse
     {
+        $property = $id;
         $data = $request->validated();
 
         $checkin = config('booking.checkin_time', '14:00');
@@ -93,6 +103,7 @@ class WidgetController extends Controller
         }
 
         $bookings = Booking::query()
+            ->where('property_id', $property->id)
             ->where('status', '!=', 'cancelled')
             ->where('date_start', '<', $end)
             ->where('date_end', '>', $start)
@@ -100,6 +111,7 @@ class WidgetController extends Controller
         $hasOverlap = $bookings->isNotEmpty();
 
         $blackouts = BlackoutDate::query()
+            ->where('property_id', $property->id)
             ->where('start_date', '<=', $end->toDateString())
             ->where('end_date', '>=', $start->toDateString())
             ->get();

@@ -54,4 +54,34 @@ class SeasonalPricingService
 
         return $total;
     }
+
+    public function getPriceForDate(int $propertyId, $date): float
+    {
+        $date = $date instanceof Carbon ? $date->copy()->startOfDay() : Carbon::parse($date)->startOfDay();
+
+        $property = Property::query()->findOrFail($propertyId);
+
+        $seasons = Season::query()
+            ->where('property_id', $propertyId)
+            ->get();
+
+        $defaultSeason = $seasons->firstWhere('is_default', true);
+        $basePrice = $defaultSeason ? (float) $defaultSeason->price : (float) ($property->base_price ?? $property->price_per_night ?? 0);
+
+        $price = $basePrice;
+
+        // Find a matching specific season for this date
+        // Priority: Higher priority wins.
+        // We sort seasons by priority descending, so the first match is the best one.
+
+        $matchingSeason = $seasons->sortByDesc('priority')->first(function (Season $season) use ($date) {
+            return $season->matchesDate($date);
+        });
+
+        if ($matchingSeason) {
+            $price = (float) $matchingSeason->price;
+        }
+
+        return $price;
+    }
 }

@@ -11,6 +11,5 @@ class PropertyData extends Data
         public string $name,
         public ?string $address,
         public ?string $description = null,
-        public ?string $widget_token = null,
     ) {}
 }

@@ -681,7 +681,7 @@ async function loadExtras() {
   extrasError.value = "";
 
   try {
-    const res = await axios.get(`/api/widgets/${props.value?.property?.id}/services`);
+    const res = await axios.get(`/api/widgets/${props.property.id}/services`);
     booking.setExtras(res.data.services || []);
   } catch (e) {
     extrasError.value = "Příplatkové služby se nepodařilo načíst.";
@@ -702,7 +702,7 @@ async function checkExtrasAvailability() {
       quantity: Number(extraSelection.value[ex.id] || 0),
     }));
 
-    const res = await axios.post("/api/services/availability", {
+    const res = await axios.post(`/api/widgets/${props.property.id}/services/availability`, {
       start_date: startDate.value,
       end_date: endDate.value,
       selections: selections,

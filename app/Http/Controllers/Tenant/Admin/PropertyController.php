@@ -43,7 +43,6 @@ class PropertyController extends Controller
         Property::create([
             ...$validated,
             'slug' => Str::slug($validated['name']) . '-' . Str::random(6),
-            'widget_token' => Str::random(32),
         ]);
 
         return redirect()->route('admin.properties.index');
