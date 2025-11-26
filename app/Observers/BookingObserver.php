@@ -20,10 +20,13 @@ class BookingObserver
             $booking->payments()->create([
                 'amount' => $booking->total_price,
                 'payment_method' => 'transfer',
-                'status' => \App\Models\PaymentStatus::Pending,
+                'status' => 'pending',
                 'paid_at' => null,
             ]);
         }
+
+        $booking->checkin_token = Str::random(12);
+        $booking->saveQuietly();
     }
 
     private function generateUniqueCode(): string

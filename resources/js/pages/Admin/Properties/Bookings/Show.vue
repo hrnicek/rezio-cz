@@ -59,7 +59,7 @@ const copyToClipboard = (text: string) => {
     <AppLayout>
         <Head title="Detail rezervace" />
 
-        <div class="space-y-6">
+        <div class="space-y-6 p-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
                     <Link :href="route('admin.bookings.index')">
@@ -68,7 +68,7 @@ const copyToClipboard = (text: string) => {
                         </Button>
                     </Link>
                     <div>
-                        <h2 class="text-3xl font-bold tracking-tight">Rezervace {{ booking.code }}</h2>
+                        <h2 class="text-3xl font-bold tracking-tight">Rezervace: #{{ booking.code }}</h2>
                         <p class="text-muted-foreground">
                             Vytvořeno {{ formatDate(booking.created_at) }}
                         </p>
