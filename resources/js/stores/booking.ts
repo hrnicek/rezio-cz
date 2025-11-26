@@ -6,7 +6,7 @@ export const useBookingStore = defineStore('booking', {
       firstName: 'Jakub',
       lastName: 'Novák',
       email: 'jakub@novak.com',
-      phone: '+420123456789',
+      phone: '+420 731 786 686',
       note: 'test',
     },
     startDate: null as string | null,

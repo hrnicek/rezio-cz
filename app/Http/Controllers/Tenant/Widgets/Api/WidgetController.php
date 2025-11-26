@@ -35,7 +35,6 @@ class WidgetController extends Controller
             ->get();
 
         $blackouts = BlackoutDate::query()
-            ->where('property_id', $property->id)
             ->where('start_date', '<=', $periodEnd->toDateString())
             ->where('end_date', '>=', $periodStart->toDateString())
             ->get();
@@ -62,12 +61,17 @@ class WidgetController extends Controller
             $meetsLead = $date->gte($earliest);
 
             $price = $pricingService->getPriceForDate($property->id, $date);
+            $season = $pricingService->getSeasonForDate($property->id, $date);
 
             $days[] = [
                 'date' => $date->toDateString(),
                 'available' => $meetsLead && ! ($isBlackout || $isBooked),
                 'blackout' => $isBlackout,
                 'price' => $price,
+                'season' => $season ? [
+                    'id' => $season->id,
+                    'name' => $season->name,
+                ] : null,
             ];
 
             $date = $date->addDay();
@@ -111,7 +115,6 @@ class WidgetController extends Controller
         $hasOverlap = $bookings->isNotEmpty();
 
         $blackouts = BlackoutDate::query()
-            ->where('property_id', $property->id)
             ->where('start_date', '<=', $end->toDateString())
             ->where('end_date', '>=', $start->toDateString())
             ->get();

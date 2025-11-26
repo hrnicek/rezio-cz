@@ -8,6 +8,7 @@ use App\Http\Controllers\Tenant\Widgets\Api\WidgetController;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use App\Http\Controllers\Tenant\Widgets\WidgetBookingController;
 use App\Http\Controllers\Tenant\Widgets\Api\WidgetServiceController;
+use App\Http\Controllers\Tenant\Widgets\Api\WidgetReservationStoreController;
 
 Route::middleware([
     InitializeTenancyByDomain::class,
@@ -32,7 +33,7 @@ Route::middleware([
         Route::get('/', [WidgetController::class, 'index'])->name('api.widgets.index');
         Route::post('verify', [WidgetController::class, 'verify'])->name('api.widgets.verify');
         Route::post('verify-customer', [WidgetController::class, 'verifyCustomer'])->name('api.widgets.verify-customer');
-        Route::post('/reservations', [WidgetController::class, 'store'])->name('api.widgets.reservations');
+        Route::post('/reservations', WidgetReservationStoreController::class)->name('api.widgets.reservations');
 
         Route::prefix('services')->group(function () {
             Route::get('/', [WidgetServiceController::class, 'index'])->name('api.widgets.services.index');
