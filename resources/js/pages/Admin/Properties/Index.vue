@@ -49,7 +49,7 @@ const columns = [
                 <h2 class="text-2xl font-bold tracking-tight">Nemovitosti</h2>
                 <Button as-child>
                     <Link :href="route('admin.properties.create')">
-                        <Plus class="mr-2 h-4 w-4" /> Přidat nemovitost
+                        <Plus class="mr-2 h-4 w-4" /> Přidat ubytování
                     </Link>
                 </Button>
             </div>
