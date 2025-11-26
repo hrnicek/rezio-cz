@@ -2,17 +2,17 @@
 
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\ReportController;
-use App\Http\Controllers\Admin\SeasonController;
-use App\Http\Controllers\Admin\BookingController;
-use App\Http\Controllers\Admin\PropertyController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\CleaningTaskController;
-use App\Http\Controllers\Admin\EmailTemplateController;
-use App\Http\Controllers\Admin\SwitchPropertyController;
-use App\Http\Controllers\Admin\Settings\ProfileController;
-use App\Http\Controllers\Admin\Settings\PasswordController;
-use App\Http\Controllers\Admin\Settings\TwoFactorAuthenticationController;
+use App\Http\Controllers\Tenant\Admin\ReportController;
+use App\Http\Controllers\Tenant\Admin\SeasonController;
+use App\Http\Controllers\Tenant\Admin\BookingController;
+use App\Http\Controllers\Tenant\Admin\PropertyController;
+use App\Http\Controllers\Tenant\Admin\DashboardController;
+use App\Http\Controllers\Tenant\Admin\CleaningTaskController;
+use App\Http\Controllers\Tenant\Admin\EmailTemplateController;
+use App\Http\Controllers\Tenant\Admin\SwitchPropertyController;
+use App\Http\Controllers\Tenant\Admin\Settings\ProfileController;
+use App\Http\Controllers\Tenant\Admin\Settings\PasswordController;
+use App\Http\Controllers\Tenant\Admin\Settings\TwoFactorAuthenticationController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 Route::post('/switch-property', SwitchPropertyController::class)->name('switch-property');

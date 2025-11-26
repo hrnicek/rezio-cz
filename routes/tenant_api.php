@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Client\Api\ServiceController;
-use App\Http\Controllers\Client\Api\BookingController;
-use App\Http\Controllers\Client\Api\Service\ListServicesController;
+use App\Http\Controllers\Tenant\Client\Api\ServiceController;
+use App\Http\Controllers\Tenant\Client\Api\BookingController;
+use App\Http\Controllers\Tenant\Client\Api\Service\ListServicesController;
 
 // Tenant API routes - these run with tenant context and database access
 // All routes here are automatically prefixed with /api/

@@ -2,8 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
-use App\Http\Controllers\Client\BookingController;
+use App\Http\Controllers\Tenant\Client\BookingController;
 
 Route::name('client.')
     ->group(function () {
