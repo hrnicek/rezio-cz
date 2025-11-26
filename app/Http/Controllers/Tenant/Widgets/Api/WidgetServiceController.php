@@ -12,10 +12,10 @@ use App\Http\Requests\Service\CheckAvailabilityRequest;
 
 class WidgetServiceController extends Controller
 {
-    public function index(Property $property): JsonResponse
+    public function index(Property $id): JsonResponse
     {
         $services = Service::query()
-            ->where('property_id', $property->id)
+            ->where('property_id', $id->id)
             ->where('is_active', true)
             ->orderBy('name')
             ->get(['id', 'name', 'price_type', 'price', 'max_quantity']);
@@ -25,7 +25,7 @@ class WidgetServiceController extends Controller
         ]);
     }
 
-    public function availability(CheckAvailabilityRequest $request, Property $property): JsonResponse
+    public function availability(CheckAvailabilityRequest $request, Property $id): JsonResponse
     {
         $data = $request->validated();
 

@@ -199,6 +199,20 @@ const addonsTotalPrice = computed(() => {
 
 const grandTotalPrice = computed(() => selectedTotalPrice.value + addonsTotalPrice.value);
 
+const seasonsInRange = computed(() => {
+  if (!startDate.value || !endDate.value) return [];
+  return Array.from(new Set(rangeDates.value
+    .map((d) => calendar.getDayInfo(d)?.season?.name)
+    .filter((n) => !!n)));
+});
+
+const seasonLabel = computed(() => {
+  if (!startDate.value || !endDate.value) return '';
+  if (seasonsInRange.value.length === 0) return 'Výchozí';
+  if (seasonsInRange.value.length === 1) return seasonsInRange.value[0];
+  return 'Více sezón';
+});
+
 // --- NAVIGATION ACTIONS ---
 const nextStep = async () => {
   if (processing.value) return;
@@ -375,20 +389,24 @@ onMounted(async () => {
                   </div>
                 </div>
 
-                <div class="space-y-2">
-                  <div class="flex justify-between text-gray-600">
-                    <span>Nocí</span>
-                    <span class="font-medium text-gray-900">{{ selectedNights }}</span>
-                  </div>
-                  <div class="flex justify-between text-gray-600">
-                    <span>Cena ubytování</span>
-                    <span class="font-medium text-gray-900">{{ currency(selectedTotalPrice) }}</span>
-                  </div>
-                  <div v-if="addonsTotalPrice > 0" class="flex justify-between text-gray-600">
-                    <span>Služby</span>
-                    <span class="font-medium text-gray-900">{{ currency(addonsTotalPrice) }}</span>
-                  </div>
+              <div class="space-y-2">
+                <div class="flex justify-between text-gray-600">
+                  <span>Nocí</span>
+                  <span class="font-medium text-gray-900">{{ selectedNights }}</span>
                 </div>
+                <div class="flex justify-between text-gray-600">
+                  <span>Cena ubytování</span>
+                  <span class="font-medium text-gray-900">{{ currency(selectedTotalPrice) }}</span>
+                </div>
+                <div class="flex justify-between text-gray-600">
+                  <span>Sezóna</span>
+                  <span class="font-medium text-gray-900">{{ seasonLabel }}</span>
+                </div>
+                <div v-if="addonsTotalPrice > 0" class="flex justify-between text-gray-600">
+                  <span>Služby</span>
+                  <span class="font-medium text-gray-900">{{ currency(addonsTotalPrice) }}</span>
+                </div>
+              </div>
 
                 <div class="border-t border-gray-200 pt-4 mt-4">
                   <div class="flex items-end justify-between">
@@ -524,6 +542,11 @@ onMounted(async () => {
                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Host</h4>
                    <p class="text-gray-900 font-medium">{{ customer.firstName }} {{ customer.lastName }}</p>
                    <p class="text-sm text-gray-500">{{ customer.email }}</p>
+                </div>
+                <div class="sm:col-span-2">
+                   <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Sezóna</h4>
+                   <p class="text-gray-900 font-medium">{{ seasonsInRange.length > 1 ? 'Více sezón' : (seasonLabel || '-') }}</p>
+                   <p v-if="seasonsInRange.length > 1" class="text-sm text-gray-500">{{ seasonsInRange.join(', ') }}</p>
                 </div>
              </div>
 
