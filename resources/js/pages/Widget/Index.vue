@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import {
   ChevronLeft, ChevronRight, CheckCircle,
   Calendar, User, StickyNote, PawPrint, Loader2
@@ -147,13 +148,13 @@ const getCellStyles = (dateStr) => {
   const e = endDate.value ? calendar.parseISO(endDate.value) : null;
   const h = hoverDate.value ? calendar.parseISO(hoverDate.value) : null;
 
-  if (s && d.getTime() === s.getTime()) return 'bg-emerald-600 text-white font-medium';
-  if (e && d.getTime() === e.getTime()) return 'bg-emerald-600 text-white font-medium';
-  if (s && e && d > s && d < e) return 'bg-emerald-50 text-emerald-900 border-emerald-100';
+  if (s && d.getTime() === s.getTime()) return 'bg-primary text-white font-medium';
+  if (e && d.getTime() === e.getTime()) return 'bg-primary text-white font-medium';
+  if (s && e && d > s && d < e) return 'bg-primary/10 text-primary border-primary/20';
   if (s && !e && h) {
     const min = Math.min(s, h);
     const max = Math.max(s, h);
-    if (d >= min && d <= max) return 'bg-emerald-50/50 text-emerald-700 dashed-border';
+    if (d >= min && d <= max) return 'bg-primary/5 text-primary dashed-border';
   }
 
   return 'bg-white hover:bg-slate-50 text-slate-700 border-slate-100';
@@ -350,13 +351,13 @@ onMounted(async () => {
                 >
                   <span class="flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition-colors"
                     :class="[
-                      step.id < currentStep ? 'bg-green-600 text-white' : 
-                      step.id === currentStep ? 'bg-green-100 text-green-700 ring-2 ring-green-600' : 'bg-gray-100 text-gray-500'
+                      step.id < currentStep ? 'bg-primary text-white' : 
+                      step.id === currentStep ? 'bg-primary/10 text-primary ring-2 ring-primary' : 'bg-gray-100 text-gray-500'
                     ]">
                     <span v-if="step.id < currentStep">✓</span>
                     <span v-else>{{ step.id }}</span>
                   </span>
-                  <span class="text-sm font-medium" :class="step.id === currentStep ? 'text-green-700' : 'text-gray-600'">
+                  <span class="text-sm font-medium" :class="step.id === currentStep ? 'text-primary' : 'text-gray-600'">
                     {{ step.label }}
                   </span>
                </button>
@@ -370,55 +371,57 @@ onMounted(async () => {
         
         <aside class="lg:col-span-4 xl:col-span-3 order-2 lg:order-1">
           <div class="sticky top-8">
-            <div class="rounded-lg border border-gray-200 bg-white p-6">
-              <h3 class="mb-6 flex items-center gap-2 text-lg font-medium text-gray-900">
-                <StickyNote class="h-5 w-5 text-gray-400" />
-                Rezervace
-              </h3>
-              
-              <div class="space-y-4 text-sm">
+            <Card>
+              <CardHeader>
+                <CardTitle class="flex items-center gap-2">
+                  <StickyNote class="h-5 w-5 text-primary" />
+                  Rezervace
+                </CardTitle>
+                <CardDescription>Souhrn vašeho pobytu</CardDescription>
+              </CardHeader>
+              <CardContent class="space-y-4 text-sm">
                 <div class="pb-4 border-b border-gray-100">
                   <div class="flex justify-between text-gray-500 mb-1">
-                    <span>Termín</span>
+                    <span>Termín pobytu</span>
                   </div>
                   <div class="font-medium text-lg text-gray-900">
                      <div v-if="startDate">{{ calendar.formatDate(startDate) }}</div>
-                     <div v-if="endDate" class="text-gray-400 text-xs">až</div>
+                     <div v-if="endDate" class="text-gray-400 text-xs">—</div>
                      <div v-if="endDate">{{ calendar.formatDate(endDate) }}</div>
-                     <div v-if="!startDate" class="text-gray-400 italic text-sm">Vyberte termín</div>
+                     <div v-if="!startDate" class="text-gray-400 italic text-sm">Vyberte termín pobytu</div>
                   </div>
                 </div>
 
-              <div class="space-y-2">
-                <div class="flex justify-between text-gray-600">
-                  <span>Nocí</span>
-                  <span class="font-medium text-gray-900">{{ selectedNights }}</span>
+                <div class="space-y-2">
+                  <div class="flex justify-between text-gray-600">
+                    <span>Počet nocí</span>
+                    <span class="font-medium text-gray-900">{{ selectedNights }}</span>
+                  </div>
+                  <div class="flex justify-between text-gray-600">
+                    <span>Cena ubytování</span>
+                    <span class="font-medium text-gray-900">{{ currency(selectedTotalPrice) }}</span>
+                  </div>
+                  <div class="flex justify-between text-gray-600">
+                    <span>Sezóna</span>
+                    <span class="font-medium text-gray-900">{{ seasonLabel }}</span>
+                  </div>
+                  <div v-if="addonsTotalPrice > 0" class="flex justify-between text-gray-600">
+                    <span>Služby</span>
+                    <span class="font-medium text-gray-900">{{ currency(addonsTotalPrice) }}</span>
+                  </div>
                 </div>
-                <div class="flex justify-between text-gray-600">
-                  <span>Cena ubytování</span>
-                  <span class="font-medium text-gray-900">{{ currency(selectedTotalPrice) }}</span>
-                </div>
-                <div class="flex justify-between text-gray-600">
-                  <span>Sezóna</span>
-                  <span class="font-medium text-gray-900">{{ seasonLabel }}</span>
-                </div>
-                <div v-if="addonsTotalPrice > 0" class="flex justify-between text-gray-600">
-                  <span>Služby</span>
-                  <span class="font-medium text-gray-900">{{ currency(addonsTotalPrice) }}</span>
-                </div>
-              </div>
 
                 <div class="border-t border-gray-200 pt-4 mt-4">
                   <div class="flex items-end justify-between">
                     <span class="font-medium text-gray-900">Celkem</span>
-                    <span class="text-xl font-bold text-green-700">{{ currency(grandTotalPrice) }}</span>
+                    <span class="text-xl font-bold text-primary">{{ currency(grandTotalPrice) }}</span>
                   </div>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
             
             <div class="mt-6 text-xs text-gray-400 px-2">
-               <div class="flex items-center gap-2 mb-2"><span class="h-2 w-2 rounded-full bg-green-600"></span> Vybráno</div>
+               <div class="flex items-center gap-2 mb-2"><span class="h-2 w-2 rounded-full bg-primary"></span> Vybráno</div>
                <div class="flex items-center gap-2 mb-2"><span class="h-2 w-2 rounded-full bg-red-300"></span> Obsazeno</div>
                <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-gray-200"></span> Nedostupné</div>
             </div>
@@ -429,22 +432,22 @@ onMounted(async () => {
           
           <div class="mb-6 lg:hidden">
             <div class="h-1 w-full bg-gray-100">
-              <div class="h-full bg-green-600 transition-all" :style="{ width: (currentStep/4)*100 + '%' }"></div>
+              <div class="h-full bg-primary transition-all" :style="{ width: (currentStep/4)*100 + '%' }"></div>
             </div>
           </div>
 
           <div v-if="currentStep === 1" class="space-y-6">
             <div class="flex items-center justify-between">
-              <h1 class="text-2xl font-medium text-gray-900">Vyberte termín</h1>
+              <h1 class="text-2xl font-medium text-gray-900">Vyberte termín pobytu</h1>
               <div class="flex items-center gap-1 bg-white border border-gray-200 rounded-md">
-                 <Button variant="ghost" size="icon" @click="calendar.changeMonth(-1)" class="h-9 w-9 text-gray-500 hover:text-green-700">
-                    <ChevronLeft class="h-4 w-4" />
+                 <Button variant="ghost" size="icon" @click="calendar.changeMonth(-1)" class="h-9 w-9 text-gray-500 hover:text-primary">
+                   <ChevronLeft class="h-4 w-4" />
                  </Button>
                  <span class="w-32 text-center text-sm font-semibold text-gray-700">
                     {{ calendar.monthLabel.value }} {{ calendar.year.value }}
                  </span>
-                 <Button variant="ghost" size="icon" @click="calendar.changeMonth(1)" class="h-9 w-9 text-gray-500 hover:text-green-700">
-                    <ChevronRight class="h-4 w-4" />
+                 <Button variant="ghost" size="icon" @click="calendar.changeMonth(1)" class="h-9 w-9 text-gray-500 hover:text-primary">
+                   <ChevronRight class="h-4 w-4" />
                  </Button>
               </div>
             </div>
@@ -458,7 +461,7 @@ onMounted(async () => {
                
                <div class="grid grid-cols-7 bg-white relative">
                   <div v-if="calendar.loading.value" class="absolute inset-0 bg-white/80 z-10 flex items-center justify-center">
-                     <Loader2 class="h-6 w-6 animate-spin text-green-600" />
+                     <Loader2 class="h-6 w-6 animate-spin text-primary" />
                   </div>
 
                   <button
@@ -467,7 +470,7 @@ onMounted(async () => {
                       @click="handleDateClick(cell.date)"
                       @mouseenter="hoverDate = cell.date"
                       @mouseleave="hoverDate = null"
-                      class="h-20 sm:h-24 border-r border-b border-gray-100 p-2 flex flex-col justify-between transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500"
+                      class="h-20 sm:h-24 border-r border-b border-gray-100 p-2 flex flex-col justify-between transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
                       :class="[
                         getCellStyles(cell.date), 
                         (idx + 1) % 7 === 0 ? 'border-r-0' : '' 
@@ -483,7 +486,7 @@ onMounted(async () => {
           </div>
 
           <div v-if="currentStep === 2" class="space-y-8">
-             <h1 class="text-2xl font-medium text-gray-900">Kontaktní údaje</h1>
+             <h1 class="text-2xl font-medium text-gray-900">Kontaktní údaje hosta</h1>
              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div v-for="field in ['firstName', 'lastName', 'email', 'phone']" :key="field" class="space-y-1">
                    <Label class="text-sm text-gray-600 capitalize">
@@ -504,18 +507,18 @@ onMounted(async () => {
           </div>
 
           <div v-if="currentStep === 3" class="space-y-8">
-             <h1 class="text-2xl font-medium text-gray-900">Doplňkové služby</h1>
+             <h1 class="text-2xl font-medium text-gray-900">Doplňkové služby k pobytu</h1>
              <div class="grid gap-4 sm:grid-cols-2">
                 <div 
                   v-for="ex in validExtras" 
                   :key="ex.id"
                   class="flex flex-col justify-between rounded-lg border p-5 transition-colors"
-                  :class="extraSelection[ex.id] > 0 ? 'border-green-500 bg-green-50/50' : 'border-gray-200 bg-white hover:border-green-300'"
+                  :class="extraSelection[ex.id] > 0 ? 'border-primary bg-primary/5' : 'border-gray-200 bg-white hover:border-primary'"
                 >
                    <div>
                       <div class="flex justify-between items-start mb-2">
                          <h4 class="font-medium text-gray-900">{{ ex.name }}</h4>
-                         <span class="font-bold text-green-700">{{ currency(ex.price) }}</span>
+                         <span class="font-bold text-primary">{{ currency(ex.price) }}</span>
                       </div>
                       <p class="text-sm text-gray-500 mb-4">{{ ex.description }}</p>
                    </div>
@@ -531,8 +534,9 @@ onMounted(async () => {
           </div>
 
           <div v-if="currentStep === 4" class="space-y-8">
-             <h1 class="text-2xl font-medium text-gray-900">Kontrola údajů</h1>
-             <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 grid sm:grid-cols-2 gap-6">
+             <h1 class="text-2xl font-medium text-gray-900">Kontrola a souhrn</h1>
+             <Card>
+               <CardContent class="grid sm:grid-cols-2 gap-6 p-6">
                 <div>
                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Termín</h4>
                    <p class="text-gray-900 font-medium">{{ calendar.formatDate(startDate) }} — {{ calendar.formatDate(endDate) }}</p>
@@ -548,28 +552,29 @@ onMounted(async () => {
                    <p class="text-gray-900 font-medium">{{ seasonsInRange.length > 1 ? 'Více sezón' : (seasonLabel || '-') }}</p>
                    <p v-if="seasonsInRange.length > 1" class="text-sm text-gray-500">{{ seasonsInRange.join(', ') }}</p>
                 </div>
-             </div>
+               </CardContent>
+             </Card>
 
-             <div class="space-y-4">
-                <div class="flex items-center gap-3">
-                   <Checkbox id="gdpr" v-model="agreeGdpr" class="text-green-600 focus:ring-green-500" />
+                <div class="space-y-4">
+                  <div class="flex items-center gap-3">
+                   <Checkbox id="gdpr" v-model="agreeGdpr" class="text-primary focus:ring-primary" />
                    <Label for="gdpr" class="text-gray-700 cursor-pointer">Souhlasím se zpracováním osobních údajů</Label>
-                </div>
-                <div class="flex items-center gap-3">
-                   <Checkbox id="terms" v-model="agreeTerms" class="text-green-600 focus:ring-green-500" />
+                  </div>
+                  <div class="flex items-center gap-3">
+                   <Checkbox id="terms" v-model="agreeTerms" class="text-primary focus:ring-primary" />
                    <Label for="terms" class="text-gray-700 cursor-pointer">Souhlasím s obchodními podmínkami</Label>
+                  </div>
                 </div>
-             </div>
           </div>
 
           <div v-if="currentStep === 5" class="py-16 text-center">
              <div class="inline-flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-green-600 mb-6">
                 <CheckCircle class="h-10 w-10" />
              </div>
-             <h2 class="text-3xl font-medium text-gray-900 mb-4">Rezervace odeslána</h2>
+             <h2 class="text-3xl font-medium text-gray-900 mb-4">Rezervace úspěšně odeslána</h2>
              <p class="text-gray-500 mb-8 max-w-md mx-auto">Potvrzení jsme odeslali na <strong>{{ customer.email }}</strong>.</p>
-             <Button as-child class="bg-green-600 hover:bg-green-700 text-white">
-                <Link :href="route('welcome')">Zpět na úvod</Link>
+             <Button as-child class="bg-primary hover:bg-primary/90 text-white">
+               <Link :href="route('welcome')">Zpět na úvod</Link>
              </Button>
           </div>
 
@@ -587,7 +592,7 @@ onMounted(async () => {
              <Button 
                @click="nextStep" 
                :disabled="processing"
-               class="bg-green-600 hover:bg-green-700 text-white min-w-[150px]"
+               class="bg-primary hover:bg-primary/90 text-white min-w-[150px]"
              >
                <Loader2 v-if="processing" class="mr-2 h-4 w-4 animate-spin" />
                <span v-else>{{ currentStep === 4 ? 'Dokončit rezervaci' : 'Pokračovat' }}</span>
@@ -603,12 +608,12 @@ onMounted(async () => {
        <div class="flex items-center justify-between gap-4 max-w-md mx-auto">
           <div>
              <div class="text-xs text-gray-500 uppercase">Celkem</div>
-             <div class="text-lg font-bold text-green-700">{{ currency(grandTotalPrice) }}</div>
+             <div class="text-lg font-bold text-primary">{{ currency(grandTotalPrice) }}</div>
           </div>
           <Button 
              @click="nextStep" 
              :disabled="processing"
-             class="bg-green-600 hover:bg-green-700 text-white px-8"
+             class="bg-primary hover:bg-primary/90 text-white px-8"
           >
              <Loader2 v-if="processing" class="h-4 w-4 animate-spin" />
              <span v-else>{{ currentStep === 4 ? 'Odeslat' : 'Dále' }}</span>
