@@ -42,8 +42,8 @@ watch(theme, (value) => {
     <SettingsLayout>
         <div class="space-y-6">
             <div>
-                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">Appearance</h3>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Customize the look and feel of the application.</p>
+                <h3 class="text-lg font-medium leading-6 text-foreground">Appearance</h3>
+                <p class="mt-1 text-sm text-muted-foreground">Customize the look and feel of the application.</p>
             </div>
 
             <div class="space-y-4">
@@ -54,7 +54,7 @@ watch(theme, (value) => {
                             for="light"
                             class="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                         >
-                            <div class="mb-3 h-20 w-full rounded-md bg-[#ecedef] shadow-sm" />
+                            <div class="mb-3 h-20 w-full rounded-md bg-[#ecedef]" />
                             <span class="block w-full text-center font-normal">Light</span>
                         </Label>
                     </div>
@@ -64,7 +64,7 @@ watch(theme, (value) => {
                             for="dark"
                             class="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                         >
-                            <div class="mb-3 h-20 w-full rounded-md bg-[#18181b] shadow-sm" />
+                            <div class="mb-3 h-20 w-full rounded-md bg-[#18181b]" />
                             <span class="block w-full text-center font-normal">Dark</span>
                         </Label>
                     </div>
@@ -74,7 +74,7 @@ watch(theme, (value) => {
                             for="system"
                             class="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                         >
-                            <div class="mb-3 h-20 w-full rounded-md bg-[#ecedef] dark:bg-[#18181b] shadow-sm" />
+                            <div class="mb-3 h-20 w-full rounded-md bg-[#ecedef] dark:bg-[#18181b]" />
                             <span class="block w-full text-center font-normal">System</span>
                         </Label>
                     </div>

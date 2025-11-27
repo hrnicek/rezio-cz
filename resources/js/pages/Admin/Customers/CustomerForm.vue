@@ -76,12 +76,12 @@ const submit = () => {
       <div class="space-y-2">
         <Label for="first_name">Jméno</Label>
         <Input id="first_name" v-model="form.first_name" />
-        <p v-if="form.errors.first_name" class="text-sm text-red-500">{{ form.errors.first_name }}</p>
+        <p v-if="form.errors.first_name" class="text-sm text-destructive">{{ form.errors.first_name }}</p>
       </div>
       <div class="space-y-2">
         <Label for="last_name">Příjmení</Label>
         <Input id="last_name" v-model="form.last_name" />
-        <p v-if="form.errors.last_name" class="text-sm text-red-500">{{ form.errors.last_name }}</p>
+        <p v-if="form.errors.last_name" class="text-sm text-destructive">{{ form.errors.last_name }}</p>
       </div>
     </div>
     <div class="grid grid-cols-2 gap-4">
@@ -98,7 +98,7 @@ const submit = () => {
             <SelectItem value="blacklisted">Blacklist</SelectItem>
           </SelectContent>
         </Select>
-        <p v-if="form.errors.status" class="text-sm text-red-500">{{ form.errors.status }}</p>
+        <p v-if="form.errors.status" class="text-sm text-destructive">{{ form.errors.status }}</p>
       </div>
     </div>
 
@@ -106,12 +106,12 @@ const submit = () => {
       <div class="space-y-2">
         <Label for="email">Email</Label>
         <Input id="email" type="email" v-model="form.email" />
-        <p v-if="form.errors.email" class="text-sm text-red-500">{{ form.errors.email }}</p>
+        <p v-if="form.errors.email" class="text-sm text-destructive">{{ form.errors.email }}</p>
       </div>
       <div class="space-y-2">
         <Label for="phone">Telefon</Label>
         <Input id="phone" v-model="form.phone" />
-        <p v-if="form.errors.phone" class="text-sm text-red-500">{{ form.errors.phone }}</p>
+        <p v-if="form.errors.phone" class="text-sm text-destructive">{{ form.errors.phone }}</p>
       </div>
     </div>
 

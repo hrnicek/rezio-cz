@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Mail, Edit, CheckCircle, XCircle } from 'lucide-vue-next';
+import { ArrowLeft, Mail, Edit } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 declare const route: any;
@@ -130,10 +130,10 @@ const getTemplateStatus = (type: string) => {
     { title: property.name, href: route('admin.properties.edit', property.id) },
     { title: 'Emailové šablony', href: route('admin.properties.email-templates.index', property.id) },
   ]">
-    <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+    <div class="flex h-full flex-1 flex-col gap-4 p-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
-          <Button variant="outline" size="icon" as-child>
+          <Button variant="outline" size="icon" as-child class="h-9 w-9">
             <Link :href="route('admin.properties.edit', property.id)">
               <ArrowLeft class="h-4 w-4" />
             </Link>
@@ -167,7 +167,7 @@ const getTemplateStatus = (type: string) => {
             <!-- Preview or additional info could go here -->
           </CardContent>
           <CardFooter>
-            <Button class="w-full" variant="outline" @click="openEditDialog(type.type)">
+            <Button class="w-full h-9" variant="outline" @click="openEditDialog(type.type)">
               <Edit class="mr-2 h-4 w-4" />
               Upravit šablonu
             </Button>
@@ -192,7 +192,7 @@ const getTemplateStatus = (type: string) => {
             
             <div class="grid gap-2">
               <Label htmlFor="subject">Předmět</Label>
-              <Input id="subject" v-model="form.subject" />
+              <Input id="subject" v-model="form.subject" class="h-9" />
             </div>
             
             <div class="grid gap-2">
@@ -205,8 +205,8 @@ const getTemplateStatus = (type: string) => {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" @click="isDialogOpen = false">Zrušit</Button>
-            <Button @click="saveTemplate" :disabled="form.processing">Uložit změny</Button>
+            <Button variant="outline" @click="isDialogOpen = false" class="h-9">Zrušit</Button>
+            <Button @click="saveTemplate" :disabled="form.processing" class="h-9">Uložit změny</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

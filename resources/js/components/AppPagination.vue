@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-vue-next';
 
 interface LinkItem {
     url: string | null;
@@ -39,7 +38,7 @@ defineProps<{
                     v-else
                     :variant="link.active ? 'default' : 'outline'"
                     size="sm"
-                    class="h-8 w-8 p-0"
+                    class="h-8 min-w-8 px-3"
                     :disabled="link.active"
                     as-child
                 >

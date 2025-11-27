@@ -22,6 +22,7 @@ export interface User {
     id: number;
     name: string;
     email: string;
+    avatar?: string;
     email_verified_at?: string;
     two_factor_enabled?: boolean;
     current_property_id?: number;

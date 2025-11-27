@@ -45,6 +45,10 @@ const statusFilter = ref(props.filters.status || 'all');
 const searchQuery = ref(props.filters.search || '');
 const { formatCurrency } = useCurrency();
 
+const breadcrumbs = [
+    { title: 'Rezervace', href: route('admin.bookings.index') },
+];
+
 const updateFilters = debounce(() => {
     router.get(route('admin.bookings.index'), { 
         status: statusFilter.value === 'all' ? null : statusFilter.value,
@@ -92,36 +96,34 @@ const columns = [
 <template>
     <Head title="Rezervace" />
 
-    <AppLayout>
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="flex h-full flex-1 flex-col gap-4 p-4">
             <div class="flex items-center justify-between">
-                <h2 class="text-2xl font-bold tracking-tight">Rezervace</h2>
-                <Button variant="outline" @click="exportBookings">
+                <div class="flex items-center gap-4">
+                    <div class="w-64">
+                        <Input 
+                            v-model="searchQuery" 
+                            placeholder="Hledat hosty..." 
+                            class="w-full h-9"
+                        />
+                    </div>
+                    <div class="w-48">
+                        <Select v-model="statusFilter">
+                            <SelectTrigger class="h-9">
+                                <SelectValue placeholder="Filtrovat dle stavu" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Všechny stavy</SelectItem>
+                                <SelectItem v-for="(label, value) in BookingStatusLabels" :key="value" :value="value">
+                                    {{ label }}
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                <Button variant="outline" size="sm" class="h-9" @click="exportBookings">
                     Exportovat CSV
                 </Button>
-            </div>
-
-            <div class="flex items-center gap-4 mb-4">
-                <div class="w-48">
-                    <Select v-model="statusFilter">
-                        <SelectTrigger>
-                            <SelectValue placeholder="Filtrovat dle stavu" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Všechny stavy</SelectItem>
-                            <SelectItem v-for="(label, value) in BookingStatusLabels" :key="value" :value="value">
-                                {{ label }}
-                            </SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div class="w-64">
-                    <Input 
-                        v-model="searchQuery" 
-                        placeholder="Hledat hosty..." 
-                        class="w-full"
-                    />
-                </div>
             </div>
 
             <AppDataTable 
@@ -159,7 +161,7 @@ const columns = [
                 
                 <template #actions="{ item }">
                     <div class="flex justify-end gap-2">
-                        <Button variant="outline" size="icon" as-child>
+                        <Button variant="outline" size="icon-sm" as-child>
                             <Link :href="route('admin.bookings.show', item.id)">
                                 <Eye class="h-4 w-4" />
                             </Link>
@@ -167,7 +169,7 @@ const columns = [
                         <Button 
                             v-if="item.status === 'pending'" 
                             variant="default"
-                            size="icon" 
+                            size="icon-sm" 
                             @click="updateStatus(item.id, 'confirmed')"
                             title="Potvrdit"
                         >
@@ -176,7 +178,7 @@ const columns = [
                         <Button 
                             v-if="item.status !== 'cancelled'" 
                             variant="destructive" 
-                            size="icon" 
+                            size="icon-sm" 
                             @click="updateStatus(item.id, 'cancelled')"
                             title="Zrušit"
                         >

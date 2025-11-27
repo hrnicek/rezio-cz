@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/table';
 import AppPagination from '@/components/AppPagination.vue';
 import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-vue-next';
-import { Button } from '@/components/ui/button';
 
 interface Column {
     key: string;
@@ -73,7 +72,7 @@ const handleSort = (column: Column) => {
 
 <template>
     <div class="space-y-4">
-        <div class="rounded-md border">
+        <div class="rounded-md border border-border bg-card overflow-hidden">
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -103,23 +102,25 @@ const handleSort = (column: Column) => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow v-for="(item, index) in items" :key="item.id || index">
-                        <TableCell 
-                            v-for="col in columns" 
-                            :key="col.key"
-                            :class="[
-                                col.class,
-                                col.align === 'right' ? 'text-right' : (col.align === 'center' ? 'text-center' : 'text-left')
-                            ]"
-                        >
-                            <slot :name="col.key" :item="item" :value="item[col.key]">
-                                {{ item[col.key] }}
-                            </slot>
-                        </TableCell>
-                    </TableRow>
-                    <TableRow v-if="items.length === 0">
+                    <template v-if="items.length > 0">
+                        <TableRow v-for="(item, index) in items" :key="index">
+                            <TableCell 
+                                v-for="col in columns" 
+                                :key="col.key"
+                                :class="[
+                                    col.class,
+                                    col.align === 'right' ? 'text-right' : (col.align === 'center' ? 'text-center' : 'text-left')
+                                ]"
+                            >
+                                <slot :name="col.key" :item="item" :value="item[col.key]">
+                                    {{ item[col.key] }}
+                                </slot>
+                            </TableCell>
+                        </TableRow>
+                    </template>
+                    <TableRow v-else>
                         <TableCell :colspan="columns.length" class="h-24 text-center">
-                            {{ noResultsMessage || 'Žádné záznamy nenalezeny.' }}
+                            {{ noResultsMessage || 'No results.' }}
                         </TableCell>
                     </TableRow>
                 </TableBody>

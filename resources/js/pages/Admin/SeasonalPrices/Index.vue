@@ -21,9 +21,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { ChevronLeft, Pencil, Trash } from 'lucide-vue-next';
+
+declare const route: any;
 
 const props = defineProps<{
     property: {
@@ -112,17 +113,17 @@ const breadcrumbs = [
     <Head title="Seasonal Prices" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+        <div class="flex h-full flex-1 flex-col gap-4 p-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <Button variant="outline" size="icon" as-child>
+                    <Button variant="outline" size="icon" as-child class="h-9 w-9">
                         <Link :href="route('admin.properties.edit', property.id)">
                             <ChevronLeft class="h-4 w-4" />
                         </Link>
                     </Button>
                     <h2 class="text-2xl font-bold tracking-tight">Seasonal Prices</h2>
                 </div>
-                <Button @click="openCreateDialog">Add Price</Button>
+                <Button @click="openCreateDialog" class="h-9">Add Price</Button>
             </div>
 
             <Card>
@@ -151,10 +152,10 @@ const breadcrumbs = [
                                 <TableCell>{{ price.price_per_night }}</TableCell>
                                 <TableCell class="text-right">
                                     <div class="flex justify-end gap-2">
-                                        <Button variant="ghost" size="icon" @click="openEditDialog(price)">
+                                        <Button variant="ghost" size="icon" @click="openEditDialog(price)" class="h-8 w-8">
                                             <Pencil class="h-4 w-4" />
                                         </Button>
-                                        <Button variant="ghost" size="icon" @click="deletePrice(price)">
+                                        <Button variant="ghost" size="icon" @click="deletePrice(price)" class="h-8 w-8">
                                             <Trash class="h-4 w-4 text-red-500" />
                                         </Button>
                                     </div>
@@ -181,28 +182,28 @@ const breadcrumbs = [
                     <form @submit.prevent="submit" class="space-y-4">
                         <div class="space-y-2">
                             <Label for="name">Name</Label>
-                            <Input id="name" v-model="form.name" placeholder="e.g. Summer 2025" required />
+                            <Input id="name" v-model="form.name" placeholder="e.g. Summer 2025" required class="h-9" />
                             <div v-if="form.errors.name" class="text-sm text-red-500">{{ form.errors.name }}</div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="space-y-2">
                                 <Label for="start_date">Start Date</Label>
-                                <Input id="start_date" type="date" v-model="form.start_date" required />
+                                <Input id="start_date" type="date" v-model="form.start_date" required class="h-9" />
                                 <div v-if="form.errors.start_date" class="text-sm text-red-500">{{ form.errors.start_date }}</div>
                             </div>
                             <div class="space-y-2">
                                 <Label for="end_date">End Date</Label>
-                                <Input id="end_date" type="date" v-model="form.end_date" required />
+                                <Input id="end_date" type="date" v-model="form.end_date" required class="h-9" />
                                 <div v-if="form.errors.end_date" class="text-sm text-red-500">{{ form.errors.end_date }}</div>
                             </div>
                         </div>
                         <div class="space-y-2">
                             <Label for="price">Price per Night</Label>
-                            <Input id="price" type="number" step="0.01" v-model="form.price_per_night" required />
+                            <Input id="price" type="number" step="0.01" v-model="form.price_per_night" required class="h-9" />
                             <div v-if="form.errors.price_per_night" class="text-sm text-red-500">{{ form.errors.price_per_night }}</div>
                         </div>
                         <DialogFooter>
-                            <Button type="submit" :disabled="form.processing">
+                            <Button type="submit" :disabled="form.processing" class="h-9">
                                 {{ editingPrice ? 'Update' : 'Create' }}
                             </Button>
                         </DialogFooter>

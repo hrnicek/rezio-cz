@@ -44,9 +44,9 @@ const columns = [
     <Head title="Nemovitosti" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+        <div class="flex h-full flex-1 flex-col gap-4 p-4">
             <div class="flex items-center justify-between">
-                <h2 class="text-2xl font-bold tracking-tight">Nemovitosti</h2>
+                <h2 class="text-xl font-semibold text-foreground">Nemovitosti</h2>
                 <Button as-child>
                     <Link :href="route('admin.properties.create')">
                         <Plus class="mr-2 h-4 w-4" /> Přidat ubytování
@@ -65,12 +65,12 @@ const columns = [
                 
                 <template #actions="{ item }">
                     <div class="flex justify-end gap-2">
-                        <Button variant="outline" size="icon" as-child>
+                        <Button variant="outline" size="icon-sm" as-child>
                             <Link :href="route('admin.properties.edit', item.id)">
                                 <Pencil class="h-4 w-4" />
                             </Link>
                         </Button>
-                        <Button variant="destructive" size="icon" @click="deleteProperty(item.id)">
+                        <Button variant="ghost" size="icon-sm" @click="deleteProperty(item.id)" class="text-destructive hover:text-destructive hover:bg-destructive/10">
                             <Trash2 class="h-4 w-4" />
                         </Button>
                     </div>

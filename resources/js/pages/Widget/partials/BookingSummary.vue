@@ -30,50 +30,50 @@ defineProps<{
         <CardDescription>Souhrn vašeho pobytu</CardDescription>
       </CardHeader>
       <CardContent class="space-y-4 text-sm">
-        <div class="pb-4 border-b border-gray-100">
-          <div class="flex justify-between text-gray-500 mb-1">
+        <div class="pb-4 border-b border-border">
+          <div class="flex justify-between text-muted-foreground mb-1">
             <span>Termín pobytu</span>
           </div>
-          <div class="font-medium text-lg text-gray-900">
+          <div class="font-medium text-lg text-foreground">
              <div v-if="startDate">{{ calendar.formatDate(startDate) }}</div>
-             <div v-if="endDate" class="text-gray-400 text-xs">—</div>
+             <div v-if="endDate" class="text-muted-foreground text-xs">—</div>
              <div v-if="endDate">{{ calendar.formatDate(endDate) }}</div>
-             <div v-if="!startDate" class="text-gray-400 italic text-sm">Vyberte termín pobytu</div>
+             <div v-if="!startDate" class="text-muted-foreground italic text-sm">Vyberte termín pobytu</div>
           </div>
         </div>
 
         <div class="space-y-2">
-          <div class="flex justify-between text-gray-600">
+          <div class="flex justify-between text-muted-foreground">
             <span>Počet nocí</span>
-            <span class="font-medium text-gray-900">{{ selectedNights }}</span>
+            <span class="font-medium text-foreground">{{ selectedNights }}</span>
           </div>
-          <div class="flex justify-between text-gray-600">
+          <div class="flex justify-between text-muted-foreground">
             <span>Cena ubytování</span>
-            <span class="font-medium text-gray-900">{{ formatCurrency(selectedTotalPrice) }}</span>
+            <span class="font-medium text-foreground">{{ formatCurrency(selectedTotalPrice) }}</span>
           </div>
-          <div class="flex justify-between text-gray-600">
+          <div class="flex justify-between text-muted-foreground">
             <span>Sezóna</span>
-            <span class="font-medium text-gray-900">{{ seasonLabel }}</span>
+            <span class="font-medium text-foreground">{{ seasonLabel }}</span>
           </div>
-          <div v-if="addonsTotalPrice > 0" class="flex justify-between text-gray-600">
+          <div v-if="addonsTotalPrice > 0" class="flex justify-between text-muted-foreground">
             <span>Služby</span>
-            <span class="font-medium text-gray-900">{{ formatCurrency(addonsTotalPrice) }}</span>
+            <span class="font-medium text-foreground">{{ formatCurrency(addonsTotalPrice) }}</span>
           </div>
         </div>
 
-        <div class="border-t border-gray-200 pt-4 mt-4">
+        <div class="border-t border-border pt-4 mt-4">
           <div class="flex items-end justify-between">
-            <span class="font-medium text-gray-900">Celkem</span>
+            <span class="font-medium text-foreground">Celkem</span>
             <span class="text-xl font-bold text-primary">{{ formatCurrency(grandTotalPrice) }}</span>
           </div>
         </div>
       </CardContent>
     </Card>
     
-    <div class="mt-6 text-xs text-gray-400 px-2">
+    <div class="mt-6 text-xs text-muted-foreground px-2">
        <div class="flex items-center gap-2 mb-2"><span class="h-2 w-2 rounded-full bg-primary"></span> Vybráno</div>
-       <div class="flex items-center gap-2 mb-2"><span class="h-2 w-2 rounded-full bg-red-300"></span> Obsazeno</div>
-       <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-gray-200"></span> Nedostupné</div>
+       <div class="flex items-center gap-2 mb-2"><span class="h-2 w-2 rounded-full bg-destructive/50"></span> Obsazeno</div>
+       <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-muted"></span> Nedostupné</div>
     </div>
   </div>
 </template>

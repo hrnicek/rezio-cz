@@ -11,11 +11,12 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from '@/components/ui/sidebar';
+import { PageProps } from '@/types';
 import { usePage } from '@inertiajs/vue3';
 import { ChevronsUpDown } from 'lucide-vue-next';
 import UserMenuContent from './UserMenuContent.vue';
 
-const page = usePage();
+const page = usePage<PageProps>();
 const user = page.props.auth.user;
 const { isMobile, state } = useSidebar();
 </script>
@@ -35,7 +36,7 @@ const { isMobile, state } = useSidebar();
                     </SidebarMenuButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                    class="w-(--reka-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                    class="w-(--reka-dropdown-menu-trigger-width) min-w-56 rounded-md"
                     :side="
                         isMobile
                             ? 'bottom'

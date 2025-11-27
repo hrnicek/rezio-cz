@@ -20,36 +20,36 @@ declare const route: any;
     <div class="max-w-xl mx-auto text-center space-y-8">
       <!-- Success Animation Icon -->
       <div class="relative inline-flex items-center justify-center">
-        <div class="absolute inset-0 bg-green-100 rounded-full animate-ping opacity-75"></div>
-        <div class="relative h-24 w-24 bg-green-50 rounded-full flex items-center justify-center ring-8 ring-white">
-          <CheckCircle class="h-12 w-12 text-green-600" />
+        <div class="absolute inset-0 bg-primary/10 rounded-md"></div>
+        <div class="relative h-24 w-24 bg-background rounded-md flex items-center justify-center border border-primary/20">
+          <CheckCircle class="h-10 w-10 text-primary" />
         </div>
       </div>
       <div class="space-y-4">
-        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">Rezervace odeslána!</h2>
-        <p class="text-lg text-gray-600 max-w-sm mx-auto">
+        <h2 class="text-xl font-semibold text-foreground tracking-tight">Rezervace odeslána!</h2>
+        <p class="text-lg text-muted-foreground max-w-sm mx-auto">
           Děkujeme, <strong>{{ customer.firstName }}</strong>. Potvrzení a další instrukce jsme právě odeslali na Váš email.
         </p>
       </div>
       <!-- Reservation Recap Card -->
-      <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 text-left max-w-sm mx-auto transform transition-all hover:shadow-md">
-        <div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
-          <span class="text-sm font-medium text-gray-500">Číslo rezervace</span>
-          <span class="font-mono font-bold text-gray-900">#{{ Math.floor(Math.random() * 10000) + 1000 }}</span>
+      <div class="bg-card rounded-md border border-border p-6 text-left max-w-sm mx-auto transform transition-all">
+        <div class="flex justify-between items-center mb-4 pb-4 border-b border-border">
+          <span class="text-xs font-mono text-muted-foreground uppercase tracking-wider">Číslo rezervace</span>
+          <span class="font-mono font-bold text-foreground">#{{ Math.floor(Math.random() * 10000) + 1000 }}</span>
         </div>
         <div class="space-y-3">
           <div class="flex items-center gap-3">
-            <Calendar class="h-4 w-4 text-gray-400" />
-            <span class="text-sm text-gray-700">{{ calendar.formatDate(startDate) }} — {{ calendar.formatDate(endDate) }}</span>
+            <Calendar class="h-4 w-4 text-muted-foreground" />
+            <span class="text-sm text-foreground">{{ calendar.formatDate(startDate) }} — {{ calendar.formatDate(endDate) }}</span>
           </div>
           <div class="flex items-center gap-3">
-            <User class="h-4 w-4 text-gray-400" />
-            <span class="text-sm text-gray-700">{{ customer.email }}</span>
+            <User class="h-4 w-4 text-muted-foreground" />
+            <span class="text-sm text-foreground">{{ customer.email }}</span>
           </div>
         </div>
       </div>
       <div class="pt-4">
-        <Button as-child variant="outline" class="border-gray-300 text-gray-700 hover:bg-gray-50 min-w-[200px]">
+        <Button as-child variant="outline" class="min-w-[200px]">
           <Link :href="route('welcome')">Zpět na hlavní stránku</Link>
         </Button>
       </div>

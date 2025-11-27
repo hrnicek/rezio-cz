@@ -227,7 +227,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen w-full bg-white text-gray-900 font-sans pb-24 lg:pb-8">
+  <div class="min-h-screen w-full bg-background text-foreground font-sans pb-24 lg:pb-8">
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       
       <!-- SUCCESS PAGE (Clean Layout) -->
@@ -245,7 +245,7 @@ onMounted(async () => {
         <!-- Progress Steps -->
         <div class="mb-10 hidden lg:block">
           <nav aria-label="Progress">
-            <ol role="list" class="flex items-center justify-between w-full border-b border-gray-200 pb-4">
+            <ol role="list" class="flex items-center justify-between w-full border-b border-border pb-4">
               <li v-for="(step, index) in STEPS" :key="step.id" class="flex items-center">
                  <button 
                     @click="navigateTo(step.id)"
@@ -255,16 +255,16 @@ onMounted(async () => {
                     <span class="flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition-colors"
                       :class="[
                         step.id < currentStep ? 'bg-primary text-white' : 
-                        step.id === currentStep ? 'bg-primary/10 text-primary ring-2 ring-primary' : 'bg-gray-100 text-gray-500'
+                        step.id === currentStep ? 'bg-primary/10 text-primary ring-2 ring-primary' : 'bg-muted text-muted-foreground'
                       ]">
                       <span v-if="step.id < currentStep">✓</span>
                       <span v-else>{{ step.id }}</span>
                     </span>
-                    <span class="text-sm font-medium" :class="step.id === currentStep ? 'text-primary' : 'text-gray-600'">
+                    <span class="text-sm font-medium" :class="step.id === currentStep ? 'text-primary' : 'text-muted-foreground'">
                       {{ step.label }}
                     </span>
                  </button>
-                 <div v-if="index !== STEPS.length - 1" class="h-px w-24 bg-gray-200 mx-4"></div>
+                 <div v-if="index !== STEPS.length - 1" class="h-px w-24 bg-border mx-4"></div>
               </li>
             </ol>
           </nav>
@@ -291,7 +291,7 @@ onMounted(async () => {
             
             <!-- Mobile Progress Bar -->
             <div class="mb-6 lg:hidden">
-              <div class="h-1 w-full bg-gray-100">
+              <div class="h-1 w-full bg-muted">
                 <div class="h-full bg-primary transition-all" :style="{ width: (currentStep/4)*100 + '%' }"></div>
               </div>
             </div>
@@ -337,7 +337,7 @@ onMounted(async () => {
             />
 
             <!-- Navigation Buttons -->
-            <div class="flex justify-between pt-6 border-t border-gray-100">
+            <div class="flex justify-between pt-6 border-t border-border">
               <Button 
                 v-if="currentStep > 1"
                 variant="outline" 
@@ -362,29 +362,29 @@ onMounted(async () => {
       </div>
 
       <!-- Mobile Price Detail Sheet (Fixed Bottom) -->
-      <div v-if="currentStep < 5" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 lg:hidden z-50 safe-area-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+      <div v-if="currentStep < 5" class="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 lg:hidden z-50 safe-area-bottom">
         <!-- Backdrop -->
         <div v-if="showMobilePriceDetails" class="fixed inset-0 bg-black/20 z-[-1]" @click="showMobilePriceDetails = false"></div>
         
         <!-- Expanded Details -->
-        <div v-if="showMobilePriceDetails" class="absolute bottom-full left-0 right-0 bg-white border-t border-gray-200 p-4 rounded-t-xl shadow-xl animate-in slide-in-from-bottom-10">
-            <div class="flex justify-between items-center mb-4 pb-2 border-b border-gray-100">
-               <span class="font-semibold text-gray-900">Rozpis ceny</span>
-               <Button variant="ghost" size="icon" @click="showMobilePriceDetails = false" class="h-8 w-8 text-gray-400">
+        <div v-if="showMobilePriceDetails" class="absolute bottom-full left-0 right-0 bg-background border-t border-border p-4 rounded-t-lg animate-in slide-in-from-bottom-10">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-border">
+               <span class="font-semibold text-foreground">Rozpis ceny</span>
+               <Button variant="ghost" size="icon" @click="showMobilePriceDetails = false" class="h-9 w-9 text-muted-foreground">
                  <X class="h-4 w-4" />
                </Button>
             </div>
             <div class="space-y-3 text-sm">
-               <div class="flex justify-between text-gray-600">
+               <div class="flex justify-between text-muted-foreground">
                   <span>Ubytování ({{ selectedNights }} nocí)</span>
-                  <span class="font-medium text-gray-900">{{ formatCurrency(selectedTotalPrice) }}</span>
+                  <span class="font-medium text-foreground">{{ formatCurrency(selectedTotalPrice) }}</span>
                </div>
-               <div v-if="addonsTotalPrice > 0" class="flex justify-between text-gray-600">
+               <div v-if="addonsTotalPrice > 0" class="flex justify-between text-muted-foreground">
                   <span>Služby a poplatky</span>
-                  <span class="font-medium text-gray-900">{{ formatCurrency(addonsTotalPrice) }}</span>
+                  <span class="font-medium text-foreground">{{ formatCurrency(addonsTotalPrice) }}</span>
                </div>
-               <div class="pt-3 border-t border-gray-100 flex justify-between items-end">
-                  <span class="font-bold text-gray-900">Celkem</span>
+               <div class="pt-3 border-t border-border flex justify-between items-end">
+                  <span class="font-bold text-foreground">Celkem</span>
                   <span class="text-xl font-bold text-primary">{{ formatCurrency(grandTotalPrice) }}</span>
                </div>
             </div>
@@ -393,12 +393,12 @@ onMounted(async () => {
         <!-- Collapsed Bar -->
         <div class="flex items-center gap-4">
            <div class="flex-1 cursor-pointer" @click="showMobilePriceDetails = !showMobilePriceDetails">
-              <div class="text-xs text-gray-500 flex items-center gap-1">
+              <div class="text-xs text-muted-foreground flex items-center gap-1">
                  Celkem za pobyt <Info class="h-3 w-3" />
               </div>
               <div class="flex items-center gap-2">
                  <span class="text-lg font-bold text-primary">{{ formatCurrency(grandTotalPrice) }}</span>
-                 <ChevronUp class="h-4 w-4 text-gray-400 transition-transform duration-200" :class="{'rotate-180': showMobilePriceDetails}" />
+                 <ChevronUp class="h-4 w-4 text-muted-foreground transition-transform duration-200" :class="{'rotate-180': showMobilePriceDetails}" />
               </div>
            </div>
            
@@ -408,14 +408,14 @@ onMounted(async () => {
                 variant="outline" 
                 size="icon"
                 @click="currentStep--"
-                class="h-11 w-11 shrink-0"
+                class="h-9 w-9 shrink-0"
               >
                 <ChevronLeft class="h-5 w-5" />
               </Button>
              <Button 
                 @click="nextStep" 
                 :disabled="processing"
-                class="h-11 px-6 font-semibold shadow-lg shadow-primary/20"
+                class="h-9 px-4 font-semibold border border-primary text-white"
              >
                 <Loader2 v-if="processing" class="mr-2 h-4 w-4 animate-spin" />
                 {{ currentStep === 4 ? 'Dokončit' : 'Pokračovat' }}
@@ -429,9 +429,6 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.dashed-border {
-  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='0' ry='0' stroke='%2310B981FF' stroke-width='2' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
-}
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 1rem);
 }

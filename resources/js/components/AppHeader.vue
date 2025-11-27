@@ -36,6 +36,8 @@ import { InertiaLinkProps, Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
 import { computed } from 'vue';
 
+declare const route: any;
+
 interface Props {
     breadcrumbs?: BreadcrumbItem[];
 }
@@ -45,7 +47,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const page = usePage();
-const auth = computed(() => page.props.auth);
+const auth = computed(() => page.props.auth as any);
 
 const isCurrentRoute = computed(
     () => (url: NonNullable<InertiaLinkProps['href']>) =>
@@ -84,7 +86,7 @@ const rightNavItems: NavItem[] = [
 <template>
     <div>
         <div class="border-b border-sidebar-border/80">
-            <div class="mx-auto flex h-16 items-center px-4 md:max-w-7xl">
+            <div class="mx-auto flex h-14 items-center px-4">
                 <!-- Mobile Menu -->
                 <div class="lg:hidden">
                     <Sheet>
@@ -114,7 +116,7 @@ const rightNavItems: NavItem[] = [
                                         v-for="item in mainNavItems"
                                         :key="item.title"
                                         :href="item.href"
-                                        class="flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent"
+                                        class="flex items-center gap-x-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent"
                                         :class="activeItemStyles(item.href)"
                                     >
                                         <component
@@ -241,10 +243,10 @@ const rightNavItems: NavItem[] = [
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                class="relative size-10 w-auto rounded-full p-1 focus-within:ring-2 focus-within:ring-primary"
+                                class="relative size-10 w-auto rounded-md p-1 focus-within:ring-2 focus-within:ring-primary"
                             >
                                 <Avatar
-                                    class="size-8 overflow-hidden rounded-full"
+                                    class="size-8 overflow-hidden rounded-md"
                                 >
                                     <AvatarImage
                                         v-if="auth.user.avatar"
@@ -252,7 +254,7 @@ const rightNavItems: NavItem[] = [
                                         :alt="auth.user.name"
                                     />
                                     <AvatarFallback
-                                        class="rounded-lg bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white"
+                                        class="rounded-md bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white"
                                     >
                                         {{ getInitials(auth.user?.name) }}
                                     </AvatarFallback>
@@ -272,7 +274,7 @@ const rightNavItems: NavItem[] = [
             class="flex w-full border-b border-sidebar-border/70"
         >
             <div
-                class="mx-auto flex h-12 w-full items-center justify-start px-4 text-neutral-500 md:max-w-7xl"
+                class="mx-auto flex h-12 w-full items-center justify-start px-4 text-neutral-500"
             >
                 <Breadcrumbs :breadcrumbs="breadcrumbs" />
             </div>

@@ -172,24 +172,24 @@ const columns = [
     <Head :title="`Sezóny - ${property.name}`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+        <div class="flex h-full flex-1 flex-col gap-4 p-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <Button variant="outline" size="icon" as-child>
+                    <Button variant="outline" size="icon" as-child class="h-9 w-9">
                         <Link :href="route('admin.properties.edit', property.id)">
                             <ChevronLeft class="h-4 w-4" />
                         </Link>
                     </Button>
                     <h2 class="text-2xl font-bold tracking-tight">Sezóny - {{ property.name }}</h2>
                 </div>
-                <Button @click="startAdding" v-if="!isAdding && !editingId">
+                <Button @click="startAdding" v-if="!isAdding && !editingId" class="h-9">
                     <Plus class="mr-2 h-4 w-4" />
                     Přidat sezónu
                 </Button>
             </div>
 
             <!-- Add/Edit Form -->
-            <Card v-if="isAdding || editingId" class="mb-6 border-2 border-primary/20">
+            <Card v-if="isAdding || editingId" class="mb-6">
                 <CardHeader>
                     <CardTitle>{{ editingId ? 'Upravit sezónu' : 'Přidat novou sezónu' }}</CardTitle>
                     <CardDescription>
@@ -201,42 +201,42 @@ const columns = [
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-2">
                                 <Label for="name">Název</Label>
-                                <Input id="name" v-model="form.name" placeholder="např. Léto 2025" required />
-                                <div v-if="form.errors.name" class="text-sm text-red-500">{{ form.errors.name }}</div>
+                                <Input id="name" v-model="form.name" placeholder="např. Léto 2025" required class="h-9" />
+                                <div v-if="form.errors.name" class="text-sm text-destructive">{{ form.errors.name }}</div>
                             </div>
 
                             <div class="space-y-2">
                                 <Label for="price">Cena za noc (Kč)</Label>
-                                <Input id="price" v-model.number="form.price" type="number" step="0.01" required />
-                                <div v-if="form.errors.price" class="text-sm text-red-500">{{ form.errors.price }}</div>
+                                <Input id="price" v-model.number="form.price" type="number" step="0.01" required class="h-9" />
+                                <div v-if="form.errors.price" class="text-sm text-destructive">{{ form.errors.price }}</div>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-2">
                                 <Label for="start_date">Začátek</Label>
-                                <Input id="start_date" v-model="form.start_date" type="date" :required="!form.is_default" :disabled="form.is_default" />
-                                <div v-if="form.errors.start_date" class="text-sm text-red-500">{{ form.errors.start_date }}</div>
+                                <Input id="start_date" v-model="form.start_date" type="date" :required="!form.is_default" :disabled="form.is_default" class="h-9" />
+                                <div v-if="form.errors.start_date" class="text-sm text-destructive">{{ form.errors.start_date }}</div>
                             </div>
 
                             <div class="space-y-2">
                                 <Label for="end_date">Konec</Label>
-                                <Input id="end_date" v-model="form.end_date" type="date" :required="!form.is_default" :disabled="form.is_default" />
-                                <div v-if="form.errors.end_date" class="text-sm text-red-500">{{ form.errors.end_date }}</div>
+                                <Input id="end_date" v-model="form.end_date" type="date" :required="!form.is_default" :disabled="form.is_default" class="h-9" />
+                                <div v-if="form.errors.end_date" class="text-sm text-destructive">{{ form.errors.end_date }}</div>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-2">
                                 <Label for="priority">Priorita</Label>
-                                <Input id="priority" v-model.number="form.priority" type="number" />
-                                <div v-if="form.errors.priority" class="text-sm text-red-500">{{ form.errors.priority }}</div>
+                                <Input id="priority" v-model.number="form.priority" type="number" class="h-9" />
+                                <div v-if="form.errors.priority" class="text-sm text-destructive">{{ form.errors.priority }}</div>
                             </div>
                             
                             <div class="space-y-2">
                                 <Label for="min_stay">Minimální délka pobytu (noci)</Label>
-                                <Input id="min_stay" v-model.number="form.min_stay" type="number" min="1" />
-                                <div v-if="form.errors.min_stay" class="text-sm text-red-500">{{ form.errors.min_stay }}</div>
+                                <Input id="min_stay" v-model.number="form.min_stay" type="number" min="1" class="h-9" />
+                                <div v-if="form.errors.min_stay" class="text-sm text-destructive">{{ form.errors.min_stay }}</div>
                             </div>
                         </div>
 
@@ -272,10 +272,10 @@ const columns = [
                         </div>
 
                         <div class="flex justify-end gap-2">
-                            <Button type="button" variant="outline" @click="cancelEdit">
+                            <Button type="button" variant="outline" @click="cancelEdit" class="h-9">
                                 Zrušit
                             </Button>
-                            <Button type="submit" :disabled="form.processing">
+                            <Button type="submit" :disabled="form.processing" class="h-9">
                                 {{ editingId ? 'Upravit' : 'Vytvořit' }} sezónu
                             </Button>
                         </div>
@@ -318,10 +318,10 @@ const columns = [
                 </template>
                 <template #actions="{ item }">
                     <div class="flex justify-end gap-2">
-                        <Button size="sm" variant="outline" @click="startEditing(item)">
+                        <Button size="icon" variant="outline" @click="startEditing(item)">
                             <Pencil class="h-3 w-3" />
                         </Button>
-                        <Button size="sm" variant="destructive" @click="deleteSeason(item.id)" :disabled="item.is_default">
+                        <Button size="icon" variant="destructive" @click="deleteSeason(item.id)" :disabled="item.is_default">
                             <Trash2 class="h-3 w-3" />
                         </Button>
                     </div>

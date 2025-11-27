@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronLeft } from 'lucide-vue-next';
-import { ref } from 'vue';
 
 declare const route: any;
 
@@ -46,10 +45,10 @@ const breadcrumbs = [
     <Head title="Upravit nemovitost" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+        <div class="flex h-full flex-1 flex-col gap-4 p-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <Button variant="outline" size="icon" as-child>
+                    <Button variant="outline" size="icon" as-child class="h-9 w-9">
                     <Link :href="route('admin.properties.index')">
                             <ChevronLeft class="h-4 w-4" />
                         </Link>
@@ -57,17 +56,17 @@ const breadcrumbs = [
                     <h2 class="text-2xl font-bold tracking-tight">Upravit nemovitost</h2>
                 </div>
                 <div class="flex gap-2">
-                    <Button variant="outline" as-child>
+                    <Button variant="outline" as-child class="h-9">
                         <Link :href="route('admin.properties.services.index', property.id)">
                             Spravovat služby
                         </Link>
                     </Button>
-                    <Button variant="outline" as-child>
+                    <Button variant="outline" as-child class="h-9">
                         <Link :href="route('admin.properties.email-templates.index', property.id)">
                             Emailové šablony
                         </Link>
                     </Button>
-                    <Button variant="outline" as-child>
+                    <Button variant="outline" as-child class="h-9">
                         <Link :href="route('admin.properties.seasons.index', property.id)">
                             Spravovat sezóny
                         </Link>
@@ -87,7 +86,7 @@ const breadcrumbs = [
                         <form @submit.prevent="submit" class="space-y-6">
                             <div class="space-y-2">
                                 <Label for="name">Název</Label>
-                                <Input id="name" v-model="form.name" placeholder="např. Horská chata" required />
+                                <Input id="name" v-model="form.name" placeholder="např. Horská chata" required class="h-9" />
                                 <div v-if="form.errors.name" class="text-sm text-red-500">{{ form.errors.name }}</div>
                             </div>
 
@@ -104,7 +103,7 @@ const breadcrumbs = [
                             </div>
 
                             <div class="flex justify-end">
-                                <Button type="submit" :disabled="form.processing">
+                                <Button type="submit" :disabled="form.processing" class="h-9">
                                     Aktualizovat nemovitost
                                 </Button>
                             </div>

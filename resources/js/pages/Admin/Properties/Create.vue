@@ -36,9 +36,9 @@ const breadcrumbs = [
     <Head title="Vytvořit nemovitost" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+        <div class="flex h-full flex-1 flex-col gap-4 p-4">
             <div class="flex items-center gap-4">
-                <Button variant="outline" size="icon" as-child>
+                <Button variant="outline" size="icon" as-child class="h-9 w-9">
                     <Link :href="route('admin.properties.index')">
                         <ChevronLeft class="h-4 w-4" />
                     </Link>
@@ -58,7 +58,7 @@ const breadcrumbs = [
                         <form @submit.prevent="submit" class="space-y-6">
                             <div class="space-y-2">
                                 <Label for="name">Název</Label>
-                                <Input id="name" v-model="form.name" placeholder="např. Horská chata" required />
+                                <Input id="name" v-model="form.name" placeholder="např. Horská chata" required class="h-9" />
                                 <div v-if="form.errors.name" class="text-sm text-red-500">{{ form.errors.name }}</div>
                             </div>
 
@@ -75,7 +75,7 @@ const breadcrumbs = [
                             </div>
 
                             <div class="flex justify-end">
-                                <Button type="submit" :disabled="form.processing">
+                                <Button type="submit" :disabled="form.processing" class="h-9">
                                     Vytvořit nemovitost
                                 </Button>
                             </div>

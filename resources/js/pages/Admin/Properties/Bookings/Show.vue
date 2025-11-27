@@ -7,8 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { 
-    ArrowLeft, Calendar, CreditCard, User, Mail, Phone, MapPin, 
-    ExternalLink, Copy, CheckCircle2, Clock, XCircle, MoreVertical,
+    ArrowLeft, Calendar, User, Mail, Phone, MapPin, 
+    ExternalLink, Copy, CheckCircle2, XCircle, MoreVertical,
     Pencil, Trash2, Send, Download
 } from 'lucide-vue-next';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -40,7 +40,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { BookingStatusLabels, PaymentStatus } from '@/lib/enums';
 
 declare const route: any;
@@ -147,7 +147,7 @@ const submitEdit = () => {
     <AppLayout>
         <Head :title="`Rezervace #${props.booking.code}`" />
 
-        <div class="flex flex-col gap-6 p-4 md:p-8 max-w-7xl mx-auto">
+        <div class="flex flex-col gap-6 p-4 md:p-8 mx-auto w-full">
             <!-- Header -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
@@ -158,7 +158,7 @@ const submitEdit = () => {
                     </Button>
                     <div>
                         <div class="flex items-center gap-3">
-                            <h1 class="text-2xl font-bold tracking-tight">Rezervace #{{ booking.code }}</h1>
+                            <h1 class="text-2xl font-bold tracking-tight text-foreground">Rezervace #{{ booking.code }}</h1>
                             <Badge :variant="getStatusColor(booking.status)">
                                 {{ BookingStatusLabels[booking.status] || booking.status }}
                             </Badge>
@@ -241,7 +241,7 @@ const submitEdit = () => {
                                 </div>
                             </div>
                             
-                            <div v-if="booking.notes" class="rounded-lg bg-muted p-4 mt-2">
+                            <div v-if="booking.notes" class="rounded-md bg-muted p-4 mt-2">
                                 <div class="flex items-center gap-2 mb-2">
                                     <span class="text-sm font-medium">Poznámka</span>
                                 </div>
@@ -266,10 +266,10 @@ const submitEdit = () => {
                                 </CardHeader>
                                 <CardContent>
                                     <div v-if="booking.guests.length > 0" class="space-y-4">
-                                        <div v-for="guest in booking.guests" :key="guest.id" class="flex items-center justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors">
+                                        <div v-for="guest in booking.guests" :key="guest.id" class="flex items-center justify-between p-3 border rounded-md bg-card hover:bg-accent/50 transition-colors">
                                             <div class="flex items-center gap-4">
-                                                <Avatar class="h-10 w-10">
-                                                    <AvatarFallback>{{ getInitials(guest.first_name, guest.last_name) }}</AvatarFallback>
+                                                <Avatar class="h-9 w-9 rounded-md">
+                                                    <AvatarFallback class="rounded-md">{{ getInitials(guest.first_name, guest.last_name) }}</AvatarFallback>
                                                 </Avatar>
                                                 <div>
                                                     <p class="font-medium">{{ guest.first_name }} {{ guest.last_name }}</p>
@@ -286,7 +286,7 @@ const submitEdit = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div v-else class="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
+                                    <div v-else class="text-center py-8 text-muted-foreground border-2 border-dashed rounded-md">
                                         <User class="h-8 w-8 mx-auto mb-2 opacity-50" />
                                         <p>Zatím nebyli přidáni žádní hosté.</p>
                                     </div>
@@ -330,9 +330,9 @@ const submitEdit = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
-                                                <TableHead>Částka</TableHead>
-                                                <TableHead>Datum</TableHead>
-                                                <TableHead>Stav</TableHead>
+                                                <TableHead class="text-xs uppercase tracking-wider font-mono text-muted-foreground">Částka</TableHead>
+                                                <TableHead class="text-xs uppercase tracking-wider font-mono text-muted-foreground">Datum</TableHead>
+                                                <TableHead class="text-xs uppercase tracking-wider font-mono text-muted-foreground">Stav</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -372,7 +372,7 @@ const submitEdit = () => {
                         </CardHeader>
                         <CardContent v-if="booking.customer" class="space-y-6">
                             <div class="flex items-center gap-4">
-                                <Avatar class="h-12 w-12">
+                                <Avatar class="h-9 w-9">
                                     <AvatarFallback class="bg-primary/10 text-primary">
                                         {{ getInitials(booking.customer.first_name, booking.customer.last_name) }}
                                     </AvatarFallback>

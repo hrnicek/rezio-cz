@@ -26,6 +26,10 @@ import { useDebounceFn } from '@vueuse/core'
 
 declare const route: any;
 
+const breadcrumbs = [
+  { title: 'Zákazníci', href: route('admin.customers.index') },
+]
+
 const props = defineProps<{
   customers: any
   filters: any
@@ -115,12 +119,19 @@ const getStatusVariant = (status: string) => {
 <template>
   <Head title="Zákazníci" />
 
-  <AppLayout>
-    <template #header>
+  <AppLayout :breadcrumbs="breadcrumbs">
+    <div class="flex h-full flex-1 flex-col gap-4 p-4">
       <div class="flex items-center justify-between">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-          Zákazníci
-        </h2>
+        <div class="relative w-full max-w-sm items-center">
+          <Input 
+            v-model="search" 
+            placeholder="Hledat jméno, email, telefon..." 
+            class="pl-10 h-9" 
+          />
+          <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
+            <Search class="size-4 text-muted-foreground" />
+          </span>
+        </div>
         <div class="flex gap-2">
             <input 
                 ref="fileInput"
@@ -129,76 +140,57 @@ const getStatusVariant = (status: string) => {
                 class="hidden"
                 @change="handleImport"
             />
-            <Button variant="outline" @click="exportCustomers">
+            <Button variant="outline" size="sm" class="h-9" @click="exportCustomers">
                 <Download class="mr-2 h-4 w-4" />
                 Export
             </Button>
-            <Button variant="outline" @click="triggerImport">
+            <Button variant="outline" size="sm" class="h-9" @click="triggerImport">
                 <Upload class="mr-2 h-4 w-4" />
                 Import
             </Button>
-            <Button @click="openCreate">
+            <Button size="sm" class="h-9" @click="openCreate">
               <Plus class="mr-2 h-4 w-4" />
               Přidat zákazníka
             </Button>
         </div>
       </div>
-    </template>
 
-    <div class="py-12">
-      <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between mb-6">
-          <div class="relative w-full max-w-sm items-center">
-            <Input 
-              v-model="search" 
-              placeholder="Hledat jméno, email, telefon..." 
-              class="pl-10" 
-            />
-            <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
-              <Search class="size-4 text-muted-foreground" />
-            </span>
-          </div>
-        </div>
+      <AppDataTable :data="customers" :columns="columns">
+        <template #contact="{ item }">
+          <div class="flex flex-col text-sm">
+              <span v-if="item.email" class="font-medium">{{ item.email }}</span>
+              <span v-if="item.phone" class="text-muted-foreground">{{ item.phone }}</span>
+            </div>
+          </template>
 
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-          <AppDataTable :data="customers" :columns="columns">
-            <template #contact="{ item }">
-              <div class="flex flex-col text-sm">
-                <span v-if="item.email" class="font-medium">{{ item.email }}</span>
-                <span v-if="item.phone" class="text-muted-foreground">{{ item.phone }}</span>
-              </div>
-            </template>
+          <template #status="{ value }">
+            <Badge :variant="getStatusVariant(value)">
+              {{ value === 'active' ? 'Aktivní' : (value === 'vip' ? 'VIP' : (value === 'inactive' ? 'Neaktivní' : 'Blacklist')) }}
+            </Badge>
+          </template>
 
-            <template #status="{ value }">
-              <Badge :variant="getStatusVariant(value)">
-                {{ value === 'active' ? 'Aktivní' : (value === 'vip' ? 'VIP' : (value === 'inactive' ? 'Neaktivní' : 'Blacklist')) }}
-              </Badge>
-            </template>
-
-            <template #actions="{ item }">
-              <DropdownMenu>
-                <DropdownMenuTrigger as-child>
-                  <Button variant="ghost" class="h-8 w-8 p-0">
-                    <span class="sr-only">Open menu</span>
-                    <MoreHorizontal class="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Akce</DropdownMenuLabel>
-                  <DropdownMenuItem @click="openEdit(item)">
-                    <Pencil class="mr-2 h-4 w-4" />
-                    Upravit
-                  </DropdownMenuItem>
-                  <DropdownMenuItem @click="deleteCustomer(item)" class="text-red-600">
-                    <Trash class="mr-2 h-4 w-4" />
-                    Smazat
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </template>
-          </AppDataTable>
-        </div>
-      </div>
+          <template #actions="{ item }">
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button variant="ghost" class="h-8 w-8 p-0">
+                  <span class="sr-only">Open menu</span>
+                  <MoreHorizontal class="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Akce</DropdownMenuLabel>
+                <DropdownMenuItem @click="openEdit(item)">
+                  <Pencil class="mr-2 h-4 w-4" />
+                  Upravit
+                </DropdownMenuItem>
+                <DropdownMenuItem @click="deleteCustomer(item)" class="text-red-600">
+                  <Trash class="mr-2 h-4 w-4" />
+                  Smazat
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+        </template>
+      </AppDataTable>
     </div>
 
     <Sheet v-model:open="isSheetOpen">

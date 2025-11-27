@@ -149,9 +149,9 @@ const getInitials = (name: string) => {
     <Head title="Nástěnka" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex-1 space-y-4 p-4 md:p-8 pt-6">
+        <div class="flex-1 space-y-4 p-4">
             <div class="flex items-center justify-between space-y-2">
-                <h2 class="text-3xl font-bold tracking-tight">Přehled</h2>
+                <h2 class="text-2xl font-semibold tracking-tight text-foreground">Přehled</h2>
                 <div class="flex items-center space-x-2">
                     <Dialog v-model:open="isBlockDatesOpen">
                         <DialogTrigger as-child>

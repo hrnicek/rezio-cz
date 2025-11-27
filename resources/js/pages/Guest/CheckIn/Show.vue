@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useForm, usePage } from '@inertiajs/vue3';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
+import { useForm } from '@inertiajs/vue3';
+import GuestLayout from '@/layouts/GuestLayout.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Trash2, Lock, User, Baby, Pencil } from 'lucide-vue-next';
+import { Trash2, User, Baby, Pencil } from 'lucide-vue-next';
 
 declare const route: any;
 
@@ -182,7 +182,7 @@ const children = computed(() => props.guests.filter(g => !g.is_adult));
                             </div>
 
                             <div class="flex items-center space-x-2">
-                                <input type="checkbox" id="is_adult" v-model="form.is_adult" class="rounded border-gray-300 text-primary shadow-sm focus:ring-primary" />
+                                <input type="checkbox" id="is_adult" v-model="form.is_adult" class="rounded border-gray-300 text-primary focus:ring-primary" />
                                 <Label for="is_adult">Osoba je dospělá (18+)</Label>
                             </div>
 
@@ -226,7 +226,7 @@ const children = computed(() => props.guests.filter(g => !g.is_adult));
                         <div v-if="children.length > 0">
                             <h4 class="text-sm font-medium text-muted-foreground mb-2">Děti ({{ children.length }})</h4>
                             <div class="space-y-2">
-                                <div v-for="guest in children" :key="guest.id" class="flex items-center justify-between p-3 bg-muted rounded-lg">
+                                <div v-for="guest in children" :key="guest.id" class="flex items-center justify-between p-3 bg-muted rounded-md">
                                     <div class="flex items-center space-x-3">
                                         <Baby class="w-4 h-4 text-muted-foreground" />
                                         <span class="font-medium">{{ guest.first_name }} {{ guest.last_name }}</span>

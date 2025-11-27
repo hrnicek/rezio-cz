@@ -18,7 +18,7 @@ const forwarded = useForwardProps(delegatedProps)
     v-slot="slotProps"
     v-bind="forwarded"
     :class="cn(
-      'inline-flex items-center justify-center rounded-full text-muted-foreground/50 w-10 h-10',
+      'inline-flex items-center justify-center rounded-full text-muted-foreground/50 w-9 h-9',
       // Disabled
       'group-data-[disabled]:text-muted-foreground group-data-[disabled]:opacity-50',
       // Active

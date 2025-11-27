@@ -18,7 +18,7 @@ import {
   Legend,
   BarElement,
 } from 'chart.js';
-import { Line, Bar } from 'vue-chartjs';
+import { Bar } from 'vue-chartjs';
 import axios from 'axios';
 
 ChartJS.register(
@@ -32,7 +32,7 @@ ChartJS.register(
   Legend
 );
 
-const props = defineProps<{
+defineProps<{
     properties: Array<{ id: number; name: string }>;
 }>();
 
@@ -121,17 +121,17 @@ const breadcrumbs = [
     <Head title="Reporty" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+        <div class="flex h-full flex-1 flex-col gap-4 p-4">
             <div class="flex items-center justify-between">
-                <h2 class="text-2xl font-bold tracking-tight">Přehledy a Reporty</h2>
+                <h2 class="text-xl font-semibold text-foreground">Přehledy a Reporty</h2>
             </div>
 
             <!-- Filters -->
-            <div class="grid gap-4 md:grid-cols-4">
+            <div class="grid gap-4 md:grid-cols-4 items-end">
                 <div class="space-y-2">
                     <Label>Nemovitost</Label>
                     <Select v-model="selectedProperty">
-                        <SelectTrigger>
+                        <SelectTrigger class="h-9">
                             <SelectValue placeholder="Všechny nemovitosti" />
                         </SelectTrigger>
                         <SelectContent>
@@ -144,14 +144,14 @@ const breadcrumbs = [
                 </div>
                 <div class="space-y-2">
                     <Label>Od</Label>
-                    <Input type="date" v-model="startDate" />
+                    <Input type="date" v-model="startDate" class="h-9" />
                 </div>
                 <div class="space-y-2">
                     <Label>Do</Label>
-                    <Input type="date" v-model="endDate" />
+                    <Input type="date" v-model="endDate" class="h-9" />
                 </div>
                 <div class="flex items-end">
-                    <Button @click="fetchData" :disabled="loading" class="w-full">
+                    <Button @click="fetchData" :disabled="loading" class="w-full h-9">
                         {{ loading ? 'Načítání...' : 'Obnovit' }}
                     </Button>
                 </div>

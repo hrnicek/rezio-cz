@@ -6,7 +6,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import AppLogo from '@/components/AppLogo.vue';
+import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { Link } from '@inertiajs/vue3';
 
 declare const route: any;
@@ -34,7 +34,7 @@ defineProps<{
             </Link>
 
             <div class="flex flex-col gap-6">
-                <Card class="rounded-xl">
+                <Card>
                     <CardHeader class="px-10 pt-8 pb-0 text-center">
                         <CardTitle class="text-xl">{{ title }}</CardTitle>
                         <CardDescription>

@@ -2,11 +2,10 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { format } from 'date-fns';
-import { ref } from 'vue';
 
 declare const route: any;
 
-const props = defineProps<{
+defineProps<{
     cleaningTasks: {
         data: Array<{
             id: number;
@@ -61,110 +60,107 @@ const markAsComplete = (taskId: number) => {
 
     <AppLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            <h2 class="font-semibold text-xl text-foreground leading-tight">
                 Úklid
             </h2>
         </template>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <h3 class="text-lg font-semibold mb-4">Nadcházející úklidy</h3>
+        <div class="flex h-full flex-1 flex-col gap-4 p-4">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold text-foreground">Nadcházející úklidy</h2>
+            </div>
 
-                        <div v-if="cleaningTasks.data.length > 0" class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                <thead class="bg-gray-50 dark:bg-gray-700">
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            ID Rezervace
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Nemovitost
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Host
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Termín
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Poznámky
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Stav
-                                        </th>
-                                        <th scope="col" class="relative px-6 py-3">
-                                            <span class="sr-only">Akce</span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    <tr v-for="task in cleaningTasks.data" :key="task.id">
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                                            {{ task.booking_id }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            {{ task.property.name }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            <span v-if="task.booking.customer">
-                                                {{ task.booking.customer.first_name }} {{ task.booking.customer.last_name }}
-                                            </span>
-                                            <span v-else class="italic text-gray-400">Žádné info o hostovi</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            {{ format(new Date(task.due_date), 'dd.MM.yyyy') }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            {{ task.notes ?? '-' }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                            <span v-if="task.completed_at" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
-                                                Hotovo
-                                            </span>
-                                            <span v-else class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
-                                                Čekající
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <button
-                                                v-if="!task.completed_at"
-                                                @click="markAsComplete(task.id)"
-                                                class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600"
-                                            >
-                                                Označit jako hotové
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div v-else class="text-gray-500 dark:text-gray-400">
-                            Nebyly nalezeny žádné úkoly úklidu.
-                        </div>
+            <div v-if="cleaningTasks.data.length > 0" class="rounded-md border border-border bg-card overflow-hidden">
+                <table class="w-full caption-bottom text-sm">
+                    <thead class="[&_tr]:border-b">
+                        <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                            <th scope="col" class="h-9 px-4 text-left align-middle font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                                ID Rezervace
+                            </th>
+                            <th scope="col" class="h-9 px-4 text-left align-middle font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                                Nemovitost
+                            </th>
+                            <th scope="col" class="h-9 px-4 text-left align-middle font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                                Host
+                            </th>
+                            <th scope="col" class="h-9 px-4 text-left align-middle font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                                Termín
+                            </th>
+                            <th scope="col" class="h-9 px-4 text-left align-middle font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                                Poznámky
+                            </th>
+                            <th scope="col" class="h-9 px-4 text-left align-middle font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                                Stav
+                            </th>
+                            <th scope="col" class="h-9 px-4 align-middle font-mono text-xs uppercase tracking-wider text-muted-foreground text-right">
+                                Akce
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="[&_tr:last-child]:border-0">
+                        <tr v-for="task in cleaningTasks.data" :key="task.id" class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                            <td class="p-2 px-4 align-middle font-medium">
+                                {{ task.booking_id }}
+                            </td>
+                            <td class="p-2 px-4 align-middle">
+                                {{ task.property.name }}
+                            </td>
+                            <td class="p-2 px-4 align-middle">
+                                <div v-if="task.booking.customer">
+                                    <div class="font-medium">{{ task.booking.customer.first_name }} {{ task.booking.customer.last_name }}</div>
+                                    <div class="text-xs text-muted-foreground">{{ task.booking.customer.email }}</div>
+                                </div>
+                                <span v-else class="italic text-muted-foreground">Žádné info o hostovi</span>
+                            </td>
+                            <td class="p-2 px-4 align-middle">
+                                {{ format(new Date(task.due_date), 'dd.MM.yyyy') }}
+                            </td>
+                            <td class="p-2 px-4 align-middle">
+                                {{ task.notes ?? '-' }}
+                            </td>
+                            <td class="p-2 px-4 align-middle">
+                                <span v-if="task.completed_at" class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-green-500 text-white hover:bg-green-500/80">
+                                    Hotovo
+                                </span>
+                                <span v-else class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-yellow-500 text-white hover:bg-yellow-500/80">
+                                    Čekající
+                                </span>
+                            </td>
+                            <td class="p-2 px-4 align-middle text-right">
+                                <button
+                                    v-if="!task.completed_at"
+                                    @click="markAsComplete(task.id)"
+                                    class="text-sm font-medium text-primary hover:underline"
+                                >
+                                    Označit jako hotové
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div v-else class="text-muted-foreground">
+                Nebyly nalezeny žádné úkoly úklidu.
+            </div>
 
-                        <!-- Pagination -->
-                        <div class="mt-4 flex justify-between items-center" v-if="cleaningTasks.links.length > 3">
-                            <template v-for="(link, key) in cleaningTasks.links">
-                                <div
-                                    v-if="link.url === null"
-                                    :key="key"
-                                    class="mr-1 mb-1 px-4 py-3 text-sm leading-4 text-gray-400 border rounded dark:text-gray-600"
-                                    v-html="link.label"
-                                />
-                                <Link
-                                    v-else
-                                    :key="`link-${key}`"
-                                    class="mr-1 mb-1 px-4 py-3 text-sm leading-4 border rounded hover:bg-white focus:border-indigo-500 focus:text-indigo-500 dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:border-indigo-600 dark:focus:text-indigo-400"
-                                    :class="{ 'bg-white dark:bg-gray-700': link.active }"
-                                    :href="link.url"
-                                    v-html="link.label"
-                                />
-                            </template>
-                        </div>
-                    </div>
-                </div>
+            <!-- Pagination -->
+            <div class="mt-4 flex justify-between items-center" v-if="cleaningTasks.links.length > 3">
+                <template v-for="(link, key) in cleaningTasks.links">
+                    <div
+                        v-if="link.url === null"
+                        :key="key"
+                        class="mr-1 mb-1 px-4 py-2 text-sm leading-4 text-muted-foreground border border-border rounded bg-muted"
+                        v-html="link.label"
+                    />
+                    <Link
+                        v-else
+                        :key="`link-${key}`"
+                        class="mr-1 mb-1 px-4 py-2 text-sm leading-4 border border-border rounded hover:bg-accent hover:text-accent-foreground"
+                        :class="{ 'bg-primary text-primary-foreground hover:bg-primary/90': link.active }"
+                        :href="link.url"
+                        v-html="link.label"
+                    />
+                </template>
             </div>
         </div>
     </AppLayout>

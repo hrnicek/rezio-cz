@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, Plus, Pencil, Trash2 } from 'lucide-vue-next';
-import { ref, h } from 'vue';
+import { ref } from 'vue';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ServicePriceType, ServicePriceTypeLabels } from '@/lib/enums';
 import {
@@ -151,17 +151,17 @@ const columns = [
     <Head :title="`Služby - ${property.name}`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+        <div class="flex h-full flex-1 flex-col gap-4 p-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <Button variant="outline" size="icon" as-child>
+                    <Button variant="outline" size="icon" as-child class="h-9 w-9">
                         <Link :href="route('admin.properties.edit', property.id)">
                             <ChevronLeft class="h-4 w-4" />
                         </Link>
                     </Button>
                     <h2 class="text-2xl font-bold tracking-tight">Služby - {{ property.name }}</h2>
                 </div>
-                <Button @click="startAdding" v-if="!isAdding && !editingId">
+                <Button @click="startAdding" v-if="!isAdding && !editingId" class="h-9">
                     <Plus class="mr-2 h-4 w-4" />
                     Přidat službu
                 </Button>
@@ -180,14 +180,14 @@ const columns = [
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-2">
                                 <Label for="name">Název</Label>
-                                <Input id="name" v-model="form.name" placeholder="např. Snídaně" required />
-                                <div v-if="form.errors.name" class="text-sm text-red-500">{{ form.errors.name }}</div>
+                                <Input id="name" v-model="form.name" placeholder="např. Snídaně" required class="h-9" />
+                                <div v-if="form.errors.name" class="text-sm text-destructive">{{ form.errors.name }}</div>
                             </div>
 
                             <div class="space-y-2">
                                 <Label for="price">Cena (Kč)</Label>
-                                <Input id="price" v-model.number="form.price" type="number" step="0.01" required />
-                                <div v-if="form.errors.price" class="text-sm text-red-500">{{ form.errors.price }}</div>
+                                <Input id="price" v-model.number="form.price" type="number" step="0.01" required class="h-9" />
+                                <div v-if="form.errors.price" class="text-sm text-destructive">{{ form.errors.price }}</div>
                             </div>
                         </div>
 
@@ -195,7 +195,7 @@ const columns = [
                             <div class="space-y-2">
                                 <Label for="price_type">Typ ceny</Label>
                                 <Select v-model="form.price_type">
-                                    <SelectTrigger>
+                                    <SelectTrigger class="h-9">
                                         <SelectValue placeholder="Vyberte typ ceny" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -204,20 +204,20 @@ const columns = [
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
-                                <div v-if="form.errors.price_type" class="text-sm text-red-500">{{ form.errors.price_type }}</div>
+                                <div v-if="form.errors.price_type" class="text-sm text-destructive">{{ form.errors.price_type }}</div>
                             </div>
 
                             <div class="space-y-2">
                                 <Label for="max_quantity">Max. množství (0 pro neomezeně)</Label>
-                                <Input id="max_quantity" v-model.number="form.max_quantity" type="number" min="0" required />
-                                <div v-if="form.errors.max_quantity" class="text-sm text-red-500">{{ form.errors.max_quantity }}</div>
+                                <Input id="max_quantity" v-model.number="form.max_quantity" type="number" min="0" required class="h-9" />
+                                <div v-if="form.errors.max_quantity" class="text-sm text-destructive">{{ form.errors.max_quantity }}</div>
                             </div>
                         </div>
 
                         <div class="space-y-2">
                             <Label for="description">Popis</Label>
                             <Textarea id="description" v-model="form.description" placeholder="Popis služby..." />
-                            <div v-if="form.errors.description" class="text-sm text-red-500">{{ form.errors.description }}</div>
+                            <div v-if="form.errors.description" class="text-sm text-destructive">{{ form.errors.description }}</div>
                         </div>
 
                         <div class="flex items-center space-x-2">
@@ -226,10 +226,10 @@ const columns = [
                         </div>
 
                         <div class="flex justify-end gap-2">
-                            <Button type="button" variant="outline" @click="cancelEdit">
+                            <Button type="button" variant="outline" @click="cancelEdit" class="h-9">
                                 Zrušit
                             </Button>
-                            <Button type="submit" :disabled="form.processing">
+                            <Button type="submit" :disabled="form.processing" class="h-9">
                                 {{ editingId ? 'Upravit' : 'Vytvořit' }} službu
                             </Button>
                         </div>

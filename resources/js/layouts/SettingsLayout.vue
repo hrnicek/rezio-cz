@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Link, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
-
-const page = usePage();
-const currentPath = computed(() => page.url);
+import { Link } from '@inertiajs/vue3';
 
 const navigation = [
     { name: 'Profile', route: 'profile.edit', icon: 'UserIcon' },
@@ -47,7 +43,7 @@ declare const route: any;
                     </aside>
 
                     <!-- Content -->
-                    <div class="flex-1 bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
+                    <div class="flex-1 bg-white dark:bg-gray-800 border border-border sm:rounded-md p-6">
                         <slot />
                     </div>
                 </div>
