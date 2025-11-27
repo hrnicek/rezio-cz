@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Tenant\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Booking;
-use App\Models\Property;
-use Inertia\Inertia;
-use Illuminate\Validation\Rule;
 use App\Data\Admin\BookingDetailData;
 use App\Data\Admin\BookingListData;
+use App\Http\Controllers\Controller;
+use App\Models\Booking;
+use App\Models\Property;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class BookingController extends Controller
 {
@@ -79,11 +79,11 @@ class BookingController extends Controller
             ->get();
 
         $headers = [
-            "Content-type" => "text/csv",
-            "Content-Disposition" => "attachment; filename=bookings.csv",
-            "Pragma" => "no-cache",
-            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
-            "Expires" => "0"
+            'Content-type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=bookings.csv',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
         ];
 
         $callback = function () use ($bookings) {
@@ -94,7 +94,7 @@ class BookingController extends Controller
                 fputcsv($file, [
                     $booking->id,
                     $booking->property->name,
-                    $booking->customer ? $booking->customer->first_name . ' ' . $booking->customer->last_name : '',
+                    $booking->customer ? $booking->customer->first_name.' '.$booking->customer->last_name : '',
                     $booking->customer->email ?? '',
                     $booking->customer->phone ?? '',
                     $booking->start_date->format('Y-m-d'),
@@ -151,7 +151,7 @@ class BookingController extends Controller
     public function update(Request $request, Booking $booking)
     {
         // Load property if not already loaded
-        if (!$booking->relationLoaded('property')) {
+        if (! $booking->relationLoaded('property')) {
             $booking->load('property');
         }
 
@@ -199,7 +199,7 @@ class BookingController extends Controller
     public function destroy(Booking $booking)
     {
         // Load property if not already loaded
-        if (!$booking->relationLoaded('property')) {
+        if (! $booking->relationLoaded('property')) {
             $booking->load('property');
         }
 

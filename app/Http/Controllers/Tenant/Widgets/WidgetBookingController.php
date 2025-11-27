@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers\Tenant\Widgets;
 
-use App\Models\Booking;
-use App\Models\Property;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-
 use App\Http\Controllers\Controller;
+use App\Models\Property;
+use Inertia\Inertia;
 
 class WidgetBookingController extends Controller
 {

@@ -16,8 +16,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Mail, Edit } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 declare const route: any;
 
@@ -120,6 +121,22 @@ const getTemplateStatus = (type: string) => {
   const template = props.templates.find(t => t.type === type);
   return template ? (template.is_active ? 'active' : 'inactive') : 'default';
 };
+
+const previewBody = computed(() => {
+    let text = form.body;
+    const replacements: Record<string, string> = {
+        '{{ customer_name }}': 'Jan Novák',
+        '{{ booking_code }}': 'REZ-123456',
+        '{{ property_name }}': props.property.name,
+    };
+
+    for (const [key, value] of Object.entries(replacements)) {
+        // Escape special regex characters in key if needed, but for simple {{ }} it's fine to just match exact string if we use replaceAll or regex
+        text = text.split(key).join(value);
+    }
+    
+    return text.replace(/\n/g, '<br>');
+});
 </script>
 
 <template>
@@ -190,18 +207,38 @@ const getTemplateStatus = (type: string) => {
               <Label htmlFor="active">Aktivní (odesílat tento email)</Label>
             </div>
             
-            <div class="grid gap-2">
-              <Label htmlFor="subject">Předmět</Label>
-              <Input id="subject" v-model="form.subject" class="h-9" />
-            </div>
-            
-            <div class="grid gap-2">
-              <Label htmlFor="body">Obsah</Label>
-              <Textarea id="body" v-model="form.body" class="min-h-[200px]" />
-              <p class="text-xs text-muted-foreground">
-                Dostupné proměnné: {{ '{' + '{ customer_name }' + '}' }}, {{ '{' + '{ booking_code }' + '}' }}, {{ '{' + '{ property_name }' + '}' }}
-              </p>
-            </div>
+            <Tabs default-value="edit" class="w-full">
+              <TabsList class="grid w-full grid-cols-2">
+                <TabsTrigger value="edit">Editace</TabsTrigger>
+                <TabsTrigger value="preview">Náhled</TabsTrigger>
+              </TabsList>
+              <TabsContent value="edit" class="space-y-4 pt-4">
+                <div class="grid gap-2">
+                  <Label htmlFor="subject">Předmět</Label>
+                  <Input id="subject" v-model="form.subject" class="h-9" />
+                </div>
+                
+                <div class="grid gap-2">
+                  <Label htmlFor="body">Obsah</Label>
+                  <Textarea id="body" v-model="form.body" class="min-h-[200px] font-mono text-sm" />
+                  <p class="text-xs text-muted-foreground">
+                    Dostupné proměnné: {{ '{' + '{ customer_name }' + '}' }}, {{ '{' + '{ booking_code }' + '}' }}, {{ '{' + '{ property_name }' + '}' }}
+                  </p>
+                </div>
+              </TabsContent>
+              <TabsContent value="preview" class="pt-4">
+                <div class="rounded-md border p-4 bg-muted/50">
+                  <div class="mb-4 border-b pb-2">
+                    <p class="text-xs font-medium text-muted-foreground">Předmět:</p>
+                    <p class="font-medium text-sm">{{ form.subject }}</p>
+                  </div>
+                  <div>
+                    <p class="text-xs font-medium text-muted-foreground mb-2">Obsah:</p>
+                    <div class="prose prose-sm dark:prose-invert max-w-none text-sm leading-relaxed" v-html="previewBody"></div>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
 
           <DialogFooter>

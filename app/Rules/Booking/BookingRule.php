@@ -2,8 +2,8 @@
 
 namespace App\Rules\Booking;
 
-use Carbon\Carbon;
 use App\Models\Season;
+use Carbon\Carbon;
 
 interface BookingRule
 {

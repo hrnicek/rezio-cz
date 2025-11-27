@@ -20,7 +20,7 @@ return new class extends Migration
         if ($firstPropertyId) {
             \Illuminate\Support\Facades\DB::table('services')->update(['property_id' => $firstPropertyId]);
         } else {
-            // If no properties exist, we can't assign a property_id. 
+            // If no properties exist, we can't assign a property_id.
             // In this case, we might want to truncate services or just leave them null (but we want non-null).
             // For now, let's assume properties exist or we truncate.
             if (\Illuminate\Support\Facades\DB::table('services')->count() > 0) {

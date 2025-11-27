@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\Season;
 use App\Rules\Booking\BookingRule;
 use Carbon\Carbon;
-use App\Models\Season;
 
 class BookingRules
 {
@@ -16,6 +16,7 @@ class BookingRules
     public function addRule(BookingRule $rule): self
     {
         $this->rules[] = $rule;
+
         return $this;
     }
 

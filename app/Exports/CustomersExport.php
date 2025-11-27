@@ -10,8 +10,8 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 class CustomersExport implements FromCollection, WithHeadings, WithMapping
 {
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
         return Customer::all();

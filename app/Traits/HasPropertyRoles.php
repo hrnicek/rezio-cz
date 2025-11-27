@@ -38,6 +38,7 @@ trait HasPropertyRoles
     public function hasPropertyRole(string $role, Property $property): bool
     {
         $roleName = "{$role}:property:{$property->id}";
+
         return $this->hasRole($roleName);
     }
 

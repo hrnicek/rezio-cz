@@ -45,6 +45,8 @@ const stats = ref({
     total_revenue: 0,
     total_bookings: 0,
     occupancy_rate: 0,
+    adr: 0,
+    revpar: 0,
 });
 
 const chartData = ref<{
@@ -65,6 +67,16 @@ const chartOptions = {
     maintainAspectRatio: false,
 };
 
+const exportReport = () => {
+    // @ts-ignore
+    const url = route('admin.reports.export', {
+        start_date: startDate.value,
+        end_date: endDate.value,
+        property_id: selectedProperty.value === 'all' ? null : selectedProperty.value,
+    });
+    window.location.href = url;
+};
+
 const fetchData = async () => {
     loading.value = true;
     try {
@@ -81,6 +93,8 @@ const fetchData = async () => {
             total_revenue: response.data.total_revenue,
             total_bookings: response.data.total_bookings,
             occupancy_rate: response.data.occupancy_rate,
+            adr: response.data.adr,
+            revpar: response.data.revpar,
         };
 
         chartData.value = {
@@ -127,7 +141,7 @@ const breadcrumbs = [
             </div>
 
             <!-- Filters -->
-            <div class="grid gap-4 md:grid-cols-4 items-end">
+            <div class="grid gap-4 md:grid-cols-5 items-end">
                 <div class="space-y-2">
                     <Label>Nemovitost</Label>
                     <Select v-model="selectedProperty">
@@ -155,10 +169,16 @@ const breadcrumbs = [
                         {{ loading ? 'Načítání...' : 'Obnovit' }}
                     </Button>
                 </div>
+                <div class="flex items-end">
+                    <Button variant="outline" @click="exportReport" :disabled="loading" class="w-full h-9">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                        Exportovat CSV
+                    </Button>
+                </div>
             </div>
 
             <!-- Summary Cards -->
-            <div class="grid gap-4 md:grid-cols-3">
+            <div class="grid gap-4 grid-cols-2 lg:grid-cols-5">
                 <Card>
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle class="text-sm font-medium">Celkové tržby</CardTitle>
@@ -230,6 +250,53 @@ const breadcrumbs = [
                         <div class="text-2xl font-bold">{{ stats.occupancy_rate }}%</div>
                         <p class="text-xs text-muted-foreground">
                             Z dostupných nocí
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle class="text-sm font-medium">ADR</CardTitle>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            class="h-4 w-4 text-muted-foreground"
+                        >
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                        </svg>
+                    </CardHeader>
+                    <CardContent>
+                        <div class="text-2xl font-bold">{{ new Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'CZK' }).format(stats.adr) }}</div>
+                        <p class="text-xs text-muted-foreground">
+                            Průměrná cena za noc
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle class="text-sm font-medium">RevPAR</CardTitle>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            class="h-4 w-4 text-muted-foreground"
+                        >
+                            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                            <polyline points="16 7 22 7 22 13" />
+                        </svg>
+                    </CardHeader>
+                    <CardContent>
+                        <div class="text-2xl font-bold">{{ new Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'CZK' }).format(stats.revpar) }}</div>
+                        <p class="text-xs text-muted-foreground">
+                            Výnos na dostupný pokoj
                         </p>
                     </CardContent>
                 </Card>

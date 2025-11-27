@@ -20,13 +20,13 @@ declare const route: any;
     <div class="max-w-xl mx-auto text-center space-y-8">
       <!-- Success Animation Icon -->
       <div class="relative inline-flex items-center justify-center">
-        <div class="absolute inset-0 bg-primary/10 rounded-md"></div>
-        <div class="relative h-24 w-24 bg-background rounded-md flex items-center justify-center border border-primary/20">
-          <CheckCircle class="h-10 w-10 text-primary" />
+        <div class="absolute inset-0 bg-primary/20 rounded-full animate-ping opacity-75"></div>
+        <div class="relative h-24 w-24 bg-background rounded-full flex items-center justify-center ring-8 ring-background border border-border">
+          <CheckCircle class="h-12 w-12 text-primary" />
         </div>
       </div>
       <div class="space-y-4">
-        <h2 class="text-xl font-semibold text-foreground tracking-tight">Rezervace odeslána!</h2>
+        <h2 class="text-2xl font-bold text-foreground tracking-tight">Rezervace odeslána!</h2>
         <p class="text-lg text-muted-foreground max-w-sm mx-auto">
           Děkujeme, <strong>{{ customer.firstName }}</strong>. Potvrzení a další instrukce jsme právě odeslali na Váš email.
         </p>

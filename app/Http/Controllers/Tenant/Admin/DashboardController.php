@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Tenant\Admin;
 
+use App\Data\Admin\CalendarBookingData;
+use App\Data\Admin\UpcomingBookingData;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Data\Admin\CalendarBookingData;
-use App\Data\Admin\UpcomingBookingData;
 
 class DashboardController extends Controller
 {
@@ -32,7 +32,7 @@ class DashboardController extends Controller
         ];
 
         $bookings = $bookingsCollection
-            ->map(fn($booking) => CalendarBookingData::fromModel($booking)->toArray());
+            ->map(fn ($booking) => CalendarBookingData::fromModel($booking)->toArray());
 
         $upcomingBookings = $bookingsQuery
             ->clone()
@@ -40,7 +40,7 @@ class DashboardController extends Controller
             ->orderBy('start_date')
             ->take(5)
             ->get()
-            ->map(fn($booking) => UpcomingBookingData::fromModel($booking)->toArray());
+            ->map(fn ($booking) => UpcomingBookingData::fromModel($booking)->toArray());
 
         return Inertia::render('Admin/Dashboard', [
             'bookings' => $bookings,

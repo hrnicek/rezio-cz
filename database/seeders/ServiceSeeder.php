@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Extra;
-use App\Models\Service;
 use App\Models\Property;
+use App\Models\Service;
 use Illuminate\Database\Seeder;
 
 class ServiceSeeder extends Seeder
@@ -14,8 +13,9 @@ class ServiceSeeder extends Seeder
         // Get the first property in the current tenant context
         $property = Property::first();
 
-        if (!$property) {
+        if (! $property) {
             $this->command->warn('No property found, skipping service seeding');
+
             return;
         }
 
@@ -42,7 +42,7 @@ class ServiceSeeder extends Seeder
             Service::query()->updateOrCreate(
                 [
                     'name' => $data['name'],
-                    'property_id' => $data['property_id']
+                    'property_id' => $data['property_id'],
                 ],
                 $data,
             );

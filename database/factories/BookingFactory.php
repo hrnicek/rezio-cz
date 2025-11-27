@@ -17,7 +17,7 @@ class BookingFactory extends Factory
     public function definition(): array
     {
         $start = fake()->dateTimeBetween('+1 week', '+3 months');
-        $end = (clone $start)->modify('+' . fake()->numberBetween(1, 14) . ' days');
+        $end = (clone $start)->modify('+'.fake()->numberBetween(1, 14).' days');
 
         // Create a customer for this booking
         $customer = \App\Models\Customer::factory()->create();

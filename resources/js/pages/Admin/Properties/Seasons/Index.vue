@@ -202,13 +202,13 @@ const columns = [
                             <div class="space-y-2">
                                 <Label for="name">Název</Label>
                                 <Input id="name" v-model="form.name" placeholder="např. Léto 2025" required class="h-9" />
-                                <div v-if="form.errors.name" class="text-sm text-destructive">{{ form.errors.name }}</div>
+                                <div v-if="form.errors.name" class="text-sm text-red-500">{{ form.errors.name }}</div>
                             </div>
 
                             <div class="space-y-2">
                                 <Label for="price">Cena za noc (Kč)</Label>
                                 <Input id="price" v-model.number="form.price" type="number" step="0.01" required class="h-9" />
-                                <div v-if="form.errors.price" class="text-sm text-destructive">{{ form.errors.price }}</div>
+                                <div v-if="form.errors.price" class="text-sm text-red-500">{{ form.errors.price }}</div>
                             </div>
                         </div>
 
@@ -216,13 +216,13 @@ const columns = [
                             <div class="space-y-2">
                                 <Label for="start_date">Začátek</Label>
                                 <Input id="start_date" v-model="form.start_date" type="date" :required="!form.is_default" :disabled="form.is_default" class="h-9" />
-                                <div v-if="form.errors.start_date" class="text-sm text-destructive">{{ form.errors.start_date }}</div>
+                                <div v-if="form.errors.start_date" class="text-sm text-red-500">{{ form.errors.start_date }}</div>
                             </div>
 
                             <div class="space-y-2">
                                 <Label for="end_date">Konec</Label>
                                 <Input id="end_date" v-model="form.end_date" type="date" :required="!form.is_default" :disabled="form.is_default" class="h-9" />
-                                <div v-if="form.errors.end_date" class="text-sm text-destructive">{{ form.errors.end_date }}</div>
+                                <div v-if="form.errors.end_date" class="text-sm text-red-500">{{ form.errors.end_date }}</div>
                             </div>
                         </div>
 
@@ -230,13 +230,13 @@ const columns = [
                             <div class="space-y-2">
                                 <Label for="priority">Priorita</Label>
                                 <Input id="priority" v-model.number="form.priority" type="number" class="h-9" />
-                                <div v-if="form.errors.priority" class="text-sm text-destructive">{{ form.errors.priority }}</div>
+                                <div v-if="form.errors.priority" class="text-sm text-red-500">{{ form.errors.priority }}</div>
                             </div>
                             
                             <div class="space-y-2">
                                 <Label for="min_stay">Minimální délka pobytu (noci)</Label>
                                 <Input id="min_stay" v-model.number="form.min_stay" type="number" min="1" class="h-9" />
-                                <div v-if="form.errors.min_stay" class="text-sm text-destructive">{{ form.errors.min_stay }}</div>
+                                <div v-if="form.errors.min_stay" class="text-sm text-red-500">{{ form.errors.min_stay }}</div>
                             </div>
                         </div>
 
@@ -318,10 +318,10 @@ const columns = [
                 </template>
                 <template #actions="{ item }">
                     <div class="flex justify-end gap-2">
-                        <Button size="icon" variant="outline" @click="startEditing(item)">
+                        <Button size="sm" variant="outline" @click="startEditing(item)" class="h-8 w-8 p-0">
                             <Pencil class="h-3 w-3" />
                         </Button>
-                        <Button size="icon" variant="destructive" @click="deleteSeason(item.id)" :disabled="item.is_default">
+                        <Button size="sm" variant="destructive" @click="deleteSeason(item.id)" :disabled="item.is_default" class="h-8 w-8 p-0">
                             <Trash2 class="h-3 w-3" />
                         </Button>
                     </div>

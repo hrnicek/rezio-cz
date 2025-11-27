@@ -2,12 +2,8 @@
 
 namespace Tests;
 
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\URL;
 use App\Models\Tenant;
-use Stancl\Tenancy\Facades\Tenancy;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {

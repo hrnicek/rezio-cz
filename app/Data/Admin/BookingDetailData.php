@@ -3,13 +3,11 @@
 namespace App\Data\Admin;
 
 use App\Data\Shared\CustomerData;
-use App\Data\Shared\PropertyData;
-use App\Data\Shared\PaymentData;
 use App\Data\Shared\GuestData;
+use App\Data\Shared\PaymentData;
+use App\Data\Shared\PropertyData;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\DataCollection;
-use Spatie\LaravelData\Attributes\WithCast;
-use Spatie\LaravelData\Casts\DateTimeInterfaceCast;
 
 class BookingDetailData extends Data
 {

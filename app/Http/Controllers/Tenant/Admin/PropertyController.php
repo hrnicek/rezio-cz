@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Tenant\Admin;
 
+use App\Data\Shared\PropertyData;
 use App\Http\Controllers\Controller;
 use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-use App\Data\Shared\PropertyData;
 
 class PropertyController extends Controller
 {
@@ -44,7 +44,7 @@ class PropertyController extends Controller
 
         Property::create([
             ...$validated,
-            'slug' => Str::slug($validated['name']) . '-' . Str::random(6),
+            'slug' => Str::slug($validated['name']).'-'.Str::random(6),
         ]);
 
         return redirect()->route('admin.properties.index');

@@ -37,6 +37,7 @@ class GenerateCleaningTasks extends Command
 
         if ($bookings->isEmpty()) {
             $this->info('No new cleaning tasks to generate for '.$checkOutDate->toDateString().'.');
+
             return;
         }
 

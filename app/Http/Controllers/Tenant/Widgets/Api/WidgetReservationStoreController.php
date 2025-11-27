@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Tenant\Widgets\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Customer;
+use App\Models\BlackoutDate;
 use App\Models\Booking;
+use App\Models\Customer;
 use App\Models\Property;
+use App\Services\BookingPriceCalculator;
+use App\Services\SeasonalPricingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Services\BookingPriceCalculator;
-use App\Services\SeasonalPricingService;
-use App\Models\BlackoutDate;
 
 class WidgetReservationStoreController extends Controller
 {
@@ -35,8 +35,8 @@ class WidgetReservationStoreController extends Controller
         $checkout = config('booking.checkout_time', '10:00');
         $timezone = config('booking.timezone', 'Europe/Prague');
 
-        $start = Carbon::createFromFormat('Y-m-d H:i', $data['start_date'] . ' ' . $checkin, $timezone);
-        $end = Carbon::createFromFormat('Y-m-d H:i', $data['end_date'] . ' ' . $checkout, $timezone);
+        $start = Carbon::createFromFormat('Y-m-d H:i', $data['start_date'].' '.$checkin, $timezone);
+        $end = Carbon::createFromFormat('Y-m-d H:i', $data['end_date'].' '.$checkout, $timezone);
 
         $minLeadDays = (int) config('booking.min_lead_days', 1);
         $earliest = now()->timezone($timezone)->startOfDay()->addDays($minLeadDays)->setTimeFromTimeString($checkin);
@@ -69,7 +69,7 @@ class WidgetReservationStoreController extends Controller
             ]
         );
 
-        $priceCalculator = new BookingPriceCalculator(new SeasonalPricingService());
+        $priceCalculator = new BookingPriceCalculator(new SeasonalPricingService);
         $breakdown = $priceCalculator->calculate(
             $id->id,
             $start,

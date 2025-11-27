@@ -1,18 +1,18 @@
 <?php
 
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Tenant\Admin\BookingController;
+use App\Http\Controllers\Tenant\Admin\CleaningTaskController;
+use App\Http\Controllers\Tenant\Admin\DashboardController;
+use App\Http\Controllers\Tenant\Admin\EmailTemplateController;
+use App\Http\Controllers\Tenant\Admin\PropertyController;
 use App\Http\Controllers\Tenant\Admin\ReportController;
 use App\Http\Controllers\Tenant\Admin\SeasonController;
-use App\Http\Controllers\Tenant\Admin\BookingController;
-use App\Http\Controllers\Tenant\Admin\PropertyController;
-use App\Http\Controllers\Tenant\Admin\DashboardController;
-use App\Http\Controllers\Tenant\Admin\CleaningTaskController;
-use App\Http\Controllers\Tenant\Admin\EmailTemplateController;
-use App\Http\Controllers\Tenant\Admin\SwitchPropertyController;
-use App\Http\Controllers\Tenant\Admin\Settings\ProfileController;
 use App\Http\Controllers\Tenant\Admin\Settings\PasswordController;
+use App\Http\Controllers\Tenant\Admin\Settings\ProfileController;
 use App\Http\Controllers\Tenant\Admin\Settings\TwoFactorAuthenticationController;
+use App\Http\Controllers\Tenant\Admin\SwitchPropertyController;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 Route::post('/switch-property', SwitchPropertyController::class)->name('switch-property');
@@ -28,6 +28,7 @@ Route::resource('customers', \App\Http\Controllers\Tenant\Admin\CustomerControll
 
 Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
 Route::get('reports/data', [ReportController::class, 'data'])->name('reports.data');
+Route::get('reports/export', [ReportController::class, 'export'])->name('reports.export');
 
 Route::get('bookings/export', [BookingController::class, 'export'])->name('bookings.export');
 Route::resource('bookings', BookingController::class)->only(['index', 'show', 'store', 'update', 'destroy']);

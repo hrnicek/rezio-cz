@@ -181,13 +181,13 @@ const columns = [
                             <div class="space-y-2">
                                 <Label for="name">Název</Label>
                                 <Input id="name" v-model="form.name" placeholder="např. Snídaně" required class="h-9" />
-                                <div v-if="form.errors.name" class="text-sm text-destructive">{{ form.errors.name }}</div>
+                                <div v-if="form.errors.name" class="text-sm text-red-500">{{ form.errors.name }}</div>
                             </div>
 
                             <div class="space-y-2">
                                 <Label for="price">Cena (Kč)</Label>
                                 <Input id="price" v-model.number="form.price" type="number" step="0.01" required class="h-9" />
-                                <div v-if="form.errors.price" class="text-sm text-destructive">{{ form.errors.price }}</div>
+                                <div v-if="form.errors.price" class="text-sm text-red-500">{{ form.errors.price }}</div>
                             </div>
                         </div>
 
@@ -204,20 +204,20 @@ const columns = [
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
-                                <div v-if="form.errors.price_type" class="text-sm text-destructive">{{ form.errors.price_type }}</div>
+                                <div v-if="form.errors.price_type" class="text-sm text-red-500">{{ form.errors.price_type }}</div>
                             </div>
 
                             <div class="space-y-2">
                                 <Label for="max_quantity">Max. množství (0 pro neomezeně)</Label>
                                 <Input id="max_quantity" v-model.number="form.max_quantity" type="number" min="0" required class="h-9" />
-                                <div v-if="form.errors.max_quantity" class="text-sm text-destructive">{{ form.errors.max_quantity }}</div>
+                                <div v-if="form.errors.max_quantity" class="text-sm text-red-500">{{ form.errors.max_quantity }}</div>
                             </div>
                         </div>
 
                         <div class="space-y-2">
                             <Label for="description">Popis</Label>
                             <Textarea id="description" v-model="form.description" placeholder="Popis služby..." />
-                            <div v-if="form.errors.description" class="text-sm text-destructive">{{ form.errors.description }}</div>
+                            <div v-if="form.errors.description" class="text-sm text-red-500">{{ form.errors.description }}</div>
                         </div>
 
                         <div class="flex items-center space-x-2">

@@ -28,7 +28,7 @@ class NewBookingAlert extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New Booking Alert - ' . $this->booking->property->name,
+            subject: 'New Booking Alert - '.$this->booking->property->name,
         );
     }
 

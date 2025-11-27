@@ -3,7 +3,6 @@
 namespace Tests;
 
 use App\Models\Central\Tenant;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 abstract class TenantTestCase extends TestCase
 {
@@ -19,16 +18,16 @@ abstract class TenantTestCase extends TestCase
     protected function initializeTenancy()
     {
         $this->tenant = Tenant::create([
-            'id' => 'test_' . str()->random(10),
+            'id' => 'test_'.str()->random(10),
         ]);
 
         $this->tenant->domains()->create([
-            'domain' => $this->tenant->id . '.localhost',
+            'domain' => $this->tenant->id.'.localhost',
         ]);
 
         tenancy()->initialize($this->tenant);
 
-        \Illuminate\Support\Facades\URL::forceRootUrl('http://' . $this->tenant->domains->first()->domain);
+        \Illuminate\Support\Facades\URL::forceRootUrl('http://'.$this->tenant->domains->first()->domain);
     }
 
     protected function tearDown(): void

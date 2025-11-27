@@ -2,8 +2,8 @@
 
 namespace App\Actions\Booking;
 
-use App\Models\Booking;
 use App\Models\BlackoutDate;
+use App\Models\Booking;
 use Carbon\Carbon;
 
 class ValidateAvailabilityAction
@@ -28,7 +28,7 @@ class ValidateAvailabilityAction
             });
         })->exists();
 
-        $isAvailable = !$overlapping && !$blackouts;
+        $isAvailable = ! $overlapping && ! $blackouts;
 
         return [
             'available' => $isAvailable,

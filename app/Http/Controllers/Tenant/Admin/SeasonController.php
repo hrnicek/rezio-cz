@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Tenant\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Property;
 use App\Models\Season;
-
 use Illuminate\Http\Request;
 
 class SeasonController extends Controller
@@ -60,7 +59,7 @@ class SeasonController extends Controller
             'is_recurring' => 'boolean',
         ]);
 
-        if ($request->boolean('is_default') && !$season->is_default) {
+        if ($request->boolean('is_default') && ! $season->is_default) {
             $property->seasons()->where('is_default', true)->update(['is_default' => false]);
         }
 

@@ -32,7 +32,7 @@ class BookingObserver
     private function generateUniqueCode(): string
     {
         do {
-            $code = now()->format('y') . strtoupper(Str::random(4));
+            $code = now()->format('y').strtoupper(Str::random(4));
         } while (Booking::where('code', $code)->exists());
 
         return $code;

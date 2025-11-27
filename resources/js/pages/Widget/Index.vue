@@ -370,7 +370,7 @@ onMounted(async () => {
         <div v-if="showMobilePriceDetails" class="absolute bottom-full left-0 right-0 bg-background border-t border-border p-4 rounded-t-lg animate-in slide-in-from-bottom-10">
             <div class="flex justify-between items-center mb-4 pb-2 border-b border-border">
                <span class="font-semibold text-foreground">Rozpis ceny</span>
-               <Button variant="ghost" size="icon" @click="showMobilePriceDetails = false" class="h-9 w-9 text-muted-foreground">
+               <Button variant="ghost" size="icon" @click="showMobilePriceDetails = false" class="h-8 w-8 text-muted-foreground">
                  <X class="h-4 w-4" />
                </Button>
             </div>
@@ -429,6 +429,9 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.dashed-border {
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='0' ry='0' stroke='%2310B981FF' stroke-width='2' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+}
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 1rem);
 }

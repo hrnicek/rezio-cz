@@ -17,7 +17,7 @@ class ValidateWidgetCors
         // Extract UUID from route parameter
         $uuid = $request->route('uuid');
 
-        if (!$uuid) {
+        if (! $uuid) {
             return response()->json(['message' => 'Widget UUID required'], 400);
         }
 
@@ -26,7 +26,7 @@ class ValidateWidgetCors
             ->where('is_active', true)
             ->first();
 
-        if (!$widget) {
+        if (! $widget) {
             return response()->json(['message' => 'Widget not found or inactive'], 404);
         }
 
@@ -36,7 +36,7 @@ class ValidateWidgetCors
         // Check CORS if allowed_domains is set and not empty
         $allowedDomains = $widget->allowed_domains ?? [];
 
-        if (!empty($allowedDomains) && $origin) {
+        if (! empty($allowedDomains) && $origin) {
             // Check if origin matches any allowed domain
             $isAllowed = false;
 
@@ -51,7 +51,7 @@ class ValidateWidgetCors
                 }
             }
 
-            if (!$isAllowed) {
+            if (! $isAllowed) {
                 return response()->json([
                     'message' => 'CORS policy: Origin not allowed',
                 ], 403);

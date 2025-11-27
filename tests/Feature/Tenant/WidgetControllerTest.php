@@ -14,7 +14,7 @@ class WidgetControllerTest extends TenantTestCase
     public function test_index_returns_season_information()
     {
         $property = Property::factory()->create();
-        
+
         $season = Season::factory()->create([
             'property_id' => $property->id,
             'name' => 'Summer Season',
@@ -33,7 +33,7 @@ class WidgetControllerTest extends TenantTestCase
         ]));
 
         $response->assertOk();
-        
+
         $response->assertJsonStructure([
             'days' => [
                 '*' => [
@@ -61,7 +61,7 @@ class WidgetControllerTest extends TenantTestCase
     public function test_index_returns_null_season_when_no_season_matches()
     {
         $property = Property::factory()->create();
-        
+
         // No seasons created
 
         $response = $this->getJson(route('api.widgets.index', [

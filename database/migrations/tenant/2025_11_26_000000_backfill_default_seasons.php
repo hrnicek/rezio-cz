@@ -2,8 +2,6 @@
 
 use App\Models\Property;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -15,7 +13,7 @@ return new class extends Migration
         // Iterate through all properties and ensure they have a default season
         Property::chunk(100, function ($properties) {
             foreach ($properties as $property) {
-                if (!$property->seasons()->where('is_default', true)->exists()) {
+                if (! $property->seasons()->where('is_default', true)->exists()) {
                     $property->seasons()->create([
                         'name' => 'Výchozí sezóna',
                         'is_default' => true,

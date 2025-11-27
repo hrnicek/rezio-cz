@@ -33,7 +33,7 @@ class BookingConfirmation extends Mailable implements ShouldQueue
             ->first();
 
         return new Envelope(
-            subject: $template ? $this->replacePlaceholders($template->subject) : 'Booking Confirmation - ' . $this->booking->property->name,
+            subject: $template ? $this->replacePlaceholders($template->subject) : 'Booking Confirmation - '.$this->booking->property->name,
         );
     }
 
@@ -64,7 +64,7 @@ class BookingConfirmation extends Mailable implements ShouldQueue
     protected function replacePlaceholders(string $content): string
     {
         $placeholders = [
-            '{{ customer_name }}' => $this->booking->customer ? $this->booking->customer->first_name . ' ' . $this->booking->customer->last_name : 'Guest',
+            '{{ customer_name }}' => $this->booking->customer ? $this->booking->customer->first_name.' '.$this->booking->customer->last_name : 'Guest',
             '{{ booking_code }}' => $this->booking->code,
             '{{ property_name }}' => $this->booking->property->name,
         ];

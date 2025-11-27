@@ -8,9 +8,7 @@ use Carbon\Carbon;
 
 class BookingPriceCalculator
 {
-    public function __construct(private SeasonalPricingService $seasonalPricing)
-    {
-    }
+    public function __construct(private SeasonalPricingService $seasonalPricing) {}
 
     public function calculate(
         int $propertyId,
@@ -41,7 +39,7 @@ class BookingPriceCalculator
             $service = Service::find($selection['extra_id'] ?? $selection['service_id'] ?? null);
             $quantity = (int) ($selection['quantity'] ?? 0);
 
-            if (!$service || !$service->is_active || $quantity <= 0) {
+            if (! $service || ! $service->is_active || $quantity <= 0) {
                 continue;
             }
 

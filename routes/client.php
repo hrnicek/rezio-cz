@@ -1,11 +1,8 @@
 <?php
 
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
-use App\Http\Controllers\Tenant\Client\BookingController;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
-
 
 Route::middleware([
     InitializeTenancyByDomain::class,

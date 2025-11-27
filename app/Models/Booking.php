@@ -2,24 +2,26 @@
 
 namespace App\Models;
 
-use Spatie\ModelStates\HasStates;
-use Spatie\Activitylog\LogOptions;
 use App\States\Booking\BookingState;
-use Illuminate\Database\Eloquent\Model;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\ModelStates\HasStates;
 
 class Booking extends Model
 {
     /** @use HasFactory<\Database\Factories\BookingFactory> */
-    use HasFactory, SoftDeletes, HasStates, LogsActivity;
+    use HasFactory, HasStates, LogsActivity, SoftDeletes;
 
     public const ALLOWED_STATUSES = ['pending', 'confirmed', 'cancelled', 'paid', 'blocked'];
+
+    protected $touches = ['property'];
 
     protected static function booted(): void
     {

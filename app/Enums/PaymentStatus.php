@@ -12,7 +12,7 @@ enum PaymentStatus: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Pending => 'Čekající',
             self::Paid => 'Zaplaceno',
             self::Refunded => 'Vráceno',
@@ -23,7 +23,7 @@ enum PaymentStatus: string
 
     public function color(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Pending => 'yellow',
             self::Paid => 'green',
             self::Refunded => 'blue',

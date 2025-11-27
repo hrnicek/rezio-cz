@@ -62,8 +62,6 @@ class Season extends Model
         return $this->belongsTo(Property::class);
     }
 
-
-
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);

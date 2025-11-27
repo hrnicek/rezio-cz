@@ -2,14 +2,14 @@
 
 namespace App\Rules\Booking;
 
-use Carbon\Carbon;
 use App\Models\Season;
+use Carbon\Carbon;
 
 class CheckInDayRule implements BookingRule
 {
     public function validate(Carbon $start, Carbon $end, ?Season $season): void
     {
-        if (!$season || empty($season->check_in_days)) {
+        if (! $season || empty($season->check_in_days)) {
             return;
         }
 
@@ -18,7 +18,7 @@ class CheckInDayRule implements BookingRule
 
         $dayName = $start->englishDayOfWeek; // e.g. 'Friday'
 
-        if (!in_array($dayName, $season->check_in_days)) {
+        if (! in_array($dayName, $season->check_in_days)) {
             $allowed = implode(', ', $season->check_in_days);
             throw new \Exception("Check-in is only allowed on: {$allowed}.");
         }

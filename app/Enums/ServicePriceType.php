@@ -14,7 +14,7 @@ enum ServicePriceType: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PerPerson => 'Za osobu',
             self::PerNight, self::PerDay => 'Za noc',
             self::PerStay => 'Za pobyt',

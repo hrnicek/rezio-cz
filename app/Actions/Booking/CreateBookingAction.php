@@ -5,11 +5,11 @@ namespace App\Actions\Booking;
 use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\Service;
-use App\Services\BookingPriceCalculator;
-use App\States\Booking\Pending;
-use App\Services\BookingRules;
-use App\Rules\Booking\MinStayRule;
 use App\Rules\Booking\CheckInDayRule;
+use App\Rules\Booking\MinStayRule;
+use App\Services\BookingPriceCalculator;
+use App\Services\BookingRules;
+use App\States\Booking\Pending;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -23,8 +23,8 @@ class CreateBookingAction
     ) {
         // Register default rules
         $this->bookingRules
-            ->addRule(new MinStayRule())
-            ->addRule(new CheckInDayRule());
+            ->addRule(new MinStayRule)
+            ->addRule(new CheckInDayRule);
     }
 
     public function execute(array $data): Booking
@@ -42,15 +42,15 @@ class CreateBookingAction
                 'phone' => $data['customer']['phone'],
             ]);
 
-            //2. Parse dates (with default check-in / check-out times)
+            // 2. Parse dates (with default check-in / check-out times)
             $checkin = config('booking.checkin_time', '14:00');
             $checkout = config('booking.checkout_time', '10:00');
-            $startDate = Carbon::createFromFormat('Y-m-d H:i', $data['start_date'] . ' ' . $checkin);
-            $endDate = Carbon::createFromFormat('Y-m-d H:i', $data['end_date'] . ' ' . $checkout);
+            $startDate = Carbon::createFromFormat('Y-m-d H:i', $data['start_date'].' '.$checkin);
+            $endDate = Carbon::createFromFormat('Y-m-d H:i', $data['end_date'].' '.$checkout);
 
             // 3. Validate availability
             $availability = $this->availabilityValidator->execute($startDate, $endDate);
-            if (!$availability['available']) {
+            if (! $availability['available']) {
                 throw new \Exception('Selected dates are not available.');
             }
 
@@ -86,7 +86,7 @@ class CreateBookingAction
                 $service = Service::find($selection['extra_id'] ?? $selection['service_id'] ?? null);
                 $quantity = (int) ($selection['quantity'] ?? 0);
 
-                if (!$service || !$service->is_active || $quantity <= 0) {
+                if (! $service || ! $service->is_active || $quantity <= 0) {
                     continue;
                 }
 

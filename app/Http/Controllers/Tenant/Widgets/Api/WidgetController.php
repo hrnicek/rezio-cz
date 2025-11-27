@@ -19,7 +19,7 @@ class WidgetController extends Controller
     public function index(Property $id, CalendarRequest $request): JsonResponse
     {
         $property = $id;
-        $pricingService = new SeasonalPricingService();
+        $pricingService = new SeasonalPricingService;
 
         $month = (int) ($request->validated()['month'] ?? now()->month);
         $year = (int) ($request->validated()['year'] ?? now()->year);
@@ -55,6 +55,7 @@ class WidgetController extends Controller
             $isBooked = $bookings->contains(function (Booking $b) use ($date) {
                 $bookingStart = \Illuminate\Support\Carbon::parse($b->date_start)->startOfDay();
                 $bookingEndExclusive = \Illuminate\Support\Carbon::parse($b->date_end)->subDay()->startOfDay();
+
                 return $date->between($bookingStart, $bookingEndExclusive);
             });
 
@@ -91,8 +92,8 @@ class WidgetController extends Controller
 
         $checkin = config('booking.checkin_time', '14:00');
         $checkout = config('booking.checkout_time', '10:00');
-        $start = Carbon::createFromFormat('Y-m-d H:i', $data['start_date'] . ' ' . $checkin);
-        $end = Carbon::createFromFormat('Y-m-d H:i', $data['end_date'] . ' ' . $checkout);
+        $start = Carbon::createFromFormat('Y-m-d H:i', $data['start_date'].' '.$checkin);
+        $end = Carbon::createFromFormat('Y-m-d H:i', $data['end_date'].' '.$checkout);
 
         $minLeadDays = (int) config('booking.min_lead_days', 1);
         $earliest = now()->timezone(config('booking.timezone', 'Europe/Prague'))
@@ -131,6 +132,7 @@ class WidgetController extends Controller
             $isBooked = $bookings->contains(function (Booking $b) use ($cursor) {
                 $bookingStart = \Illuminate\Support\Carbon::parse($b->date_start)->startOfDay();
                 $bookingEndExclusive = \Illuminate\Support\Carbon::parse($b->date_end)->subDay()->startOfDay();
+
                 return $cursor->between($bookingStart, $bookingEndExclusive);
             });
 

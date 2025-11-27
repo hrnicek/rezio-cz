@@ -56,13 +56,13 @@ class Property extends Model
     public function widget(): HasOne
     {
         return $this->hasOne(Widget::class)->withDefault([
-        'settings' => [
-            'primary_color' => '#3b82f6',
-            'font_family' => 'Roboto, sans-serif',
-            'layout' => 'standard',
-        ],
-        'allowed_domains' => [], 
-        'is_active' => true,
-    ]);
+            'settings' => [
+                'primary_color' => '#3b82f6',
+                'font_family' => 'Roboto, sans-serif',
+                'layout' => 'standard',
+            ],
+            'allowed_domains' => [],
+            'is_active' => true,
+        ]);
     }
 }

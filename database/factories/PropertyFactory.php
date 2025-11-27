@@ -18,10 +18,11 @@ class PropertyFactory extends Factory
     public function definition(): array
     {
         $name = $this->faker->words(3, true);
+
         return [
             // 'user_id' => \App\Models\User::factory(), // Removed
             'name' => $name,
-            'slug' => Str::slug($name) . '-' . Str::random(6),
+            'slug' => Str::slug($name).'-'.Str::random(6),
             'address' => $this->faker->address(),
             'description' => $this->faker->sentence(),
             'price_per_night' => $this->faker->numberBetween(50, 500),

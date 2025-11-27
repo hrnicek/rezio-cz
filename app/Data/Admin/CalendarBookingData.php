@@ -23,7 +23,7 @@ class CalendarBookingData extends Data
             start: $booking->start_date->format('Y-m-d'),
             end: $booking->end_date->format('Y-m-d'),
             title: $booking->customer
-                ? $booking->customer->first_name . ' ' . $booking->customer->last_name
+                ? $booking->customer->first_name.' '.$booking->customer->last_name
                 : 'Unknown',
             status: $booking->status ?? '',
         );
