@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue';
+import PropertyLayout from '../Partials/PropertyLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Mail, Edit } from 'lucide-vue-next';
+import { Mail, Edit } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
 
 declare const route: any;
@@ -131,41 +131,35 @@ const previewBody = computed(() => {
     };
 
     for (const [key, value] of Object.entries(replacements)) {
-        // Escape special regex characters in key if needed, but for simple {{ }} it's fine to just match exact string if we use replaceAll or regex
         text = text.split(key).join(value);
     }
     
     return text.replace(/\n/g, '<br>');
 });
+
+const breadcrumbs = [
+  { title: 'Nemovitosti', href: route('admin.properties.index') },
+  { title: props.property.name, href: route('admin.properties.edit', props.property.id) },
+  { title: 'Emailové šablony', href: route('admin.properties.email-templates.index', props.property.id) },
+];
 </script>
 
 <template>
   <Head title="Emailové šablony" />
 
-  <AppLayout :breadcrumbs="[
-    { title: 'Nemovitosti', href: route('admin.properties.index') },
-    { title: property.name, href: route('admin.properties.edit', property.id) },
-    { title: 'Emailové šablony', href: route('admin.properties.email-templates.index', property.id) },
-  ]">
-    <div class="flex h-full flex-1 flex-col gap-4 p-4">
+  <PropertyLayout :property="property" :breadcrumbs="breadcrumbs">
+    <div class="space-y-6">
       <div class="flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <Button variant="outline" size="icon" as-child class="h-9 w-9">
-            <Link :href="route('admin.properties.edit', property.id)">
-              <ArrowLeft class="h-4 w-4" />
-            </Link>
-          </Button>
-          <div>
-            <h2 class="text-2xl font-bold tracking-tight">Emailové šablony</h2>
-            <p class="text-sm text-muted-foreground">
-              Správa automatických emailů pro {{ property.name }}
-            </p>
-          </div>
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight">Emailové šablony</h2>
+          <p class="text-muted-foreground">
+            Správa automatických emailů pro {{ property.name }}
+          </p>
         </div>
       </div>
 
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card v-for="type in availableTypes" :key="type.type" class="flex flex-col">
+        <Card v-for="type in availableTypes" :key="type.type" class="flex flex-col border shadow-sm hover:shadow-md transition-shadow">
           <CardHeader>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
@@ -248,5 +242,5 @@ const previewBody = computed(() => {
         </DialogContent>
       </Dialog>
     </div>
-  </AppLayout>
+  </PropertyLayout>
 </template>

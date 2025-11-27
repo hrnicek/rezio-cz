@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue';
+import PropertyLayout from '../Partials/PropertyLayout.vue';
 import { Head, router, Link } from '@inertiajs/vue3';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,12 +15,13 @@ import AppDataTable from '@/components/AppDataTable.vue';
 import { ref, watch } from 'vue';
 import { debounce } from 'lodash';
 import { useCurrency } from '@/composables/useCurrency';
-import { Eye, Check, X } from 'lucide-vue-next';
+import { Eye, Check, X, Calendar } from 'lucide-vue-next';
 import { BookingStatusLabels } from '@/lib/enums';
 
 declare const route: any;
 
 const props = defineProps<{
+    property: { id: number; name: string };
     bookings: {
         data: Array<{
             id: number;
@@ -46,11 +47,13 @@ const searchQuery = ref(props.filters.search || '');
 const { formatCurrency } = useCurrency();
 
 const breadcrumbs = [
-    { title: 'Rezervace', href: route('admin.bookings.index') },
+    { title: 'Nemovitosti', href: route('admin.properties.index') },
+    { title: props.property.name, href: route('admin.properties.edit', props.property.id) },
+    { title: 'Rezervace', href: route('admin.properties.bookings.index', props.property.id) },
 ];
 
 const updateFilters = debounce(() => {
-    router.get(route('admin.bookings.index'), { 
+    router.get(route('admin.properties.bookings.index', props.property.id), { 
         status: statusFilter.value === 'all' ? null : statusFilter.value,
         search: searchQuery.value || null
     }, { preserveState: true, replace: true });
@@ -64,7 +67,11 @@ const exportBookings = () => {
     if (statusFilter.value !== 'all') params.append('status', statusFilter.value);
     if (searchQuery.value) params.append('search', searchQuery.value);
     
-    window.location.href = route('admin.bookings.export') + '?' + params.toString();
+    // Note: This export route might need to be specific for property too, but falling back to global export with property_id filter if needed.
+    // Assuming admin.bookings.export can handle property_id or we need a new route.
+    // For now, keeping it as is but be aware it might need backend adjustment.
+    // Ideally: route('admin.properties.bookings.export', props.property.id)
+    window.location.href = route('admin.bookings.export') + '?' + params.toString() + '&property_id=' + props.property.id;
 };
 
 const updateStatus = (bookingId: number, status: string) => {
@@ -84,7 +91,6 @@ const getStatusVariant = (status: string) => {
 };
 
 const columns = [
-    { key: 'property', label: 'Nemovitost' },
     { key: 'customer', label: 'Host' },
     { key: 'dates', label: 'Termín' },
     { key: 'total_price', label: 'Cena celkem' },
@@ -94,36 +100,41 @@ const columns = [
 </script>
 
 <template>
-    <Head title="Rezervace" />
+    <Head :title="`Rezervace - ${property.name}`" />
 
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 p-4">
+    <PropertyLayout :property="property" :breadcrumbs="breadcrumbs">
+        <div class="space-y-6">
             <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <div class="w-64">
-                        <Input 
-                            v-model="searchQuery" 
-                            placeholder="Hledat hosty..." 
-                            class="w-full h-9"
-                        />
-                    </div>
-                    <div class="w-48">
-                        <Select v-model="statusFilter">
-                            <SelectTrigger class="h-9">
-                                <SelectValue placeholder="Filtrovat dle stavu" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Všechny stavy</SelectItem>
-                                <SelectItem v-for="(label, value) in BookingStatusLabels" :key="value" :value="value">
-                                    {{ label }}
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                <div>
+                    <h2 class="text-2xl font-bold tracking-tight">Rezervace</h2>
+                    <p class="text-muted-foreground">Přehled a správa rezervací.</p>
                 </div>
-                <Button variant="outline" size="sm" class="h-9" @click="exportBookings">
+                <Button variant="outline" size="sm" class="h-9 shadow-sm" @click="exportBookings">
                     Exportovat CSV
                 </Button>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="w-64">
+                    <Input 
+                        v-model="searchQuery" 
+                        placeholder="Hledat hosty..." 
+                        class="w-full h-9"
+                    />
+                </div>
+                <div class="w-48">
+                    <Select v-model="statusFilter">
+                        <SelectTrigger class="h-9">
+                            <SelectValue placeholder="Filtrovat dle stavu" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Všechny stavy</SelectItem>
+                            <SelectItem v-for="(label, value) in BookingStatusLabels" :key="value" :value="value">
+                                {{ label }}
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
 
             <AppDataTable 
@@ -131,13 +142,9 @@ const columns = [
                 :columns="columns"
                 no-results-message="Žádné rezervace nenalezeny."
             >
-                <template #property="{ item }">
-                    <span class="font-medium">{{ item.property.name }}</span>
-                </template>
-                
                 <template #customer="{ item }">
                     <div v-if="item.customer">
-                        <div>{{ item.customer.first_name }} {{ item.customer.last_name }}</div>
+                        <div class="font-medium">{{ item.customer.first_name }} {{ item.customer.last_name }}</div>
                         <div class="text-xs text-muted-foreground">{{ item.customer.email }}</div>
                     </div>
                     <div v-else class="text-muted-foreground italic">
@@ -146,11 +153,14 @@ const columns = [
                 </template>
                 
                 <template #dates="{ item }">
-                    {{ item.start_date }} - {{ item.end_date }}
+                    <div class="flex items-center gap-2">
+                        <Calendar class="h-3 w-3 text-muted-foreground" />
+                        <span class="text-sm">{{ item.start_date }} - {{ item.end_date }}</span>
+                    </div>
                 </template>
                 
                 <template #total_price="{ item }">
-                    {{ formatCurrency(item.total_price) }}
+                    <span class="font-mono">{{ formatCurrency(item.total_price) }}</span>
                 </template>
                 
                 <template #status="{ item }">
@@ -161,7 +171,7 @@ const columns = [
                 
                 <template #actions="{ item }">
                     <div class="flex justify-end gap-2">
-                        <Button variant="outline" size="icon-sm" as-child>
+                        <Button variant="ghost" size="icon" as-child class="h-8 w-8">
                             <Link :href="route('admin.bookings.show', item.id)">
                                 <Eye class="h-4 w-4" />
                             </Link>
@@ -169,7 +179,8 @@ const columns = [
                         <Button 
                             v-if="item.status === 'pending'" 
                             variant="default"
-                            size="icon-sm" 
+                            size="icon"
+                            class="h-8 w-8"
                             @click="updateStatus(item.id, 'confirmed')"
                             title="Potvrdit"
                         >
@@ -177,8 +188,9 @@ const columns = [
                         </Button>
                         <Button 
                             v-if="item.status !== 'cancelled'" 
-                            variant="destructive" 
-                            size="icon-sm" 
+                            variant="ghost" 
+                            size="icon" 
+                            class="h-8 w-8 text-destructive hover:text-destructive"
                             @click="updateStatus(item.id, 'cancelled')"
                             title="Zrušit"
                         >
@@ -188,5 +200,5 @@ const columns = [
                 </template>
             </AppDataTable>
         </div>
-    </AppLayout>
+    </PropertyLayout>
 </template>

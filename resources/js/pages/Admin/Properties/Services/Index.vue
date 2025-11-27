@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue';
+import PropertyLayout from '../Partials/PropertyLayout.vue';
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, Plus, Pencil, Trash2 } from 'lucide-vue-next';
+import { Plus, Pencil, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ServicePriceType, ServicePriceTypeLabels } from '@/lib/enums';
@@ -150,25 +150,21 @@ const columns = [
 <template>
     <Head :title="`Služby - ${property.name}`" />
 
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 p-4">
+    <PropertyLayout :property="property" :breadcrumbs="breadcrumbs">
+        <div class="space-y-6">
             <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <Button variant="outline" size="icon" as-child class="h-9 w-9">
-                        <Link :href="route('admin.properties.edit', property.id)">
-                            <ChevronLeft class="h-4 w-4" />
-                        </Link>
-                    </Button>
-                    <h2 class="text-2xl font-bold tracking-tight">Služby - {{ property.name }}</h2>
+                <div>
+                    <h2 class="text-2xl font-bold tracking-tight">Služby</h2>
+                    <p class="text-muted-foreground">Správa doplňkových služeb a poplatků.</p>
                 </div>
-                <Button @click="startAdding" v-if="!isAdding && !editingId" class="h-9">
+                <Button @click="startAdding" v-if="!isAdding && !editingId" class="h-9 shadow-sm">
                     <Plus class="mr-2 h-4 w-4" />
                     Přidat službu
                 </Button>
             </div>
 
             <!-- Add/Edit Form -->
-            <Card v-if="isAdding || editingId" class="mb-6 border-2 border-primary/20">
+            <Card v-if="isAdding || editingId" class="border shadow-sm animate-in fade-in slide-in-from-top-4 duration-200">
                 <CardHeader>
                     <CardTitle>{{ editingId ? 'Upravit službu' : 'Přidat novou službu' }}</CardTitle>
                     <CardDescription>
@@ -181,13 +177,13 @@ const columns = [
                             <div class="space-y-2">
                                 <Label for="name">Název</Label>
                                 <Input id="name" v-model="form.name" placeholder="např. Snídaně" required class="h-9" />
-                                <div v-if="form.errors.name" class="text-sm text-red-500">{{ form.errors.name }}</div>
+                                <div v-if="form.errors.name" class="text-sm text-destructive">{{ form.errors.name }}</div>
                             </div>
 
                             <div class="space-y-2">
                                 <Label for="price">Cena (Kč)</Label>
                                 <Input id="price" v-model.number="form.price" type="number" step="0.01" required class="h-9" />
-                                <div v-if="form.errors.price" class="text-sm text-red-500">{{ form.errors.price }}</div>
+                                <div v-if="form.errors.price" class="text-sm text-destructive">{{ form.errors.price }}</div>
                             </div>
                         </div>
 
@@ -204,28 +200,28 @@ const columns = [
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
-                                <div v-if="form.errors.price_type" class="text-sm text-red-500">{{ form.errors.price_type }}</div>
+                                <div v-if="form.errors.price_type" class="text-sm text-destructive">{{ form.errors.price_type }}</div>
                             </div>
 
                             <div class="space-y-2">
                                 <Label for="max_quantity">Max. množství (0 pro neomezeně)</Label>
                                 <Input id="max_quantity" v-model.number="form.max_quantity" type="number" min="0" required class="h-9" />
-                                <div v-if="form.errors.max_quantity" class="text-sm text-red-500">{{ form.errors.max_quantity }}</div>
+                                <div v-if="form.errors.max_quantity" class="text-sm text-destructive">{{ form.errors.max_quantity }}</div>
                             </div>
                         </div>
 
                         <div class="space-y-2">
                             <Label for="description">Popis</Label>
-                            <Textarea id="description" v-model="form.description" placeholder="Popis služby..." />
-                            <div v-if="form.errors.description" class="text-sm text-red-500">{{ form.errors.description }}</div>
+                            <Textarea id="description" v-model="form.description" placeholder="Popis služby..." rows="3" />
+                            <div v-if="form.errors.description" class="text-sm text-destructive">{{ form.errors.description }}</div>
                         </div>
 
-                        <div class="flex items-center space-x-2">
+                        <div class="flex items-center space-x-2 pt-2">
                             <Checkbox id="is_active" v-model:checked="form.is_active" />
                             <Label for="is_active" class="cursor-pointer">Aktivní</Label>
                         </div>
 
-                        <div class="flex justify-end gap-2">
+                        <div class="flex justify-end gap-2 pt-4">
                             <Button type="button" variant="outline" @click="cancelEdit" class="h-9">
                                 Zrušit
                             </Button>
@@ -263,15 +259,15 @@ const columns = [
                 </template>
                 <template #actions="{ item }">
                     <div class="flex justify-end gap-2">
-                        <Button size="sm" variant="outline" @click="startEditing(item)">
-                            <Pencil class="h-3 w-3" />
+                        <Button size="sm" variant="ghost" class="h-8 w-8 p-0" @click="startEditing(item)">
+                            <Pencil class="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="destructive" @click="deleteService(item.id)">
-                            <Trash2 class="h-3 w-3" />
+                        <Button size="sm" variant="ghost" class="h-8 w-8 p-0 text-destructive hover:text-destructive" @click="deleteService(item.id)">
+                            <Trash2 class="h-4 w-4" />
                         </Button>
                     </div>
                 </template>
             </AppDataTable>
         </div>
-    </AppLayout>
+    </PropertyLayout>
 </template>

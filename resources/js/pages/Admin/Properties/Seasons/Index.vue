@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, Link, useForm, router } from '@inertiajs/vue3';
+import PropertyLayout from '../Partials/PropertyLayout.vue';
+import { Head, useForm, router } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, Plus, Pencil, Trash2 } from 'lucide-vue-next';
+import { Plus, Pencil, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { Checkbox } from '@/components/ui/checkbox';
 import AppDataTable from '@/components/AppDataTable.vue';
@@ -17,6 +17,7 @@ const props = defineProps<{
     property: {
         id: number;
         name: string;
+        address?: string;
     };
     seasons: {
         data: Array<{
@@ -171,25 +172,21 @@ const columns = [
 <template>
     <Head :title="`Sezóny - ${property.name}`" />
 
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 p-4">
+    <PropertyLayout :property="property" :breadcrumbs="breadcrumbs">
+        <div class="space-y-6">
             <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <Button variant="outline" size="icon" as-child class="h-9 w-9">
-                        <Link :href="route('admin.properties.edit', property.id)">
-                            <ChevronLeft class="h-4 w-4" />
-                        </Link>
-                    </Button>
-                    <h2 class="text-2xl font-bold tracking-tight">Sezóny - {{ property.name }}</h2>
+                <div>
+                    <h2 class="text-2xl font-bold tracking-tight">Sezóny</h2>
+                    <p class="text-muted-foreground">Správa cenových sezón a omezení.</p>
                 </div>
-                <Button @click="startAdding" v-if="!isAdding && !editingId" class="h-9">
+                <Button @click="startAdding" v-if="!isAdding && !editingId" class="h-9 shadow-sm">
                     <Plus class="mr-2 h-4 w-4" />
                     Přidat sezónu
                 </Button>
             </div>
 
             <!-- Add/Edit Form -->
-            <Card v-if="isAdding || editingId" class="mb-6">
+            <Card v-if="isAdding || editingId" class="border shadow-none bg-muted/20">
                 <CardHeader>
                     <CardTitle>{{ editingId ? 'Upravit sezónu' : 'Přidat novou sezónu' }}</CardTitle>
                     <CardDescription>
@@ -200,65 +197,65 @@ const columns = [
                     <form @submit.prevent="submit" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-2">
-                                <Label for="name">Název</Label>
+                                <Label for="name" class="text-xs uppercase text-muted-foreground font-mono">Název</Label>
                                 <Input id="name" v-model="form.name" placeholder="např. Léto 2025" required class="h-9" />
-                                <div v-if="form.errors.name" class="text-sm text-red-500">{{ form.errors.name }}</div>
+                                <div v-if="form.errors.name" class="text-sm text-destructive">{{ form.errors.name }}</div>
                             </div>
 
                             <div class="space-y-2">
-                                <Label for="price">Cena za noc (Kč)</Label>
+                                <Label for="price" class="text-xs uppercase text-muted-foreground font-mono">Cena za noc (Kč)</Label>
                                 <Input id="price" v-model.number="form.price" type="number" step="0.01" required class="h-9" />
-                                <div v-if="form.errors.price" class="text-sm text-red-500">{{ form.errors.price }}</div>
+                                <div v-if="form.errors.price" class="text-sm text-destructive">{{ form.errors.price }}</div>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-2">
-                                <Label for="start_date">Začátek</Label>
+                                <Label for="start_date" class="text-xs uppercase text-muted-foreground font-mono">Začátek</Label>
                                 <Input id="start_date" v-model="form.start_date" type="date" :required="!form.is_default" :disabled="form.is_default" class="h-9" />
-                                <div v-if="form.errors.start_date" class="text-sm text-red-500">{{ form.errors.start_date }}</div>
+                                <div v-if="form.errors.start_date" class="text-sm text-destructive">{{ form.errors.start_date }}</div>
                             </div>
 
                             <div class="space-y-2">
-                                <Label for="end_date">Konec</Label>
+                                <Label for="end_date" class="text-xs uppercase text-muted-foreground font-mono">Konec</Label>
                                 <Input id="end_date" v-model="form.end_date" type="date" :required="!form.is_default" :disabled="form.is_default" class="h-9" />
-                                <div v-if="form.errors.end_date" class="text-sm text-red-500">{{ form.errors.end_date }}</div>
+                                <div v-if="form.errors.end_date" class="text-sm text-destructive">{{ form.errors.end_date }}</div>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-2">
-                                <Label for="priority">Priorita</Label>
+                                <Label for="priority" class="text-xs uppercase text-muted-foreground font-mono">Priorita</Label>
                                 <Input id="priority" v-model.number="form.priority" type="number" class="h-9" />
-                                <div v-if="form.errors.priority" class="text-sm text-red-500">{{ form.errors.priority }}</div>
+                                <div v-if="form.errors.priority" class="text-sm text-destructive">{{ form.errors.priority }}</div>
                             </div>
                             
                             <div class="space-y-2">
-                                <Label for="min_stay">Minimální délka pobytu (noci)</Label>
+                                <Label for="min_stay" class="text-xs uppercase text-muted-foreground font-mono">Minimální délka pobytu (noci)</Label>
                                 <Input id="min_stay" v-model.number="form.min_stay" type="number" min="1" class="h-9" />
-                                <div v-if="form.errors.min_stay" class="text-sm text-red-500">{{ form.errors.min_stay }}</div>
+                                <div v-if="form.errors.min_stay" class="text-sm text-destructive">{{ form.errors.min_stay }}</div>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                             <div class="flex items-center space-x-2">
                                 <Checkbox id="is_default" v-model:checked="form.is_default" />
-                                <Label for="is_default" class="cursor-pointer">Výchozí sezóna</Label>
+                                <Label for="is_default" class="cursor-pointer text-sm font-medium">Výchozí sezóna</Label>
                             </div>
 
                             <div class="flex items-center space-x-2">
                                 <Checkbox id="is_fixed_range" v-model:checked="form.is_fixed_range" />
-                                <Label for="is_fixed_range" class="cursor-pointer">Pevný rozsah</Label>
+                                <Label for="is_fixed_range" class="cursor-pointer text-sm font-medium">Pevný rozsah</Label>
                             </div>
 
                             <div class="flex items-center space-x-2">
                                 <Checkbox id="is_recurring" v-model:checked="form.is_recurring" />
-                                <Label for="is_recurring" class="cursor-pointer">Opakovaná (roční)</Label>
+                                <Label for="is_recurring" class="cursor-pointer text-sm font-medium">Opakovaná (roční)</Label>
                             </div>
                         </div>
 
                         <div class="space-y-2">
-                            <Label>Dny příjezdu (volitelné)</Label>
+                            <Label class="text-xs uppercase text-muted-foreground font-mono">Dny příjezdu (volitelné)</Label>
                             <div class="flex flex-wrap gap-2">
                                 <div v-for="day in weekDays" :key="day.value" class="flex items-center space-x-2">
                                     <Checkbox 
@@ -266,16 +263,16 @@ const columns = [
                                         :checked="form.check_in_days.includes(day.value)"
                                         @update:checked="toggleCheckInDay(day.value)"
                                     />
-                                    <Label :for="`day-${day.value}`" class="cursor-pointer">{{ day.label }}</Label>
+                                    <Label :for="`day-${day.value}`" class="cursor-pointer text-sm">{{ day.label }}</Label>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="flex justify-end gap-2">
-                            <Button type="button" variant="outline" @click="cancelEdit" class="h-9">
+                        <div class="flex justify-end gap-2 pt-2">
+                            <Button type="button" variant="outline" @click="cancelEdit" class="h-9 shadow-none">
                                 Zrušit
                             </Button>
-                            <Button type="submit" :disabled="form.processing" class="h-9">
+                            <Button type="submit" :disabled="form.processing" class="h-9 shadow-sm">
                                 {{ editingId ? 'Upravit' : 'Vytvořit' }} sezónu
                             </Button>
                         </div>
@@ -290,43 +287,43 @@ const columns = [
                 search-placeholder="Hledat sezóny..."
             >
                 <template #name="{ value }">
-                    <div class="font-medium">{{ value }}</div>
+                    <div class="font-medium text-foreground">{{ value }}</div>
                 </template>
                 <template #priority="{ value }">
-                    {{ value || 0 }}
+                    <span class="text-muted-foreground">{{ value || 0 }}</span>
                 </template>
                 <template #period="{ item }">
-                    <span v-if="item.is_default">N/A</span>
-                    <span v-else>{{ item.start_date }} - {{ item.end_date }}</span>
+                    <span v-if="item.is_default" class="text-muted-foreground text-xs uppercase">Vždy</span>
+                    <span v-else class="font-mono text-xs">{{ item.start_date }} - {{ item.end_date }}</span>
                 </template>
                 <template #price="{ value }">
-                    {{ value }} Kč
+                    <span class="font-medium">{{ value }} Kč</span>
                 </template>
                 <template #min_stay="{ value }">
-                    {{ value || 1 }} nocí
+                    {{ value || 1 }} <span class="text-muted-foreground text-xs">nocí</span>
                 </template>
                 <template #check_in_days="{ value }">
-                    <span v-if="!value || value.length === 0">Kdykoliv</span>
-                    <span v-else>{{ value.map((d: number) => weekDays[d].label.substring(0, 2)).join(', ') }}</span>
+                    <span v-if="!value || value.length === 0" class="text-muted-foreground text-xs uppercase">Kdykoliv</span>
+                    <span v-else class="text-xs font-mono">{{ value.map((d: number) => weekDays[d].label.substring(0, 2)).join(', ') }}</span>
                 </template>
                 <template #status="{ item }">
                     <div class="flex gap-1 flex-wrap">
-                        <Badge v-if="item.is_default" variant="default">Výchozí</Badge>
-                        <Badge v-if="item.is_fixed_range" variant="secondary">Pevný</Badge>
-                        <Badge v-if="item.is_recurring" variant="outline">Opakovaná</Badge>
+                        <Badge v-if="item.is_default" variant="secondary" class="rounded-sm shadow-none">Výchozí</Badge>
+                        <Badge v-if="item.is_fixed_range" variant="outline" class="rounded-sm">Pevný</Badge>
+                        <Badge v-if="item.is_recurring" variant="outline" class="rounded-sm">Opakovaná</Badge>
                     </div>
                 </template>
                 <template #actions="{ item }">
                     <div class="flex justify-end gap-2">
-                        <Button size="sm" variant="outline" @click="startEditing(item)" class="h-8 w-8 p-0">
-                            <Pencil class="h-3 w-3" />
+                        <Button size="icon-sm" variant="ghost" @click="startEditing(item)" class="h-8 w-8 hover:bg-muted">
+                            <Pencil class="h-3 w-3 text-muted-foreground" />
                         </Button>
-                        <Button size="sm" variant="destructive" @click="deleteSeason(item.id)" :disabled="item.is_default" class="h-8 w-8 p-0">
-                            <Trash2 class="h-3 w-3" />
+                        <Button size="icon-sm" variant="ghost" @click="deleteSeason(item.id)" :disabled="item.is_default" class="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
+                            <Trash2 class="h-3 w-3 text-muted-foreground group-hover:text-destructive" />
                         </Button>
                     </div>
                 </template>
             </AppDataTable>
         </div>
-    </AppLayout>
+    </PropertyLayout>
 </template>

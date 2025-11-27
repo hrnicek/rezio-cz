@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue';
+import PropertyLayout from './Partials/PropertyLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronLeft } from 'lucide-vue-next';
 
 declare const route: any;
 
@@ -35,7 +34,11 @@ const breadcrumbs = [
         href: '/admin/properties',
     },
     {
-        title: 'Upravit',
+        title: props.property.name,
+        href: `/admin/properties/${props.property.id}/edit`,
+    },
+    {
+        title: 'Přehled',
         href: `/admin/properties/${props.property.id}/edit`,
     },
 ];
@@ -44,73 +47,48 @@ const breadcrumbs = [
 <template>
     <Head title="Upravit nemovitost" />
 
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 p-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <Button variant="outline" size="icon" as-child class="h-9 w-9">
-                    <Link :href="route('admin.properties.index')">
-                            <ChevronLeft class="h-4 w-4" />
-                        </Link>
-                    </Button>
-                    <h2 class="text-2xl font-bold tracking-tight">Upravit nemovitost</h2>
-                </div>
-                <div class="flex gap-2">
-                    <Button variant="outline" as-child class="h-9">
-                        <Link :href="route('admin.properties.services.index', property.id)">
-                            Spravovat služby
-                        </Link>
-                    </Button>
-                    <Button variant="outline" as-child class="h-9">
-                        <Link :href="route('admin.properties.email-templates.index', property.id)">
-                            Emailové šablony
-                        </Link>
-                    </Button>
-                    <Button variant="outline" as-child class="h-9">
-                        <Link :href="route('admin.properties.seasons.index', property.id)">
-                            Spravovat sezóny
-                        </Link>
-                    </Button>
-                </div>
+    <PropertyLayout :property="property" :breadcrumbs="breadcrumbs">
+        <div class="space-y-6 max-w-4xl">
+            <div>
+                <h2 class="text-2xl font-bold tracking-tight">Přehled nemovitosti</h2>
+                <p class="text-muted-foreground">Základní informace a nastavení.</p>
             </div>
 
-            <div class="mx-auto w-full max-w-2xl">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Upravit nemovitost</CardTitle>
-                        <CardDescription>
-                            Aktualizujte detaily nemovitosti.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form @submit.prevent="submit" class="space-y-6">
-                            <div class="space-y-2">
-                                <Label for="name">Název</Label>
-                                <Input id="name" v-model="form.name" placeholder="např. Horská chata" required class="h-9" />
-                                <div v-if="form.errors.name" class="text-sm text-red-500">{{ form.errors.name }}</div>
-                            </div>
+            <Card class="border shadow-none">
+                <CardHeader>
+                    <CardTitle>Detaily nemovitosti</CardTitle>
+                    <CardDescription>
+                        Informace zobrazované na webu a v rezervacích.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form @submit.prevent="submit" class="space-y-6">
+                        <div class="grid gap-2">
+                            <Label for="name">Název nemovitosti</Label>
+                            <Input id="name" v-model="form.name" placeholder="např. Horská chata" required class="h-9" />
+                            <div v-if="form.errors.name" class="text-sm text-destructive">{{ form.errors.name }}</div>
+                        </div>
 
-                            <div class="space-y-2">
-                                <Label for="address">Adresa</Label>
-                                <Textarea id="address" v-model="form.address" placeholder="Celá adresa nemovitosti" />
-                                <div v-if="form.errors.address" class="text-sm text-red-500">{{ form.errors.address }}</div>
-                            </div>
+                        <div class="grid gap-2">
+                            <Label for="address">Adresa</Label>
+                            <Textarea id="address" v-model="form.address" placeholder="Celá adresa nemovitosti" class="min-h-[80px]" />
+                            <div v-if="form.errors.address" class="text-sm text-destructive">{{ form.errors.address }}</div>
+                        </div>
 
-                            <div class="space-y-2">
-                                <Label for="description">Popis</Label>
-                                <Textarea id="description" v-model="form.description" placeholder="Krátký popis pro widget" />
-                                <div v-if="form.errors.description" class="text-sm text-red-500">{{ form.errors.description }}</div>
-                            </div>
+                        <div class="grid gap-2">
+                            <Label for="description">Popis</Label>
+                            <Textarea id="description" v-model="form.description" placeholder="Krátký popis pro widget" class="min-h-[120px]" />
+                            <div v-if="form.errors.description" class="text-sm text-destructive">{{ form.errors.description }}</div>
+                        </div>
 
-                            <div class="flex justify-end">
-                                <Button type="submit" :disabled="form.processing" class="h-9">
-                                    Aktualizovat nemovitost
-                                </Button>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
-            </div>
+                        <div class="flex justify-end pt-4">
+                            <Button type="submit" :disabled="form.processing" class="h-9 shadow-sm">
+                                Uložit změny
+                            </Button>
+                        </div>
+                    </form>
+                </CardContent>
+            </Card>
         </div>
-    </AppLayout>
+    </PropertyLayout>
 </template>

@@ -19,6 +19,8 @@ Route::post('/switch-property', SwitchPropertyController::class)->name('switch-p
 
 Route::resource('properties', PropertyController::class);
 Route::resource('properties.seasons', SeasonController::class)->except(['show', 'create', 'edit']);
+Route::get('properties/{property}/bookings/export', [\App\Http\Controllers\Tenant\Admin\PropertyBookingController::class, 'export'])->name('properties.bookings.export');
+Route::resource('properties.bookings', \App\Http\Controllers\Tenant\Admin\PropertyBookingController::class)->only(['index']);
 Route::resource('properties.services', \App\Http\Controllers\Tenant\Admin\PropertyServiceController::class)->except(['show', 'create', 'edit']);
 Route::resource('properties.email-templates', EmailTemplateController::class)->only(['index', 'store', 'update']);
 
