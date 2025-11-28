@@ -23,13 +23,6 @@ class Booking extends Model
 
     protected $touches = ['property'];
 
-    protected static function booted(): void
-    {
-        static::deleted(function (Booking $booking) {
-            $booking->cleaningTask()->delete();
-        });
-    }
-
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

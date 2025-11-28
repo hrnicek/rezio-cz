@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Tenant\Admin\BookingController;
-use App\Http\Controllers\Tenant\Admin\CleaningTaskController;
 use App\Http\Controllers\Tenant\Admin\DashboardController;
 use App\Http\Controllers\Tenant\Admin\EmailTemplateController;
 use App\Http\Controllers\Tenant\Admin\PropertyController;
@@ -34,10 +33,6 @@ Route::get('reports/export', [ReportController::class, 'export'])->name('reports
 
 Route::get('bookings/export', [BookingController::class, 'export'])->name('bookings.export');
 Route::resource('bookings', BookingController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
-
-Route::resource('cleaning-tasks', CleaningTaskController::class);
-Route::post('cleaning-tasks/{cleaningTask}/complete', [CleaningTaskController::class, 'complete'])
-    ->name('cleaning-tasks.complete');
 
 Route::redirect('settings', '/settings/profile');
 

@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('code')->nullable();
             $table->foreignId('property_id')->constrained()->cascadeOnDelete();
             $table->foreignId('customer_id')->constrained()->cascadeOnDelete()->nullable();
-            $table->foreignId('season_id')->nullable();
             $table->date('start_date');
             $table->date('end_date');
             $table->dateTime('date_start')->nullable();
