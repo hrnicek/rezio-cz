@@ -2,6 +2,7 @@
 
 namespace App\Models\Booking;
 
+use App\Enums\BookingItemType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,6 +28,7 @@ class BookingItem extends Model
         'net_amount' => 'integer',
         'tax_amount' => 'integer',
         'quantity' => 'integer',
+        'type' => BookingItemType::class,
     ];
 
     // --- RELATIONS ---

@@ -3,7 +3,7 @@
 namespace Tests\Feature\Tenant;
 
 use App\Models\Property;
-use App\Models\Season;
+use App\Models\Configuration\Season;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TenantTestCase;
 

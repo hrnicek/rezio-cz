@@ -19,7 +19,7 @@ class Customer extends Model
 
     protected $fillable = [
         'email', 'phone', 'is_company',
-        'name', 'company_name', 'ico', 'dic', 'has_vat',
+        'first_name', 'last_name', 'company_name', 'ico', 'dic', 'has_vat',
         'billing_street', 'billing_city', 'billing_zip', 'billing_country',
         'internal_notes', 'is_registered'
     ];
@@ -40,6 +40,11 @@ class Customer extends Model
     public function folios(): HasMany
     {
         return $this->hasMany(Folio::class, 'customer_id');
+    }
+
+    public function getNameAttribute(): string
+    {
+        return "{$this->first_name} {$this->last_name}";
     }
 
     // Helper pro získání správného jména na fakturu

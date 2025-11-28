@@ -2,6 +2,7 @@
 
 namespace App\Models\Finance;
 
+use App\Enums\InvoiceStatus;
 use App\Models\Booking\Booking;
 use App\Models\Booking\Folio;
 use Illuminate\Database\Eloquent\Model;
@@ -34,6 +35,7 @@ class Invoice extends Model
         'total_price_amount' => 'integer',
         'total_net_amount' => 'integer',
         'total_tax_amount' => 'integer',
+        'status' => InvoiceStatus::class,
     ];
 
     // --- RELATIONS ---

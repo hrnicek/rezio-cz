@@ -1,33 +1,38 @@
 <?php
 
-namespace App\Data\Admin;
+namespace App\Data\Admin\Booking;
 
 use App\Data\Shared\CustomerData;
 use App\Data\Shared\GuestData;
 use App\Data\Shared\PaymentData;
-use App\Data\Shared\PropertyData;
+use App\Data\Admin\Property\PropertyData;
+use App\Enums\BookingStatus;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\DataCollection;
 
-class BookingDetailData extends Data
+class BookingData extends Data
 {
     public function __construct(
-        public int $id,
+        public string $id,
         public ?string $code,
         public PropertyData $property,
         public ?CustomerData $customer,
         public string $check_in_date,
         public string $check_out_date,
         public int $total_price_amount,
-        public string $status,
+        public BookingStatus $status,
         public ?string $notes,
         public string $created_at,
         public string $updated_at,
         /** @var DataCollection<PaymentData> */
         public DataCollection $payments,
-        public ?string $checkin_token,
+        public ?string $token,
         /** @var DataCollection<GuestData> */
         public DataCollection $guests,
+        public ?string $arrival_time_estimate = null,
+        public ?string $departure_time_estimate = null,
+        public ?string $checked_in_at = null,
+        public ?string $checked_out_at = null,
     ) {}
 
     public static function fromModel($booking): self
@@ -45,8 +50,12 @@ class BookingDetailData extends Data
             created_at: $booking->created_at->toISOString(),
             updated_at: $booking->updated_at->toISOString(),
             payments: PaymentData::collect($booking->payments, DataCollection::class),
-            checkin_token: $booking->checkin_token,
+            token: $booking->token,
             guests: GuestData::collect($booking->guests, DataCollection::class),
+            arrival_time_estimate: $booking->arrival_time_estimate,
+            departure_time_estimate: $booking->departure_time_estimate,
+            checked_in_at: $booking->checked_in_at?->toISOString(),
+            checked_out_at: $booking->checked_out_at?->toISOString(),
         );
     }
 }

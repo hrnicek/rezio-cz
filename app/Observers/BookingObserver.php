@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\Models\Booking;
 use Illuminate\Support\Str;
+use App\Models\Booking\Booking;
 
 class BookingObserver
 {
@@ -16,17 +16,6 @@ class BookingObserver
 
     public function created(Booking $booking): void
     {
-        if ($booking->total_price > 0 && $booking->status !== 'blocked') {
-            $booking->payments()->create([
-                'amount' => $booking->total_price,
-                'payment_method' => 'transfer',
-                'status' => 'pending',
-                'paid_at' => null,
-            ]);
-        }
-
-        $booking->checkin_token = Str::random(12);
-        $booking->saveQuietly();
     }
 
     private function generateUniqueCode(): string

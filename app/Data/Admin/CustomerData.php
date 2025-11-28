@@ -8,21 +8,27 @@ use Spatie\LaravelData\Data;
 class CustomerData extends Data
 {
     public function __construct(
-        public ?int $id,
-        public ?string $uuid,
-        public ?string $first_name,
-        public ?string $last_name,
-        public ?string $name, // Calculated field
-        public ?string $email,
+        public string $id, // UUID
+        public string $name, // Kontaktní osoba
+        public string $email,
         public ?string $phone,
-        public ?string $address,
-        public ?string $city,
-        public ?string $zip,
-        public ?string $country,
+        
+        // Company Info
+        public bool $is_company,
         public ?string $company_name,
-        public ?string $vat_id,
-        public ?string $notes,
-        public string $status,
+        public ?string $ico,
+        public ?string $dic,
+        public bool $has_vat,
+        
+        // Billing Address
+        public ?string $billing_street,
+        public ?string $billing_city,
+        public ?string $billing_zip,
+        public string $billing_country,
+        
+        public ?string $internal_notes,
+        public bool $is_registered,
+        
         public ?string $created_at,
     ) {}
 
@@ -30,20 +36,24 @@ class CustomerData extends Data
     {
         return new self(
             id: $customer->id,
-            uuid: $customer->uuid,
-            first_name: $customer->first_name,
-            last_name: $customer->last_name,
             name: $customer->name,
             email: $customer->email,
             phone: $customer->phone,
-            address: $customer->address,
-            city: $customer->city,
-            zip: $customer->zip,
-            country: $customer->country,
+            
+            is_company: $customer->is_company,
             company_name: $customer->company_name,
-            vat_id: $customer->vat_id,
-            notes: $customer->notes,
-            status: $customer->status ?? 'active',
+            ico: $customer->ico,
+            dic: $customer->dic,
+            has_vat: $customer->has_vat,
+            
+            billing_street: $customer->billing_street,
+            billing_city: $customer->billing_city,
+            billing_zip: $customer->billing_zip,
+            billing_country: $customer->billing_country ?? 'CZ',
+            
+            internal_notes: $customer->internal_notes,
+            is_registered: $customer->is_registered,
+            
             created_at: $customer->created_at?->toIso8601String(),
         );
     }

@@ -2,11 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Configuration\Season;
 use App\Models\Property;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Season>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Configuration\Season>
  */
 class SeasonFactory extends Factory
 {

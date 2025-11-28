@@ -2,16 +2,18 @@
 
 namespace App\Data\Shared;
 
+use App\Enums\PaymentMethod;
+use App\Enums\PaymentStatus;
 use Spatie\LaravelData\Data;
 
 class PaymentData extends Data
 {
     public function __construct(
-        public int $id,
+        public string $id,
         public int $amount,
-        public string $payment_method,
+        public PaymentMethod $payment_method,
         public ?string $paid_at,
-        public string $status,
+        public PaymentStatus $status,
     ) {}
 
     public static function fromModel($payment): self
@@ -19,9 +21,9 @@ class PaymentData extends Data
         return new self(
             id: $payment->id,
             amount: (int) $payment->amount,
-            payment_method: $payment->payment_method,
+            payment_method: $payment->payment_method instanceof \BackedEnum ? $payment->payment_method : PaymentMethod::from($payment->payment_method),
             paid_at: $payment?->paid_at?->toISOString(),
-            status: $payment->status instanceof \BackedEnum ? $payment->status->value : $payment->status,
+            status: $payment->status instanceof \BackedEnum ? $payment->status : PaymentStatus::from($payment->status),
         );
     }
 }

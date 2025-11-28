@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Booking\Booking;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -22,7 +23,5 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\RateLimiter::for('widgets', function (\Illuminate\Http\Request $request) {
             return \Illuminate\Cache\RateLimiting\Limit::perMinute(60)->by($request->ip());
         });
-
-        \App\Models\Booking::observe(\App\Observers\BookingObserver::class);
     }
 }

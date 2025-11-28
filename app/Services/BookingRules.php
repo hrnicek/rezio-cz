@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Season;
+use App\Models\Configuration\Season;
 use App\Rules\Booking\BookingRule;
 use Carbon\Carbon;
 

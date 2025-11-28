@@ -56,6 +56,10 @@ return new class extends Migration
             // Adresa (pro jednoduchost text, nebo rozbít na sloupce)
             $table->text('address')->nullable(); 
             $table->text('description')->nullable();
+
+            $table->time('default_check_in_time')->default('15:00:00');
+            $table->time('default_check_out_time')->default('10:00:00');
+
             $table->string('image')->nullable();
             
             $table->timestamps();
@@ -70,8 +74,9 @@ return new class extends Migration
             $table->boolean('is_company')->default(false);
             
             // Fakturační identita
-            $table->string('name'); // Kontaktní osoba
-            $table->string('company_name')->nullable();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('company_name')->nullable(); // Pro firmy povinné (validace v PHP)
             $table->string('ico')->nullable();
             $table->string('dic')->nullable();
             $table->boolean('has_vat')->default(false);
@@ -104,6 +109,14 @@ return new class extends Migration
             // Logika času
             $table->date('check_in_date');
             $table->date('check_out_date');
+
+            // Logistika (Nullable - pokud je null, platí default z Property)
+            $table->time('arrival_time_estimate')->nullable(); // Např. "18:30:00" (Host nahlásil zpoždění)
+            $table->time('departure_time_estimate')->nullable(); // Např. "12:00:00" (Zaplatil late check-out)
+    
+            // Audit (Kdy skutečně dostal klíče - Timestamp)
+            $table->timestamp('checked_in_at')->nullable(); 
+            $table->timestamp('checked_out_at')->nullable();
             
             $table->string('status')->default('pending')->index();
             $table->uuid('token')->nullable()->unique(); // Public access token
@@ -174,8 +187,8 @@ return new class extends Migration
             $table->string('status')->default('pending')->index(); // pending, paid, failed
             $table->string('payment_method'); // card, bank, cash
             $table->string('gateway')->nullable(); // stripe, gopay
-            $table->string('transaction_id')->nullable()->index(); // ID z brány/banky
-            
+            // ZMĚNA: transaction_id -> transaction_reference
+            $table->string('transaction_reference')->nullable()->index();            
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
         });

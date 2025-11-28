@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Tenant\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Property;
-use App\Models\Service;
+use App\Models\Configuration\Service;
 use Illuminate\Http\Request;
 
 class PropertyServiceController extends Controller

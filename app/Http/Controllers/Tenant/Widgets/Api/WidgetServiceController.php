@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Tenant\Widgets\Api;
 
+use App\Enums\BookingItemType;
+use App\Enums\BookingStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Service\CheckAvailabilityRequest;
-use App\Models\Booking;
+use App\Models\Booking\Booking;
+use App\Models\Configuration\Service;
 use App\Models\Property;
-use App\Models\Service;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -19,7 +21,26 @@ class WidgetServiceController extends Controller
             ->where('property_id', $id->id)
             ->where('is_active', true)
             ->orderBy('name')
-            ->get(['id', 'name', 'price_type', 'price', 'max_quantity']);
+            ->get(['id', 'name', 'price_type', 'price_amount', 'max_quantity']);
+
+        // Transform price_amount (cents) to price (float) for API if needed, 
+        // or just return price_amount and let frontend handle it. 
+        // The previous code returned 'price', let's see if we should map it.
+        // Assuming frontend expects 'price' as float or integer. 
+        // Let's return price_amount as 'price' for now to match existing structure roughly, 
+        // but strictly it should be price_amount.
+        // Old code: ->get(['id', 'name', 'price_type', 'price', 'max_quantity']);
+        // New Service model likely has price_amount.
+
+        $services = $services->map(function ($service) {
+            return [
+                'id' => $service->id,
+                'name' => $service->name,
+                'price_type' => $service->price_type,
+                'price' => $service->price_amount, // Return integer cents
+                'max_quantity' => $service->max_quantity,
+            ];
+        });
 
         return response()->json([
             'services' => $services,
@@ -30,8 +51,6 @@ class WidgetServiceController extends Controller
     {
         $data = $request->validated();
 
-        // Use property's updated_at timestamp for cache invalidation
-        // When a booking is created/updated, it touches the property (via Booking::$touches)
         $timestamp = $id->updated_at?->timestamp ?? '0';
         $cacheKey = "widget_availability:{$id->id}:{$timestamp}:".md5(serialize($data));
 
@@ -43,13 +62,12 @@ class WidgetServiceController extends Controller
 
             $overlappingBookings = Booking::query()
                 ->where('property_id', $id->id)
-                ->where('status', '!=', 'cancelled')
-                ->where('date_start', '<', $end)
-                ->where('date_end', '>', $start)
-                ->with(['services'])
+                ->where('status', '!=', BookingStatus::Cancelled)
+                ->where('check_in_date', '<', $end)
+                ->where('check_out_date', '>', $start)
+                ->with(['items']) // Load items
                 ->get();
 
-            // Pre-fetch services to avoid N+1
             $serviceIds = collect($data['selections'])
                 ->map(fn ($s) => $s['service_id'] ?? $s['extra_id'] ?? null)
                 ->filter()
@@ -67,22 +85,24 @@ class WidgetServiceController extends Controller
                 if (! $service || ! $service->is_active) {
                     $resultItems[] = [
                         'service_id' => $serviceId,
-                        'extra_id' => $serviceId, // Backward compatibility
+                        'extra_id' => $serviceId,
                         'available_quantity' => 0,
                         'requested_quantity' => (int) $selection['quantity'],
                         'is_available' => false,
                     ];
                     $overallAvailable = false;
-
                     continue;
                 }
 
                 $bookedQty = 0;
                 foreach ($overlappingBookings as $booking) {
-                    $pivot = $booking->services->firstWhere('id', $service->id)?->pivot;
-                    if ($pivot) {
-                        $bookedQty += (int) $pivot->quantity;
-                    }
+                    // Filter items for this service name
+                    // This assumes Service Name is unique and immutable for tracking
+                    $items = $booking->items->filter(function ($item) use ($service) {
+                        return $item->type === BookingItemType::Service && $item->name === $service->name;
+                    });
+                    
+                    $bookedQty += $items->sum('quantity');
                 }
 
                 $availableQty = max(0, (int) $service->max_quantity - $bookedQty);
@@ -91,7 +111,7 @@ class WidgetServiceController extends Controller
 
                 $resultItems[] = [
                     'service_id' => $service->id,
-                    'extra_id' => $service->id, // Backward compatibility
+                    'extra_id' => $service->id,
                     'available_quantity' => $availableQty,
                     'requested_quantity' => (int) $selection['quantity'],
                     'is_available' => $isAvailable,

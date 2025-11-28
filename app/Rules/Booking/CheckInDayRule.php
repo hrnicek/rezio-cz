@@ -2,7 +2,7 @@
 
 namespace App\Rules\Booking;
 
-use App\Models\Season;
+use App\Models\Configuration\Season;
 use Carbon\Carbon;
 
 class CheckInDayRule implements BookingRule

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Tenant\Guest;
 
 use App\Http\Controllers\Controller;
-use App\Models\Booking;
-use App\Models\Guest;
+use App\Models\Booking\Booking;
+use App\Models\CRM\Guest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -12,7 +12,7 @@ class CheckInController extends Controller
 {
     public function show(string $token)
     {
-        $booking = Booking::where('checkin_token', $token)
+        $booking = Booking::where('token', $token)
             ->with(['property', 'guests'])
             ->firstOrFail();
 
@@ -25,7 +25,7 @@ class CheckInController extends Controller
 
     public function store(Request $request, string $token)
     {
-        $booking = Booking::where('checkin_token', $token)->firstOrFail();
+        $booking = Booking::where('token', $token)->firstOrFail();
 
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
@@ -36,6 +36,7 @@ class CheckInController extends Controller
             'document_type' => 'nullable|string',
             'document_number' => 'nullable|string',
             'birth_date' => 'nullable|date',
+            'birth_place' => 'nullable|string',
             'address' => 'nullable|array',
             'signature' => 'nullable|string',
         ]);
@@ -47,7 +48,7 @@ class CheckInController extends Controller
 
     public function update(Request $request, string $token, Guest $guest)
     {
-        $booking = Booking::where('checkin_token', $token)->firstOrFail();
+        $booking = Booking::where('token', $token)->firstOrFail();
 
         if ($guest->booking_id !== $booking->id) {
             abort(403);
@@ -62,6 +63,7 @@ class CheckInController extends Controller
             'document_type' => 'nullable|string',
             'document_number' => 'nullable|string',
             'birth_date' => 'nullable|date',
+            'birth_place' => 'nullable|string',
             'address' => 'nullable|array',
             'signature' => 'nullable|string',
         ]);
@@ -73,7 +75,7 @@ class CheckInController extends Controller
 
     public function destroy(string $token, Guest $guest)
     {
-        $booking = Booking::where('checkin_token', $token)->firstOrFail();
+        $booking = Booking::where('token', $token)->firstOrFail();
 
         if ($guest->booking_id !== $booking->id) {
             abort(403);

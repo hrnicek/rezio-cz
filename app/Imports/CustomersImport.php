@@ -17,18 +17,18 @@ class CustomersImport implements ToModel, WithBatchInserts, WithChunkReading, Wi
     public function model(array $row)
     {
         return new Customer([
-            'first_name' => $row['first_name'] ?? null,
-            'last_name' => $row['last_name'] ?? null,
+            'first_name' => $row['first_name'] ?? '',
+            'last_name' => $row['last_name'] ?? '',
             'email' => $row['email'],
             'phone' => $row['phone'] ?? null,
-            'address' => $row['address'] ?? null,
-            'city' => $row['city'] ?? null,
-            'zip' => $row['zip'] ?? null,
-            'country' => $row['country'] ?? null,
+            'billing_street' => $row['billing_street'] ?? $row['address'] ?? null,
+            'billing_city' => $row['billing_city'] ?? $row['city'] ?? null,
+            'billing_zip' => $row['billing_zip'] ?? $row['zip'] ?? null,
+            'billing_country' => $row['billing_country'] ?? $row['country'] ?? null,
             'company_name' => $row['company_name'] ?? null,
-            'vat_id' => $row['vat_id'] ?? null,
-            'notes' => $row['notes'] ?? null,
-            'status' => $row['status'] ?? 'active',
+            'ico' => $row['ico'] ?? null,
+            'dic' => $row['dic'] ?? $row['vat_id'] ?? null,
+            'internal_notes' => $row['internal_notes'] ?? $row['notes'] ?? null,
         ]);
     }
 
@@ -37,8 +37,7 @@ class CustomersImport implements ToModel, WithBatchInserts, WithChunkReading, Wi
         return [
             'first_name' => ['nullable', 'string'],
             'last_name' => ['nullable', 'string'],
-            'email' => ['nullable', 'email'],
-            'status' => ['nullable', 'in:active,inactive,vip,blacklisted'],
+            'email' => ['required', 'email'],
         ];
     }
 

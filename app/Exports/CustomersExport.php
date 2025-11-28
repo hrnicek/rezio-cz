@@ -25,13 +25,14 @@ class CustomersExport implements FromCollection, WithHeadings, WithMapping
             $customer->last_name,
             $customer->email,
             $customer->phone,
-            $customer->address,
-            $customer->city,
-            $customer->zip,
-            $customer->country,
+            $customer->billing_street, // address was ambiguous, using billing_street as per new schema
+            $customer->billing_city,
+            $customer->billing_zip,
+            $customer->billing_country,
             $customer->company_name,
-            $customer->vat_id,
-            $customer->status,
+            $customer->ico, // vat_id -> ico/dic usually, checking Customer model for exact field names
+            $customer->dic,
+            // $customer->status, // Status removed
             $customer->created_at->format('Y-m-d H:i:s'),
         ];
     }
@@ -44,13 +45,14 @@ class CustomersExport implements FromCollection, WithHeadings, WithMapping
             'Last Name',
             'Email',
             'Phone',
-            'Address',
-            'City',
-            'ZIP',
-            'Country',
+            'Billing Street',
+            'Billing City',
+            'Billing ZIP',
+            'Billing Country',
             'Company Name',
-            'VAT ID',
-            'Status',
+            'ICO',
+            'DIC',
+            // 'Status',
             'Created At',
         ];
     }

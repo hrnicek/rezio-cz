@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\Booking;
+use App\Models\Booking\Booking;
 use App\Observers\BookingObserver;
 use Illuminate\Support\ServiceProvider;
 

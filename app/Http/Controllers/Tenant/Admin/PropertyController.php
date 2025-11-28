@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Tenant\Admin;
 
-use App\Data\Shared\PropertyData;
+use App\Data\Admin\Property\PropertyData;
 use App\Http\Controllers\Controller;
 use App\Models\Property;
 use Illuminate\Http\Request;

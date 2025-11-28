@@ -18,7 +18,14 @@ class Property extends Model
     protected $table = 'properties';
 
     protected $fillable = [
-        'name', 'slug', 'address', 'description', 'image'
+        'name', 'slug', 'address', 'description', 'image',
+        'default_check_in_time', 'default_check_out_time'
+    ];
+
+    protected $casts = [
+        // Time cast usually returns a Carbon instance or string 'H:i:s'
+        // In Laravel 11+, 'immutable_time' or just string is common.
+        // Let's stick to standard behavior or string for simplicity unless user specified.
     ];
 
     // --- RELATIONS ---

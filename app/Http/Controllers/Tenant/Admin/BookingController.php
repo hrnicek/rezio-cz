@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\Tenant\Admin;
 
-use App\Data\Admin\BookingDetailData;
-use App\Data\Admin\BookingListData;
-use App\Http\Controllers\Controller;
-use App\Models\Booking;
-use App\Models\Property;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use App\Models\Property;
+use App\Enums\BookingStatus;
+use App\Models\CRM\Customer;
+use Illuminate\Http\Request;
+use App\Models\Booking\Booking;
+use Illuminate\Validation\Rule;
+use App\Http\Controllers\Controller;
+use App\Data\Admin\Booking\BookingData;
+use App\Data\Admin\Booking\BookingListData;
 
 class BookingController extends Controller
 {
@@ -19,7 +21,7 @@ class BookingController extends Controller
         $search = $request->input('search');
         $currentPropertyId = $request->user()->current_property_id;
 
-        $bookings = Booking::with(['property', 'guest'])
+        $bookings = Booking::with(['property', 'guests'])
             ->when($currentPropertyId, function ($query, $propertyId) {
                 return $query->where('property_id', $propertyId);
             })
@@ -28,8 +30,7 @@ class BookingController extends Controller
             })
             ->when($request->search, function ($query, $search) {
                 return $query->whereHas('customer', function ($q) use ($search) {
-                    $q->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%")
+                    $q->where('name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%");
                 });
             })
@@ -48,10 +49,10 @@ class BookingController extends Controller
 
     public function show(Booking $booking)
     {
-        $booking->load(['property', 'customer', 'payments']);
+        $booking->load(['property', 'customer', 'payments', 'guests']);
 
         return Inertia::render('Admin/Properties/Bookings/Show', [
-            'booking' => BookingDetailData::from($booking)->toArray(),
+            'booking' => BookingData::from($booking)->toArray(),
         ]);
     }
 
@@ -61,7 +62,7 @@ class BookingController extends Controller
         $search = $request->input('search');
         $currentPropertyId = $request->user()->current_property_id;
 
-        $bookings = Booking::with(['property', 'guest'])
+        $bookings = Booking::with(['property', 'guests'])
             ->when($currentPropertyId, function ($query, $propertyId) {
                 return $query->where('property_id', $propertyId);
             })
@@ -70,8 +71,7 @@ class BookingController extends Controller
             })
             ->when($search, function ($query, $search) {
                 return $query->whereHas('customer', function ($q) use ($search) {
-                    $q->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%")
+                    $q->where('name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%");
                 });
             })
@@ -88,19 +88,19 @@ class BookingController extends Controller
 
         $callback = function () use ($bookings) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['ID', 'Property', 'Guest Name', 'Email', 'Phone', 'Check-in', 'Check-out', 'Status', 'Total Price', 'Notes']);
+            fputcsv($file, ['ID', 'Property', 'Customer', 'Email', 'Phone', 'Check-in', 'Check-out', 'Status', 'Total Price', 'Notes']);
 
             foreach ($bookings as $booking) {
                 fputcsv($file, [
                     $booking->id,
                     $booking->property->name,
-                    $booking->customer ? $booking->customer->first_name.' '.$booking->customer->last_name : '',
+                    $booking->customer ? $booking->customer->name : '',
                     $booking->customer->email ?? '',
                     $booking->customer->phone ?? '',
                     $booking->check_in_date->format('Y-m-d'),
                     $booking->check_out_date->format('Y-m-d'),
-                    $booking->status ?? '',
-                    $booking->total_price,
+                    $booking->status instanceof BookingStatus ? $booking->status->label() : $booking->status,
+                    $booking->total_price_amount / 100, // Convert cents to units
                     $booking->notes ?? '',
                 ]);
             }
@@ -117,27 +117,25 @@ class BookingController extends Controller
             'property_id' => 'required|exists:properties,id',
             'check_in_date' => 'required|date',
             'check_out_date' => 'required|date|after:check_in_date',
-            'status' => ['required', Rule::in(Booking::ALLOWED_STATUSES)], // Updated validation
+            'status' => ['required', Rule::enum(BookingStatus::class)],
             'notes' => 'nullable|string',
         ]);
 
-        $property = \App\Models\Property::findOrFail($validated['property_id']);
+        $property = Property::findOrFail($validated['property_id']);
 
         if ($this->hasOverlap($property->id, $validated['check_in_date'], $validated['check_out_date'])) {
             return back()->withErrors(['check_in_date' => 'Selected dates are not available.']);
         }
 
         // Create a customer for the blocked date
-        $customer = \App\Models\Customer::create([
-            'first_name' => 'Blocked',
-            'last_name' => 'Date',
+        $customer = Customer::create([
+            'name' => 'Blocked Date',
             'email' => 'blocked@system.local',
-            'phone' => 'N/A',
+            'phone' => null,
         ]);
 
         $newBooking = Booking::create([
             'property_id' => $property->id,
-            'user_id' => auth()->id(),
             'customer_id' => $customer->id,
             'check_in_date' => $validated['check_in_date'],
             'check_out_date' => $validated['check_out_date'],
@@ -155,10 +153,8 @@ class BookingController extends Controller
             $booking->load('property');
         }
 
-        // Ownership check removed (tenanting will be added later)
-
         $validated = $request->validate([
-            'status' => ['sometimes', 'required', Rule::in(Booking::ALLOWED_STATUSES)], // Updated validation
+            'status' => ['sometimes', 'required', Rule::enum(BookingStatus::class)],
             'check_in_date' => 'sometimes|required|date',
             'check_out_date' => 'sometimes|required|date|after:check_in_date',
             'notes' => 'nullable|string',
@@ -181,7 +177,7 @@ class BookingController extends Controller
     private function hasOverlap($propertyId, $startDate, $endDate, $ignoreBookingId = null)
     {
         return Booking::where('property_id', $propertyId)
-            ->where('status', '!=', 'cancelled')
+            ->where('status', '!=', BookingStatus::Cancelled)
             ->when($ignoreBookingId, function ($query, $ignoreBookingId) {
                 return $query->where('id', '!=', $ignoreBookingId);
             })
@@ -198,12 +194,9 @@ class BookingController extends Controller
 
     public function destroy(Booking $booking)
     {
-        // Load property if not already loaded
         if (! $booking->relationLoaded('property')) {
             $booking->load('property');
         }
-
-        // Ownership check removed (tenanting will be added later)
 
         $booking->delete();
 

@@ -5,9 +5,9 @@ namespace App\Data;
 class PriceBreakdown
 {
     public function __construct(
-        public readonly float $accommodation,
-        public readonly float $services,
-        public readonly float $total,
+        public readonly int $accommodation, // in cents
+        public readonly int $services,      // in cents
+        public readonly int $total,         // in cents
         public readonly array $serviceDetails = []
     ) {}
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Tenant\Admin;
 
-use App\Data\Admin\BookingListData;
+use App\Data\Admin\Booking\BookingListData;
 use App\Http\Controllers\Controller;
 use App\Models\Property;
 use Illuminate\Http\Request;
@@ -22,9 +22,11 @@ class PropertyBookingController extends Controller
             })
             ->when($search, function ($query, $search) {
                 return $query->whereHas('customer', function ($q) use ($search) {
-                    $q->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
+                    $q->where(function ($sub) use ($search) {
+                        $sub->where('first_name', 'like', "%{$search}%")
+                            ->orWhere('last_name', 'like', "%{$search}%")
+                            ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
+                    })->orWhere('email', 'like', "%{$search}%");
                 });
             })
             ->latest()
@@ -53,9 +55,11 @@ class PropertyBookingController extends Controller
             })
             ->when($search, function ($query, $search) {
                 return $query->whereHas('customer', function ($q) use ($search) {
-                    $q->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
+                    $q->where(function ($sub) use ($search) {
+                        $sub->where('first_name', 'like', "%{$search}%")
+                            ->orWhere('last_name', 'like', "%{$search}%")
+                            ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
+                    })->orWhere('email', 'like', "%{$search}%");
                 });
             })
             ->latest()

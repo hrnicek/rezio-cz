@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Tenant\Admin;
 
-use App\Data\Admin\CalendarBookingData;
-use App\Data\Admin\UpcomingBookingData;
-use App\Http\Controllers\Controller;
-use App\Models\Booking;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
+use App\Models\Booking\Booking;
+use App\Http\Controllers\Controller;
+use App\Data\Admin\Booking\CalendarBookingData;
+use App\Data\Admin\Booking\UpcomingBookingData;
 
 class DashboardController extends Controller
 {

@@ -2,6 +2,7 @@
 
 namespace App\Models\Booking;
 
+use App\Enums\FolioStatus;
 use App\Models\CRM\Customer;
 use App\Models\Finance\Payment;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +25,7 @@ class Folio extends Model
 
     protected $casts = [
         'total_amount' => 'integer',
+        'status' => FolioStatus::class,
     ];
 
     // --- RELATIONS ---
@@ -41,7 +43,7 @@ class Folio extends Model
 
     public function items(): HasMany
     {
-        return $this->hasMany(Item::class, 'folio_id');
+        return $this->hasMany(BookingItem::class, 'folio_id');
     }
 
     public function payments(): HasMany

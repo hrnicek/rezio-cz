@@ -14,7 +14,6 @@ import { Input } from '@/components/ui/input';
 import AppDataTable from '@/components/AppDataTable.vue';
 import { ref, watch } from 'vue';
 import { debounce } from 'lodash';
-import { useCurrency } from '@/composables/useCurrency';
 import { Eye, Check, X, Calendar } from 'lucide-vue-next';
 import { BookingStatusLabels } from '@/lib/enums';
 
@@ -25,13 +24,14 @@ const props = defineProps<{
     bookings: {
         data: Array<{
             id: number;
-            property: { name: string };
-            customer: { first_name: string; last_name: string; email: string; phone: string } | null;
-            start_date: string;
-            end_date: string;
-            total_price: number;
+            customer_name: string;
+            code: string;
+            check_in_date: string;
+            check_out_date: string;
+            total_price: { display: string };
             status: string;
-            notes?: string;
+            status_label: string;
+            created_at_human: string;
         }>;
         links: any;
         meta: any;
@@ -44,7 +44,6 @@ const props = defineProps<{
 
 const statusFilter = ref(props.filters.status || 'all');
 const searchQuery = ref(props.filters.search || '');
-const { formatCurrency } = useCurrency();
 
 const breadcrumbs = [
     { title: 'Nemovitosti', href: route('admin.properties.index') },
@@ -143,29 +142,24 @@ const columns = [
                 no-results-message="Žádné rezervace nenalezeny."
             >
                 <template #customer="{ item }">
-                    <div v-if="item.customer">
-                        <div class="font-medium">{{ item.customer.first_name }} {{ item.customer.last_name }}</div>
-                        <div class="text-xs text-muted-foreground">{{ item.customer.email }}</div>
-                    </div>
-                    <div v-else class="text-muted-foreground italic">
-                        Žádné info o hostovi
-                    </div>
+                    <div class="font-medium">{{ item.customer_name }}</div>
+                    <div class="text-xs text-muted-foreground">{{ item.code }}</div>
                 </template>
                 
                 <template #dates="{ item }">
                     <div class="flex items-center gap-2">
                         <Calendar class="h-3 w-3 text-muted-foreground" />
-                        <span class="text-sm">{{ item.start_date }} - {{ item.end_date }}</span>
+                        <span class="text-sm">{{ item.check_in_date }} - {{ item.check_out_date }}</span>
                     </div>
                 </template>
                 
                 <template #total_price="{ item }">
-                    <span class="font-mono">{{ formatCurrency(item.total_price) }}</span>
+                    <span class="font-mono">{{ item.total_price.display }}</span>
                 </template>
                 
                 <template #status="{ item }">
                     <Badge :variant="getStatusVariant(item.status)">
-                        {{ BookingStatusLabels[item.status] || item.status }}
+                        {{ item.status_label }}
                     </Badge>
                 </template>
                 

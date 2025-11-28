@@ -3,11 +3,12 @@
 namespace Database\Factories;
 
 use App\Enums\ServicePriceType;
+use App\Models\Configuration\Service;
 use App\Models\Property;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Service>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Configuration\Service>
  */
 class ServiceFactory extends Factory
 {

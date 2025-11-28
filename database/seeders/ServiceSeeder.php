@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Property;
-use App\Models\Service;
+use App\Models\Configuration\Service;
 use Illuminate\Database\Seeder;
 
 class ServiceSeeder extends Seeder

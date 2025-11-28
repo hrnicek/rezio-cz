@@ -2,7 +2,7 @@
 
 namespace App\Actions\Booking;
 
-use App\Models\Season;
+use App\Models\Configuration\Season;
 use Carbon\Carbon;
 
 class CalculateDominantSeasonAction

@@ -6,7 +6,7 @@ use App\Data\Admin\CustomerData;
 use App\Exports\CustomersExport;
 use App\Http\Controllers\Controller;
 use App\Imports\CustomersImport;
-use App\Models\Customer;
+use App\Models\CRM\Customer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -21,11 +21,11 @@ class CustomerController extends Controller
         $customers = Customer::query()
             ->when($request->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%")
+                    $q->where('name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%")
                         ->orWhere('phone', 'like', "%{$search}%")
-                        ->orWhere('company_name', 'like', "%{$search}%");
+                        ->orWhere('company_name', 'like', "%{$search}%")
+                        ->orWhere('ico', 'like', "%{$search}%");
                 });
             })
             ->orderByDesc('created_at')
@@ -41,18 +41,23 @@ class CustomerController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'first_name' => ['nullable', 'string', 'max:255'],
-            'last_name' => ['nullable', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
-            'address' => ['nullable', 'string', 'max:255'],
-            'city' => ['nullable', 'string', 'max:100'],
-            'zip' => ['nullable', 'string', 'max:20'],
-            'country' => ['nullable', 'string', 'max:100'],
+            
+            'is_company' => ['boolean'],
             'company_name' => ['nullable', 'string', 'max:255'],
-            'vat_id' => ['nullable', 'string', 'max:50'],
-            'notes' => ['nullable', 'string'],
-            'status' => ['required', 'string', 'in:active,inactive,vip,blacklisted'],
+            'ico' => ['nullable', 'string', 'max:20'],
+            'dic' => ['nullable', 'string', 'max:20'],
+            'has_vat' => ['boolean'],
+
+            'billing_street' => ['nullable', 'string', 'max:255'],
+            'billing_city' => ['nullable', 'string', 'max:100'],
+            'billing_zip' => ['nullable', 'string', 'max:20'],
+            'billing_country' => ['nullable', 'string', 'size:2'],
+            
+            'internal_notes' => ['nullable', 'string'],
+            'is_registered' => ['boolean'],
         ]);
 
         Customer::create($validated);
@@ -63,18 +68,23 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer): RedirectResponse
     {
         $validated = $request->validate([
-            'first_name' => ['nullable', 'string', 'max:255'],
-            'last_name' => ['nullable', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
-            'address' => ['nullable', 'string', 'max:255'],
-            'city' => ['nullable', 'string', 'max:100'],
-            'zip' => ['nullable', 'string', 'max:20'],
-            'country' => ['nullable', 'string', 'max:100'],
+            
+            'is_company' => ['boolean'],
             'company_name' => ['nullable', 'string', 'max:255'],
-            'vat_id' => ['nullable', 'string', 'max:50'],
-            'notes' => ['nullable', 'string'],
-            'status' => ['required', 'string', 'in:active,inactive,vip,blacklisted'],
+            'ico' => ['nullable', 'string', 'max:20'],
+            'dic' => ['nullable', 'string', 'max:20'],
+            'has_vat' => ['boolean'],
+
+            'billing_street' => ['nullable', 'string', 'max:255'],
+            'billing_city' => ['nullable', 'string', 'max:100'],
+            'billing_zip' => ['nullable', 'string', 'max:20'],
+            'billing_country' => ['nullable', 'string', 'size:2'],
+            
+            'internal_notes' => ['nullable', 'string'],
+            'is_registered' => ['boolean'],
         ]);
 
         $customer->update($validated);

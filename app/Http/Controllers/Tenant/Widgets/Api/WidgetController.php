@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Tenant\Widgets\Api;
 
+use App\Enums\BookingStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Booking\CalendarRequest;
 use App\Http\Requests\Booking\VerifyAvailabilityRequest;
 use App\Http\Requests\Booking\VerifyCustomerRequest;
-use App\Models\BlackoutDate;
-use App\Models\Booking;
-use App\Models\Customer;
+use App\Models\Booking\Booking;
+use App\Models\Configuration\BlockDate;
+use App\Models\CRM\Customer;
 use App\Models\Property;
 use App\Services\SeasonalPricingService;
 use Illuminate\Http\JsonResponse;
@@ -29,12 +30,12 @@ class WidgetController extends Controller
 
         $bookings = Booking::query()
             ->where('property_id', $property->id)
-            ->where('status', '!=', 'cancelled')
-            ->where('date_start', '<', $periodEnd->copy()->endOfDay())
-            ->where('date_end', '>', $periodStart->copy()->startOfDay())
+            ->where('status', '!=', BookingStatus::Cancelled)
+            ->where('check_in_date', '<', $periodEnd->copy()->endOfDay())
+            ->where('check_out_date', '>', $periodStart->copy()->startOfDay())
             ->get();
 
-        $blackouts = BlackoutDate::query()
+        $blackouts = BlockDate::query()
             ->where('start_date', '<=', $periodEnd->toDateString())
             ->where('end_date', '>=', $periodStart->toDateString())
             ->get();
@@ -48,13 +49,13 @@ class WidgetController extends Controller
             ->addDays($minLeadDays);
 
         while ($date->lte($periodEnd)) {
-            $isBlackout = $blackouts->contains(function (BlackoutDate $b) use ($date) {
+            $isBlackout = $blackouts->contains(function (BlockDate $b) use ($date) {
                 return $date->between($b->start_date, $b->end_date);
             });
 
             $isBooked = $bookings->contains(function (Booking $b) use ($date) {
-                $bookingStart = \Illuminate\Support\Carbon::parse($b->date_start)->startOfDay();
-                $bookingEndExclusive = \Illuminate\Support\Carbon::parse($b->date_end)->subDay()->startOfDay();
+                $bookingStart = $b->check_in_date->startOfDay();
+                $bookingEndExclusive = $b->check_out_date->copy()->subDay()->startOfDay();
 
                 return $date->between($bookingStart, $bookingEndExclusive);
             });
@@ -109,13 +110,13 @@ class WidgetController extends Controller
 
         $bookings = Booking::query()
             ->where('property_id', $property->id)
-            ->where('status', '!=', 'cancelled')
-            ->where('date_start', '<', $end)
-            ->where('date_end', '>', $start)
+            ->where('status', '!=', BookingStatus::Cancelled)
+            ->where('check_in_date', '<', $end)
+            ->where('check_out_date', '>', $start)
             ->get();
         $hasOverlap = $bookings->isNotEmpty();
 
-        $blackouts = BlackoutDate::query()
+        $blackouts = BlockDate::query()
             ->where('start_date', '<=', $end->toDateString())
             ->where('end_date', '>=', $start->toDateString())
             ->get();
@@ -125,13 +126,13 @@ class WidgetController extends Controller
         $cursorEnd = $end->copy()->startOfDay();
 
         while ($cursor->lte($cursorEnd)) {
-            $isBlackout = $blackouts->contains(function (BlackoutDate $b) use ($cursor) {
+            $isBlackout = $blackouts->contains(function (BlockDate $b) use ($cursor) {
                 return $cursor->between($b->start_date, $b->end_date);
             });
 
             $isBooked = $bookings->contains(function (Booking $b) use ($cursor) {
-                $bookingStart = \Illuminate\Support\Carbon::parse($b->date_start)->startOfDay();
-                $bookingEndExclusive = \Illuminate\Support\Carbon::parse($b->date_end)->subDay()->startOfDay();
+                $bookingStart = $b->check_in_date->startOfDay();
+                $bookingEndExclusive = $b->check_out_date->copy()->subDay()->startOfDay();
 
                 return $cursor->between($bookingStart, $bookingEndExclusive);
             });

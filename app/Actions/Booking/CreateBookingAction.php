@@ -3,8 +3,8 @@
 namespace App\Actions\Booking;
 
 use App\Models\Booking;
-use App\Models\Customer;
-use App\Models\Service;
+use App\Models\CRM\Customer;
+use App\Models\Configuration\Service;
 use App\Rules\Booking\CheckInDayRule;
 use App\Rules\Booking\MinStayRule;
 use App\Services\BookingPriceCalculator;
@@ -37,8 +37,8 @@ class CreateBookingAction
             // 1. Always create a new customer (no deduplication)
             $customer = Customer::query()->create([
                 'email' => $data['customer']['email'],
-                'first_name' => $data['customer']['first_name'],
-                'last_name' => $data['customer']['last_name'],
+                'first_name' => $data['customer']['first_name'] ?? '',
+                'last_name' => $data['customer']['last_name'] ?? '',
                 'phone' => $data['customer']['phone'],
             ]);
 
