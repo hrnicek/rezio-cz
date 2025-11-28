@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, Link } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -26,13 +26,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ref, computed } from 'vue';
 import { Textarea } from '@/components/ui/textarea';
 import { useCurrency } from '@/composables/useCurrency';
 import { BookingStatusLabels } from '@/lib/enums';
-import { Calendar as CalendarIcon, CreditCard, Users, Activity, DollarSign } from 'lucide-vue-next';
+import { Calendar as CalendarIcon, CreditCard, Users, Activity, DollarSign, Building } from 'lucide-vue-next';
 
 declare const route: any;
 
@@ -45,7 +46,15 @@ const breadcrumbs = [
 
 const props = defineProps<{
     bookings: Array<any>;
-    properties: Array<{ id: number; name: string }>;
+    properties: Array<{
+        id: number;
+        name: string;
+        address: string | null;
+        description: string | null;
+        bookings_count: number;
+        active_bookings_count: number;
+        month_bookings_count: number;
+    }>;
     stats: {
         total_revenue: number;
         total_bookings: number;
@@ -199,6 +208,38 @@ const getInitials = (name: string) => {
                         </DialogContent>
                     </Dialog>
                 </div>
+            </div>
+
+            <!-- Properties Grid -->
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <Card v-for="property in properties" :key="property.id" class="overflow-hidden border-border shadow-none rounded-md group hover:border-primary/50 transition-colors">
+                    <div class="aspect-video w-full bg-muted relative flex items-center justify-center border-b border-border">
+                        <Building class="h-12 w-12 text-muted-foreground/20" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4">
+                            <h3 class="font-semibold text-white tracking-tight text-lg leading-none">{{ property.name }}</h3>
+                            <p v-if="property.address" class="text-xs text-white/70 mt-1 truncate font-medium">{{ property.address }}</p>
+                        </div>
+                    </div>
+                    <CardContent class="p-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-[10px] text-muted-foreground uppercase tracking-wider font-mono font-medium">Nové rezervace</p>
+                                <p class="text-2xl font-semibold tracking-tight text-foreground">{{ property.month_bookings_count }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-muted-foreground uppercase tracking-wider font-mono font-medium">Aktivní</p>
+                                <p class="text-2xl font-semibold tracking-tight text-foreground">{{ property.active_bookings_count }}</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                    <CardFooter class="p-4 pt-0">
+                        <Button variant="outline" class="w-full uppercase tracking-wider text-xs h-9 font-mono border-dashed hover:border-solid hover:bg-secondary/50" as-child>
+                            <Link :href="route('admin.properties.bookings.index', property.id)">
+                                REZERVACE
+                            </Link>
+                        </Button>
+                    </CardFooter>
+                </Card>
             </div>
 
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

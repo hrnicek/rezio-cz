@@ -45,7 +45,15 @@ class DashboardController extends Controller
         return Inertia::render('Admin/Dashboard', [
             'bookings' => $bookings,
             'upcomingBookings' => $upcomingBookings,
-            'properties' => \App\Models\Property::get(['id', 'name']),
+            'properties' => \App\Models\Property::withCount([
+                'bookings',
+                'bookings as active_bookings_count' => function ($query) {
+                    $query->where('end_date', '>=', now());
+                },
+                'bookings as month_bookings_count' => function ($query) {
+                    $query->whereBetween('start_date', [now()->startOfMonth(), now()->endOfMonth()]);
+                }
+            ])->get(['id', 'name', 'address', 'description']),
             'stats' => $stats,
         ]);
     }
