@@ -19,7 +19,7 @@ class BookingController extends Controller
         $search = $request->input('search');
         $currentPropertyId = $request->user()->current_property_id;
 
-        $bookings = Booking::with(['property', 'customer'])
+        $bookings = Booking::with(['property', 'guest'])
             ->when($currentPropertyId, function ($query, $propertyId) {
                 return $query->where('property_id', $propertyId);
             })
@@ -61,7 +61,7 @@ class BookingController extends Controller
         $search = $request->input('search');
         $currentPropertyId = $request->user()->current_property_id;
 
-        $bookings = Booking::with(['property', 'customer'])
+        $bookings = Booking::with(['property', 'guest'])
             ->when($currentPropertyId, function ($query, $propertyId) {
                 return $query->where('property_id', $propertyId);
             })
@@ -97,8 +97,8 @@ class BookingController extends Controller
                     $booking->customer ? $booking->customer->first_name.' '.$booking->customer->last_name : '',
                     $booking->customer->email ?? '',
                     $booking->customer->phone ?? '',
-                    $booking->start_date->format('Y-m-d'),
-                    $booking->end_date->format('Y-m-d'),
+                    $booking->check_in_date->format('Y-m-d'),
+                    $booking->check_out_date->format('Y-m-d'),
                     $booking->status ?? '',
                     $booking->total_price,
                     $booking->notes ?? '',
@@ -115,16 +115,16 @@ class BookingController extends Controller
     {
         $validated = $request->validate([
             'property_id' => 'required|exists:properties,id',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
+            'check_in_date' => 'required|date',
+            'check_out_date' => 'required|date|after:check_in_date',
             'status' => ['required', Rule::in(Booking::ALLOWED_STATUSES)], // Updated validation
             'notes' => 'nullable|string',
         ]);
 
         $property = \App\Models\Property::findOrFail($validated['property_id']);
 
-        if ($this->hasOverlap($property->id, $validated['start_date'], $validated['end_date'])) {
-            return back()->withErrors(['start_date' => 'Selected dates are not available.']);
+        if ($this->hasOverlap($property->id, $validated['check_in_date'], $validated['check_out_date'])) {
+            return back()->withErrors(['check_in_date' => 'Selected dates are not available.']);
         }
 
         // Create a customer for the blocked date
@@ -139,9 +139,9 @@ class BookingController extends Controller
             'property_id' => $property->id,
             'user_id' => auth()->id(),
             'customer_id' => $customer->id,
-            'start_date' => $validated['start_date'],
-            'end_date' => $validated['end_date'],
-            'total_price' => 0,
+            'check_in_date' => $validated['check_in_date'],
+            'check_out_date' => $validated['check_out_date'],
+            'total_price_amount' => 0,
             'status' => $validated['status'],
         ]);
 
@@ -159,17 +159,17 @@ class BookingController extends Controller
 
         $validated = $request->validate([
             'status' => ['sometimes', 'required', Rule::in(Booking::ALLOWED_STATUSES)], // Updated validation
-            'start_date' => 'sometimes|required|date',
-            'end_date' => 'sometimes|required|date|after:start_date',
+            'check_in_date' => 'sometimes|required|date',
+            'check_out_date' => 'sometimes|required|date|after:check_in_date',
             'notes' => 'nullable|string',
         ]);
 
-        if (isset($validated['start_date']) || isset($validated['end_date'])) {
-            $start = $validated['start_date'] ?? $booking->start_date;
-            $end = $validated['end_date'] ?? $booking->end_date;
+        if (isset($validated['check_in_date']) || isset($validated['check_out_date'])) {
+            $start = $validated['check_in_date'] ?? $booking->check_in_date;
+            $end = $validated['check_out_date'] ?? $booking->check_out_date;
 
             if ($this->hasOverlap($booking->property_id, $start, $end, $booking->id)) {
-                return back()->withErrors(['start_date' => 'Selected dates are not available.']);
+                return back()->withErrors(['check_in_date' => 'Selected dates are not available.']);
             }
         }
 
@@ -186,11 +186,11 @@ class BookingController extends Controller
                 return $query->where('id', '!=', $ignoreBookingId);
             })
             ->where(function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('start_date', [$startDate, $endDate])
-                    ->orWhereBetween('end_date', [$startDate, $endDate])
+                $query->whereBetween('check_in_date', [$startDate, $endDate])
+                    ->orWhereBetween('check_out_date', [$startDate, $endDate])
                     ->orWhere(function ($query) use ($startDate, $endDate) {
-                        $query->where('start_date', '<', $startDate)
-                            ->where('end_date', '>', $endDate);
+                        $query->where('check_in_date', '<', $startDate)
+                            ->where('check_out_date', '>', $endDate);
                     });
             })
             ->exists();

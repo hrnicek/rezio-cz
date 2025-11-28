@@ -1,41 +1,31 @@
 <?php
 
-namespace App\Models;
+namespace App\Models; 
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Booking\Booking;
+use App\Models\Finance\Invoice;
+use App\Models\Configuration\Season;     
+use App\Models\Configuration\Service;    
+use App\Models\Configuration\BlockDate;  
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Property extends Model
 {
     use HasFactory;
 
+    protected $table = 'properties';
+
     protected $fillable = [
-        'name',
-        'slug',
-        'address',
-        'description',
-        'price_per_night',
-        'image',
+        'name', 'slug', 'address', 'description', 'image'
     ];
 
-    protected static function booted(): void
-    {
-        static::created(function (Property $property) {
-            $property->seasons()->create([
-                'name' => 'Výchozí sezóna',
-                'is_default' => true,
-                'price' => 0,
-                'min_stay' => 1,
-                'priority' => 0,
-            ]);
-        });
-    }
+    // --- RELATIONS ---
 
-    public function bookings(): HasMany
+    public function services(): HasMany
     {
-        return $this->hasMany(Booking::class);
+        return $this->hasMany(Service::class);
     }
 
     public function seasons(): HasMany
@@ -43,13 +33,18 @@ class Property extends Model
         return $this->hasMany(Season::class);
     }
 
-    public function services(): HasMany
+    public function blockDates(): HasMany
     {
-        return $this->hasMany(Service::class);
+        return $this->hasMany(BlockDate::class);
     }
 
-    public function emailTemplates(): HasMany
+    public function bookings(): HasMany
     {
-        return $this->hasMany(EmailTemplate::class);
+        return $this->hasMany(Booking::class);
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
     }
 }

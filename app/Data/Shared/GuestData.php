@@ -16,6 +16,7 @@ class GuestData extends Data
         public ?string $document_type,
         public ?string $document_number,
         public ?string $birth_date,
+        public ?string $birth_place,
         public ?array $address,
         public ?string $signature,
     ) {}

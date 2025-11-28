@@ -20,7 +20,16 @@ class DatabaseSeeder extends Seeder
         // 1. Create tenants
         $this->command->info('Creating tenants...');
 
-        DB::statement("DROP DATABASE rezio_chata");
+        // Delete existing tenants and domains (use central connection)
+        Tenant::query()->delete();
+        DB::connection('mysql')->table('domains')->delete();
+
+        // Drop and recreate tenant database
+        try {
+            DB::connection('mysql')->statement("DROP DATABASE IF EXISTS rezio_chata");
+        } catch (\Exception $e) {
+            // Database might not exist yet
+        }
 
         $tenant1 = Tenant::create([
             'tenancy_db_name' => 'rezio_chata'
@@ -46,39 +55,6 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'chata-1',
                 'description' => 'Krásná chata s výhledem',
             ]);
-
-            // Seed seasons and services
-            $this->call(SeasonSeeder::class);
-            $this->call(ServiceSeeder::class);
-
-            // Create customers and bookings
-            for ($i = 0; $i < 5; $i++) {
-                $customer = \App\Models\Customer::factory()->create();
-
-                $startDate = now()->addDays(rand(1, 60));
-                $endDate = (clone $startDate)->addDays(rand(2, 7));
-
-                $booking = \App\Models\Booking::create([
-                    'property_id' => $property->id,
-                    'customer_id' => $customer->id,
-                    'start_date' => $startDate->format('Y-m-d'),
-                    'end_date' => $endDate->format('Y-m-d'),
-                    'date_start' => $startDate->setTime(14, 0),
-                    'date_end' => $endDate->setTime(10, 0),
-                    'status' => fake()->randomElement(['pending', 'confirmed', 'paid']),
-                    'total_price' => rand(5000, 15000),
-                    'notes' => fake()->optional()->sentence(),
-                ]);
-
-                // Attach random services
-                $services = \App\Models\Service::inRandomOrder()->limit(rand(0, 3))->get();
-                foreach ($services as $service) {
-                    $booking->services()->attach($service->id, [
-                        'quantity' => rand(1, 3),
-                        'price_total' => $service->price * rand(1, 3),
-                    ]);
-                }
-            }
         });
 
         $this->command->info('✅ Multi-tenant database seeded successfully!');
