@@ -26,7 +26,7 @@ class Property extends Model
             $property->seasons()->create([
                 'name' => 'Výchozí sezóna',
                 'is_default' => true,
-                'price' => $property->price_per_night,
+                'price' => 0,
                 'min_stay' => 1,
                 'priority' => 0,
             ]);

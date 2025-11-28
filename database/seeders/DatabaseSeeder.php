@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Central\Tenant;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\DatabaseManager;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,6 +19,8 @@ class DatabaseSeeder extends Seeder
 
         // 1. Create tenants
         $this->command->info('Creating tenants...');
+
+        DB::statement("DROP DATABASE rezio_chata");
 
         $tenant1 = Tenant::create([
             'tenancy_db_name' => 'rezio_chata'
@@ -41,8 +45,6 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Chata 1',
                 'slug' => 'chata-1',
                 'description' => 'Krásná chata s výhledem',
-                'widget_token' => \Illuminate\Support\Str::random(32),
-                'price_per_night' => 2500,
             ]);
 
             // Seed seasons and services
