@@ -29,7 +29,6 @@ class Property extends Model
                 'price' => $property->price_per_night,
                 'min_stay' => 1,
                 'priority' => 0,
-                // Default season doesn't need dates as it's a fallback
             ]);
         });
     }
@@ -52,18 +51,5 @@ class Property extends Model
     public function emailTemplates(): HasMany
     {
         return $this->hasMany(EmailTemplate::class);
-    }
-
-    public function widget(): HasOne
-    {
-        return $this->hasOne(Widget::class)->withDefault([
-            'settings' => [
-                'primary_color' => '#3b82f6',
-                'font_family' => 'Roboto, sans-serif',
-                'layout' => 'standard',
-            ],
-            'allowed_domains' => [],
-            'is_active' => true,
-        ]);
     }
 }

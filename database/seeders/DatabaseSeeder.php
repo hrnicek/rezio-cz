@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Tenant;
 use App\Models\User;
+use App\Models\Central\Tenant;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -19,16 +19,12 @@ class DatabaseSeeder extends Seeder
         $this->command->info('Creating tenants...');
 
         $tenant1 = Tenant::create([
-            'id' => 'chata-u-lipna',
+            'id' => 'chata',
             'plan' => 'pro',
         ]);
-        $tenant1->domains()->create(['domain' => 'chata-u-lipna.rezio.test']);
+        $tenant1->domains()->create(['domain' => 'chata.rezio.test']);
 
-        $tenant2 = Tenant::create([
-            'id' => 'apartman-praha',
-            'plan' => 'free',
-        ]);
-        $tenant2->domains()->create(['domain' => 'apartman-praha.rezio.test']);
+       
 
         // 2. Seed Tenant 1 (Chata u Lipna)
         $this->command->info('Seeding Tenant 1: Chata u Lipna...');
@@ -42,9 +38,9 @@ class DatabaseSeeder extends Seeder
 
             // Create property
             $property = \App\Models\Property::create([
-                'name' => 'Chata u Lipna',
-                'slug' => 'chata-u-lipna',
-                'description' => 'Krásná chata s výhledem na Lipno',
+                'name' => 'Chata 1',
+                'slug' => 'chata-1',
+                'description' => 'Krásná chata s výhledem',
                 'widget_token' => \Illuminate\Support\Str::random(32),
                 'price_per_night' => 2500,
             ]);
@@ -80,49 +76,6 @@ class DatabaseSeeder extends Seeder
                         'price_total' => $service->price * rand(1, 3),
                     ]);
                 }
-            }
-        });
-
-        // 3. Seed Tenant 2 (Apartmán Praha)
-        $this->command->info('Seeding Tenant 2: Apartmán Praha...');
-        $tenant2->run(function () {
-            // Create admin user
-            $admin = User::create([
-                'name' => 'Praha Admin',
-                'email' => 'praha@example.com',
-                'password' => bcrypt('password'),
-            ]);
-
-            // Create property
-            $property = \App\Models\Property::create([
-                'name' => 'Apartmán Praha',
-                'slug' => 'apartman-praha',
-                'description' => 'Moderní apartmán v centru Prahy',
-                'price_per_night' => 3500,
-            ]);
-
-            // Seed seasons and services
-            $this->call(SeasonSeeder::class);
-            $this->call(ServiceSeeder::class);
-
-            // Create customers and bookings
-            for ($i = 0; $i < 3; $i++) {
-                $customer = \App\Models\Customer::factory()->create();
-
-                $startDate = now()->addDays(rand(1, 60));
-                $endDate = (clone $startDate)->addDays(rand(2, 7));
-
-                \App\Models\Booking::create([
-                    'property_id' => $property->id,
-                    'customer_id' => $customer->id,
-                    'start_date' => $startDate->format('Y-m-d'),
-                    'end_date' => $endDate->format('Y-m-d'),
-                    'date_start' => $startDate->setTime(14, 0),
-                    'date_end' => $endDate->setTime(10, 0),
-                    'status' => fake()->randomElement(['pending', 'confirmed', 'paid']),
-                    'total_price' => rand(7000, 20000),
-                    'notes' => fake()->optional()->sentence(),
-                ]);
             }
         });
 
