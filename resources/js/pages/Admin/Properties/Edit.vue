@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import Upload from '@/components/Upload.vue';
 
 declare const route: any;
 
@@ -15,6 +16,7 @@ const props = defineProps<{
         name: string;
         address: string;
         description: string;
+        image: string | null;
     };
 }>();
 
@@ -22,6 +24,7 @@ const form = useForm({
     name: props.property.name,
     address: props.property.address,
     description: props.property.description,
+    image: props.property.image,
 });
 
 const submit = () => {
@@ -79,6 +82,15 @@ const breadcrumbs = [
                             <Label for="description">Popis</Label>
                             <Textarea id="description" v-model="form.description" placeholder="Krátký popis pro widget" class="min-h-[120px]" />
                             <div v-if="form.errors.description" class="text-sm text-destructive">{{ form.errors.description }}</div>
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label>Obrázek</Label>
+                            <div v-if="props.property.image && form.image === props.property.image" class="mb-2">
+                                <img :src="'/storage/' + props.property.image" alt="Current Image" class="h-32 w-auto rounded-md object-cover" />
+                            </div>
+                            <Upload v-model="form.image" label="Změnit obrázek" />
+                            <div v-if="form.errors.image" class="text-sm text-destructive">{{ form.errors.image }}</div>
                         </div>
 
                         <div class="flex justify-end pt-4">

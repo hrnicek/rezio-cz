@@ -40,12 +40,19 @@ class PropertyController extends Controller
             'name' => 'required|string|max:255',
             'address' => 'nullable|string',
             'description' => 'nullable|string',
+            'image' => 'nullable|string',
         ]);
 
-        Property::create([
+        $property = Property::create([
             ...$validated,
             'slug' => Str::slug($validated['name']).'-'.Str::random(6),
         ]);
+
+        if ($request->filled('image')) {
+            $fileInfo = \RahulHaque\Filepond\Facades\Filepond::field($request->image)
+                ->moveTo('properties/images/'.$property->id);
+            $property->update(['image' => $fileInfo['filepath']]);
+        }
 
         return redirect()->route('admin.properties.index');
     }
@@ -77,9 +84,20 @@ class PropertyController extends Controller
             'name' => 'required|string|max:255',
             'address' => 'nullable|string',
             'description' => 'nullable|string',
+            'image' => 'nullable|string',
         ]);
 
         $property->update($validated);
+
+        if ($request->filled('image') && $request->image !== $property->image) {
+            try {
+                $fileInfo = \RahulHaque\Filepond\Facades\Filepond::field($request->image)
+                    ->moveTo('properties/images/'.$property->id);
+                $property->update(['image' => $fileInfo['filepath']]);
+            } catch (\Throwable $e) {
+                // Ignore if it's not a valid FilePond serverId (e.g. existing image path)
+            }
+        }
 
         return redirect()->route('admin.properties.index');
     }

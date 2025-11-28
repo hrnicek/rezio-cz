@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronLeft } from 'lucide-vue-next';
+import Upload from '@/components/Upload.vue';
 
 declare const route: any;
 
@@ -14,6 +15,7 @@ const form = useForm({
     name: '',
     address: '',
     description: '',
+    image: null,
 });
 
 const submit = () => {
@@ -72,6 +74,12 @@ const breadcrumbs = [
                                 <Label for="description">Popis</Label>
                                 <Textarea id="description" v-model="form.description" placeholder="Krátký popis pro widget" />
                                 <div v-if="form.errors.description" class="text-sm text-red-500">{{ form.errors.description }}</div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <Label>Obrázek</Label>
+                                <Upload v-model="form.image" />
+                                <div v-if="form.errors.image" class="text-sm text-red-500">{{ form.errors.image }}</div>
                             </div>
 
                             <div class="flex justify-end">

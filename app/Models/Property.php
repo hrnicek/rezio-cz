@@ -17,6 +17,7 @@ class Property extends Model
         'address',
         'description',
         'price_per_night',
+        'image',
     ];
 
     protected static function booted(): void

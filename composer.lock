@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "002f970eed2b23acc596945628d75249",
+    "content-hash": "8c07cc5eb7f48a6e179d2a2df231a4d9",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -5844,6 +5844,81 @@
                 "source": "https://github.com/bobthecow/psysh/tree/v0.12.14"
             },
             "time": "2025-10-27T17:15:31+00:00"
+        },
+        {
+            "name": "rahulhaque/laravel-filepond",
+            "version": "v12.3.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rahulhaque/laravel-filepond.git",
+                "reference": "df0eb5b763444a098fea48b1a6e511d87b99d3f8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rahulhaque/laravel-filepond/zipball/df0eb5b763444a098fea48b1a6e511d87b99d3f8",
+                "reference": "df0eb5b763444a098fea48b1a6e511d87b99d3f8",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "^12.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "fakerphp/faker": "^1.24.1",
+                "laravel/pail": "^1.2.3",
+                "laravel/pint": "^1.24",
+                "laravel/sail": "^1.45",
+                "league/flysystem-aws-s3-v3": "^3.29",
+                "mockery/mockery": "^1.6.12",
+                "nunomaduro/collision": "^8.8.2",
+                "orchestra/testbench": "^10.6",
+                "phpunit/phpunit": "^11.5.38"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Filepond": "RahulHaque\\Filepond\\Facades\\Filepond"
+                    },
+                    "providers": [
+                        "RahulHaque\\Filepond\\FilepondServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "RahulHaque\\Filepond\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rahul Haque",
+                    "email": "rahulhaque07@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Use FilePond the Laravel way",
+            "homepage": "https://github.com/rahulhaque/laravel-filepond",
+            "keywords": [
+                "filepond",
+                "filepond-laravel",
+                "laravel-filepond"
+            ],
+            "support": {
+                "issues": "https://github.com/rahulhaque/laravel-filepond/issues",
+                "source": "https://github.com/rahulhaque/laravel-filepond/tree/v12.3.4"
+            },
+            "funding": [
+                {
+                    "url": "https://ko-fi.com/rahulhaque",
+                    "type": "ko_fi"
+                }
+            ],
+            "time": "2025-10-09T13:05:57+00:00"
         },
         {
             "name": "ralouphie/getallheaders",

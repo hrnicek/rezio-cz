@@ -10,6 +10,7 @@ class PropertyData extends Data
         public int $id,
         public string $name,
         public ?string $address,
+        public ?string $image = null,
         public ?string $description = null,
     ) {}
 }
