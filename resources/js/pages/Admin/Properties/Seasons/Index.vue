@@ -4,12 +4,30 @@ import { Head, useForm, router } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Pencil, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { Checkbox } from '@/components/ui/checkbox';
 import AppDataTable from '@/components/AppDataTable.vue';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { toast } from 'vue-sonner';
 
 declare const route: any;
 
@@ -38,8 +56,10 @@ const props = defineProps<{
     };
 }>();
 
-const editingId = ref<number | null>(null);
-const isAdding = ref(false);
+const isDialogOpen = ref(false);
+const editingSeason = ref<any>(null);
+const isDeleteDialogOpen = ref(false);
+const seasonToDelete = ref<number | null>(null);
 
 const form = useForm({
     name: '',
@@ -64,15 +84,14 @@ const weekDays = [
     { value: 6, label: 'Sobota' },
 ];
 
-const startAdding = () => {
-    isAdding.value = true;
-    editingId.value = null;
+const openCreateDialog = () => {
+    editingSeason.value = null;
     form.reset();
+    isDialogOpen.value = true;
 };
 
-const startEditing = (season: any) => {
-    isAdding.value = false;
-    editingId.value = season.id;
+const openEditDialog = (season: any) => {
+    editingSeason.value = season;
     form.name = season.name;
     form.start_date = season.start_date;
     form.end_date = season.end_date;
@@ -83,34 +102,57 @@ const startEditing = (season: any) => {
     form.is_fixed_range = season.is_fixed_range || false;
     form.priority = season.priority || 0;
     form.is_recurring = season.is_recurring || false;
+    isDialogOpen.value = true;
 };
 
-const cancelEdit = () => {
-    isAdding.value = false;
-    editingId.value = null;
+const closeDialog = () => {
+    isDialogOpen.value = false;
+    editingSeason.value = null;
     form.reset();
 };
 
 const submit = () => {
-    if (editingId.value) {
-        form.put(route('admin.properties.seasons.update', [props.property.id, editingId.value]), {
+    if (editingSeason.value) {
+        form.put(route('admin.properties.seasons.update', [props.property.id, editingSeason.value.id]), {
             onSuccess: () => {
-                cancelEdit();
+                closeDialog();
+                toast.success('Sezóna byla úspěšně upravena.');
             },
+            onError: () => {
+                toast.error('Nepodařilo se upravit sezónu. Zkontrolujte formulář.');
+            }
         });
     } else {
         form.post(route('admin.properties.seasons.store', props.property.id), {
             onSuccess: () => {
-                cancelEdit();
+                closeDialog();
+                toast.success('Sezóna byla úspěšně vytvořena.');
             },
+            onError: () => {
+                toast.error('Nepodařilo se vytvořit sezónu. Zkontrolujte formulář.');
+            }
         });
     }
 };
 
-const deleteSeason = (seasonId: number) => {
-    if (confirm('Opravdu chcete smazat tuto sezónu?')) {
-        router.delete(route('admin.properties.seasons.destroy', [props.property.id, seasonId]));
-    }
+const confirmDelete = (seasonId: number) => {
+    seasonToDelete.value = seasonId;
+    isDeleteDialogOpen.value = true;
+};
+
+const deleteSeason = () => {
+    if (!seasonToDelete.value) return;
+    
+    router.delete(route('admin.properties.seasons.destroy', [props.property.id, seasonToDelete.value]), {
+        onSuccess: () => {
+            isDeleteDialogOpen.value = false;
+            seasonToDelete.value = null;
+            toast.success('Sezóna byla úspěšně smazána.');
+        },
+        onError: () => {
+            toast.error('Nepodařilo se smazat sezónu.');
+        }
+    });
 };
 
 const toggleCheckInDay = (day: number) => {
@@ -179,22 +221,68 @@ const columns = [
                     <h2 class="text-2xl font-bold tracking-tight">Sezóny</h2>
                     <p class="text-muted-foreground">Správa cenových sezón a omezení.</p>
                 </div>
-                <Button @click="startAdding" v-if="!isAdding && !editingId" class="h-9 shadow-sm">
+                <Button @click="openCreateDialog" class="h-9 shadow-sm">
                     <Plus class="mr-2 h-4 w-4" />
                     Přidat sezónu
                 </Button>
             </div>
 
-            <!-- Add/Edit Form -->
-            <Card v-if="isAdding || editingId" class="border shadow-none bg-muted/20">
-                <CardHeader>
-                    <CardTitle>{{ editingId ? 'Upravit sezónu' : 'Přidat novou sezónu' }}</CardTitle>
-                    <CardDescription>
-                        {{ editingId ? 'Úprava detailů sezóny' : 'Vytvoření nové cenové sezóny' }}
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form @submit.prevent="submit" class="space-y-4">
+            <!-- Seasons Table -->
+            <AppDataTable
+                :data="seasons"
+                :columns="columns"
+                search-placeholder="Hledat sezóny..."
+            >
+                <template #name="{ value }">
+                    <div class="font-medium text-foreground">{{ value }}</div>
+                </template>
+                <template #priority="{ value }">
+                    <span class="text-muted-foreground">{{ value || 0 }}</span>
+                </template>
+                <template #period="{ item }">
+                    <span v-if="item.is_default" class="text-muted-foreground text-xs uppercase">Vždy</span>
+                    <span v-else class="font-mono text-xs">{{ item.start_date }} - {{ item.end_date }}</span>
+                </template>
+                <template #price="{ value }">
+                    <span class="font-medium">{{ value }} Kč</span>
+                </template>
+                <template #min_stay="{ value }">
+                    {{ value || 1 }} <span class="text-muted-foreground text-xs">nocí</span>
+                </template>
+                <template #check_in_days="{ value }">
+                    <span v-if="!value || value.length === 0" class="text-muted-foreground text-xs uppercase">Kdykoliv</span>
+                    <span v-else class="text-xs font-mono">{{ value.map((d: number) => weekDays[d].label.substring(0, 2)).join(', ') }}</span>
+                </template>
+                <template #status="{ item }">
+                    <div class="flex gap-1 flex-wrap">
+                        <Badge v-if="item.is_default" variant="secondary" class="rounded-sm shadow-none">Výchozí</Badge>
+                        <Badge v-if="item.is_fixed_range" variant="outline" class="rounded-sm">Pevný</Badge>
+                        <Badge v-if="item.is_recurring" variant="outline" class="rounded-sm">Opakovaná</Badge>
+                    </div>
+                </template>
+                <template #actions="{ item }">
+                    <div class="flex justify-end gap-2">
+                        <Button size="icon-sm" variant="ghost" @click="openEditDialog(item)" class="h-8 w-8 hover:bg-muted">
+                            <Pencil class="h-3 w-3 text-muted-foreground" />
+                        </Button>
+                        <Button size="icon-sm" variant="ghost" @click="confirmDelete(item.id)" :disabled="item.is_default" class="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
+                            <Trash2 class="h-3 w-3 text-muted-foreground group-hover:text-destructive" />
+                        </Button>
+                    </div>
+                </template>
+            </AppDataTable>
+
+            <!-- Create/Edit Dialog -->
+            <Dialog :open="isDialogOpen" @update:open="isDialogOpen = $event">
+                <DialogContent class="sm:max-w-[800px]">
+                    <DialogHeader>
+                        <DialogTitle>{{ editingSeason ? 'Upravit sezónu' : 'Přidat novou sezónu' }}</DialogTitle>
+                        <DialogDescription>
+                            {{ editingSeason ? 'Úprava detailů sezóny' : 'Vytvoření nové cenové sezóny' }}
+                        </DialogDescription>
+                    </DialogHeader>
+                    
+                    <form @submit.prevent="submit" class="space-y-4 py-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-2">
                                 <Label for="name" class="text-xs uppercase text-muted-foreground font-mono">Název</Label>
@@ -268,62 +356,35 @@ const columns = [
                             </div>
                         </div>
 
-                        <div class="flex justify-end gap-2 pt-2">
-                            <Button type="button" variant="outline" @click="cancelEdit" class="h-9 shadow-none">
+                        <DialogFooter class="pt-4">
+                            <Button type="button" variant="outline" @click="closeDialog" class="h-9">
                                 Zrušit
                             </Button>
-                            <Button type="submit" :disabled="form.processing" class="h-9 shadow-sm">
-                                {{ editingId ? 'Upravit' : 'Vytvořit' }} sezónu
+                            <Button type="submit" :disabled="form.processing" class="h-9">
+                                {{ editingSeason ? 'Upravit' : 'Vytvořit' }} sezónu
                             </Button>
-                        </div>
+                        </DialogFooter>
                     </form>
-                </CardContent>
-            </Card>
+                </DialogContent>
+            </Dialog>
 
-            <!-- Seasons Table -->
-            <AppDataTable
-                :data="seasons"
-                :columns="columns"
-                search-placeholder="Hledat sezóny..."
-            >
-                <template #name="{ value }">
-                    <div class="font-medium text-foreground">{{ value }}</div>
-                </template>
-                <template #priority="{ value }">
-                    <span class="text-muted-foreground">{{ value || 0 }}</span>
-                </template>
-                <template #period="{ item }">
-                    <span v-if="item.is_default" class="text-muted-foreground text-xs uppercase">Vždy</span>
-                    <span v-else class="font-mono text-xs">{{ item.start_date }} - {{ item.end_date }}</span>
-                </template>
-                <template #price="{ value }">
-                    <span class="font-medium">{{ value }} Kč</span>
-                </template>
-                <template #min_stay="{ value }">
-                    {{ value || 1 }} <span class="text-muted-foreground text-xs">nocí</span>
-                </template>
-                <template #check_in_days="{ value }">
-                    <span v-if="!value || value.length === 0" class="text-muted-foreground text-xs uppercase">Kdykoliv</span>
-                    <span v-else class="text-xs font-mono">{{ value.map((d: number) => weekDays[d].label.substring(0, 2)).join(', ') }}</span>
-                </template>
-                <template #status="{ item }">
-                    <div class="flex gap-1 flex-wrap">
-                        <Badge v-if="item.is_default" variant="secondary" class="rounded-sm shadow-none">Výchozí</Badge>
-                        <Badge v-if="item.is_fixed_range" variant="outline" class="rounded-sm">Pevný</Badge>
-                        <Badge v-if="item.is_recurring" variant="outline" class="rounded-sm">Opakovaná</Badge>
-                    </div>
-                </template>
-                <template #actions="{ item }">
-                    <div class="flex justify-end gap-2">
-                        <Button size="icon-sm" variant="ghost" @click="startEditing(item)" class="h-8 w-8 hover:bg-muted">
-                            <Pencil class="h-3 w-3 text-muted-foreground" />
-                        </Button>
-                        <Button size="icon-sm" variant="ghost" @click="deleteSeason(item.id)" :disabled="item.is_default" class="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
-                            <Trash2 class="h-3 w-3 text-muted-foreground group-hover:text-destructive" />
-                        </Button>
-                    </div>
-                </template>
-            </AppDataTable>
+            <!-- Delete Alert Dialog -->
+            <AlertDialog :open="isDeleteDialogOpen" @update:open="isDeleteDialogOpen = $event">
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Opravdu chcete smazat tuto sezónu?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Tato akce je nevratná. Sezóna bude trvale odstraněna ze systému.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel @click="isDeleteDialogOpen = false">Zrušit</AlertDialogCancel>
+                        <AlertDialogAction @click="deleteSeason" class="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            Smazat
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     </PropertyLayout>
 </template>

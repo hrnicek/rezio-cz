@@ -9,6 +9,7 @@ import VCalendar from 'v-calendar';
 import 'v-calendar/style.css';
 import { ZiggyVue } from 'ziggy-js';
 import { DarkModeManager } from './utils/darkMode';
+import 'vue-sonner/style.css'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 

@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import PropertyLayout from '../Partials/PropertyLayout.vue';
-import { Head, Link, useForm, router } from '@inertiajs/vue3';
+import { Head, useForm, router } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Pencil, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
@@ -18,6 +17,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { toast } from 'vue-sonner';
 import AppDataTable from '@/components/AppDataTable.vue';
 
 declare const route: any;
@@ -50,8 +68,10 @@ const props = defineProps<{
     };
 }>();
 
-const editingId = ref<number | null>(null);
-const isAdding = ref(false);
+const isDialogOpen = ref(false);
+const editingService = ref<any>(null);
+const isDeleteDialogOpen = ref(false);
+const serviceToDelete = ref<number | null>(null);
 
 const form = useForm({
     name: '',
@@ -62,49 +82,71 @@ const form = useForm({
     is_active: true,
 });
 
-const startAdding = () => {
-    isAdding.value = true;
-    editingId.value = null;
+const openCreateDialog = () => {
+    editingService.value = null;
     form.reset();
+    isDialogOpen.value = true;
 };
 
-const startEditing = (service: any) => {
-    isAdding.value = false;
-    editingId.value = service.id;
+const openEditDialog = (service: any) => {
+    editingService.value = service;
     form.name = service.name;
     form.description = service.description || '';
     form.price_type = service.price_type;
     form.price = service.price;
     form.max_quantity = service.max_quantity;
     form.is_active = !!service.is_active;
+    isDialogOpen.value = true;
 };
 
-const cancelEdit = () => {
-    isAdding.value = false;
-    editingId.value = null;
+const closeDialog = () => {
+    isDialogOpen.value = false;
+    editingService.value = null;
     form.reset();
 };
 
 const submit = () => {
-    if (editingId.value) {
-        form.put(route('admin.properties.services.update', [props.property.id, editingId.value]), {
+    if (editingService.value) {
+        form.put(route('admin.properties.services.update', [props.property.id, editingService.value.id]), {
             onSuccess: () => {
-                cancelEdit();
+                closeDialog();
+                toast.success('Služba byla úspěšně upravena.');
             },
+            onError: () => {
+                toast.error('Nepodařilo se upravit službu. Zkontrolujte formulář.');
+            }
         });
     } else {
         form.post(route('admin.properties.services.store', props.property.id), {
             onSuccess: () => {
-                cancelEdit();
+                closeDialog();
+                toast.success('Služba byla úspěšně vytvořena.');
             },
+            onError: () => {
+                toast.error('Nepodařilo se vytvořit službu. Zkontrolujte formulář.');
+            }
         });
     }
 };
 
-const deleteService = (serviceId: number) => {
-    if (confirm('Opravdu chcete smazat tuto službu?')) {
-        router.delete(route('admin.properties.services.destroy', [props.property.id, serviceId]));
-    }
+const confirmDelete = (serviceId: number) => {
+    serviceToDelete.value = serviceId;
+    isDeleteDialogOpen.value = true;
+};
+
+const deleteService = () => {
+    if (!serviceToDelete.value) return;
+    
+    router.delete(route('admin.properties.services.destroy', [props.property.id, serviceToDelete.value]), {
+        onSuccess: () => {
+            isDeleteDialogOpen.value = false;
+            serviceToDelete.value = null;
+            toast.success('Služba byla úspěšně smazána.');
+        },
+        onError: () => {
+            toast.error('Nepodařilo se smazat službu.');
+        }
+    });
 };
 
 const breadcrumbs = [
@@ -157,22 +199,59 @@ const columns = [
                     <h2 class="text-2xl font-bold tracking-tight">Služby</h2>
                     <p class="text-muted-foreground">Správa doplňkových služeb a poplatků.</p>
                 </div>
-                <Button @click="startAdding" v-if="!isAdding && !editingId" class="h-9 shadow-sm">
+                <Button @click="openCreateDialog" class="h-9 shadow-sm">
                     <Plus class="mr-2 h-4 w-4" />
                     Přidat službu
                 </Button>
             </div>
 
-            <!-- Add/Edit Form -->
-            <Card v-if="isAdding || editingId" class="border shadow-sm animate-in fade-in slide-in-from-top-4 duration-200">
-                <CardHeader>
-                    <CardTitle>{{ editingId ? 'Upravit službu' : 'Přidat novou službu' }}</CardTitle>
-                    <CardDescription>
-                        {{ editingId ? 'Úprava detailů služby' : 'Vytvoření nové doplňkové služby pro tuto nemovitost' }}
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form @submit.prevent="submit" class="space-y-4">
+            <!-- Services Table -->
+            <AppDataTable
+                :data="services"
+                :columns="columns"
+                search-placeholder="Hledat služby..."
+            >
+                <template #name="{ item }">
+                    <div class="font-medium">{{ item.name }}</div>
+                    <div v-if="item.description" class="text-xs text-muted-foreground truncate max-w-[200px]">{{ item.description }}</div>
+                </template>
+                <template #price="{ value }">
+                    {{ value }} Kč
+                </template>
+                <template #price_type="{ value }">
+                    {{ ServicePriceTypeLabels[value] || value }}
+                </template>
+                <template #max_quantity="{ value }">
+                    {{ value === 0 ? 'Neomezeně' : value }}
+                </template>
+                <template #is_active="{ value }">
+                    <Badge :variant="value ? 'default' : 'secondary'">
+                        {{ value ? 'Aktivní' : 'Neaktivní' }}
+                    </Badge>
+                </template>
+                <template #actions="{ item }">
+                    <div class="flex justify-end gap-2">
+                        <Button size="sm" variant="ghost" class="h-8 w-8 p-0" @click="openEditDialog(item)">
+                            <Pencil class="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="ghost" class="h-8 w-8 p-0 text-destructive hover:text-destructive" @click="confirmDelete(item.id)">
+                            <Trash2 class="h-4 w-4" />
+                        </Button>
+                    </div>
+                </template>
+            </AppDataTable>
+
+            <!-- Create/Edit Dialog -->
+            <Dialog :open="isDialogOpen" @update:open="isDialogOpen = $event">
+                <DialogContent class="sm:max-w-[600px]">
+                    <DialogHeader>
+                        <DialogTitle>{{ editingService ? 'Upravit službu' : 'Přidat novou službu' }}</DialogTitle>
+                        <DialogDescription>
+                            {{ editingService ? 'Úprava detailů služby' : 'Vytvoření nové doplňkové služby pro tuto nemovitost' }}
+                        </DialogDescription>
+                    </DialogHeader>
+                    
+                    <form @submit.prevent="submit" class="space-y-4 py-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-2">
                                 <Label for="name">Název</Label>
@@ -221,53 +300,35 @@ const columns = [
                             <Label for="is_active" class="cursor-pointer">Aktivní</Label>
                         </div>
 
-                        <div class="flex justify-end gap-2 pt-4">
-                            <Button type="button" variant="outline" @click="cancelEdit" class="h-9">
+                        <DialogFooter class="pt-4">
+                            <Button type="button" variant="outline" @click="closeDialog" class="h-9">
                                 Zrušit
                             </Button>
                             <Button type="submit" :disabled="form.processing" class="h-9">
-                                {{ editingId ? 'Upravit' : 'Vytvořit' }} službu
+                                {{ editingService ? 'Upravit' : 'Vytvořit' }} službu
                             </Button>
-                        </div>
+                        </DialogFooter>
                     </form>
-                </CardContent>
-            </Card>
+                </DialogContent>
+            </Dialog>
 
-            <!-- Services Table -->
-            <AppDataTable
-                :data="services"
-                :columns="columns"
-                search-placeholder="Hledat služby..."
-            >
-                <template #name="{ item }">
-                    <div class="font-medium">{{ item.name }}</div>
-                    <div v-if="item.description" class="text-xs text-muted-foreground truncate max-w-[200px]">{{ item.description }}</div>
-                </template>
-                <template #price="{ value }">
-                    {{ value }} Kč
-                </template>
-                <template #price_type="{ value }">
-                    {{ ServicePriceTypeLabels[value] || value }}
-                </template>
-                <template #max_quantity="{ value }">
-                    {{ value === 0 ? 'Neomezeně' : value }}
-                </template>
-                <template #is_active="{ value }">
-                    <Badge :variant="value ? 'default' : 'secondary'">
-                        {{ value ? 'Aktivní' : 'Neaktivní' }}
-                    </Badge>
-                </template>
-                <template #actions="{ item }">
-                    <div class="flex justify-end gap-2">
-                        <Button size="sm" variant="ghost" class="h-8 w-8 p-0" @click="startEditing(item)">
-                            <Pencil class="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" variant="ghost" class="h-8 w-8 p-0 text-destructive hover:text-destructive" @click="deleteService(item.id)">
-                            <Trash2 class="h-4 w-4" />
-                        </Button>
-                    </div>
-                </template>
-            </AppDataTable>
+            <!-- Delete Alert Dialog -->
+            <AlertDialog :open="isDeleteDialogOpen" @update:open="isDeleteDialogOpen = $event">
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Opravdu chcete smazat tuto službu?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Tato akce je nevratná. Služba bude trvale odstraněna ze systému.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel @click="isDeleteDialogOpen = false">Zrušit</AlertDialogCancel>
+                        <AlertDialogAction @click="deleteService" class="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            Smazat
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     </PropertyLayout>
 </template>
