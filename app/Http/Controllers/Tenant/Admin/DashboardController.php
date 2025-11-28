@@ -22,11 +22,11 @@ class DashboardController extends Controller
 
         $bookingsCollection = $bookingsQuery
             ->clone()
-            ->whereBetween('start_date', [now()->startOfMonth(), now()->endOfMonth()])
+            ->whereBetween('check_in_date', [now()->startOfMonth(), now()->endOfMonth()])
             ->get();
 
         $stats = [
-            'total_revenue' => $bookingsCollection->where('status', '!=', 'cancelled')->sum('total_price'),
+            'total_revenue' => $bookingsCollection->where('status', '!=', 'cancelled')->sum('total_price_amount'),
             'total_bookings' => $bookingsCollection->count(),
             'pending_bookings' => $bookingsCollection->where('status', 'pending')->count(),
         ];
@@ -36,8 +36,8 @@ class DashboardController extends Controller
 
         $upcomingBookings = $bookingsQuery
             ->clone()
-            ->where('start_date', '>=', now())
-            ->orderBy('start_date')
+            ->where('check_in_date', '>=', now())
+            ->orderBy('check_in_date')
             ->take(5)
             ->get()
             ->map(fn ($booking) => UpcomingBookingData::fromModel($booking)->toArray());
@@ -48,10 +48,10 @@ class DashboardController extends Controller
             'properties' => \App\Models\Property::withCount([
                 'bookings',
                 'bookings as active_bookings_count' => function ($query) {
-                    $query->where('end_date', '>=', now());
+                    $query->where('check_out_date', '>=', now());
                 },
                 'bookings as month_bookings_count' => function ($query) {
-                    $query->whereBetween('start_date', [now()->startOfMonth(), now()->endOfMonth()]);
+                    $query->whereBetween('check_in_date', [now()->startOfMonth(), now()->endOfMonth()]);
                 }
             ])->get(['id', 'name', 'address', 'description']),
             'stats' => $stats,

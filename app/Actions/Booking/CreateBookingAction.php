@@ -73,11 +73,9 @@ class CreateBookingAction
                 'property_id' => $propertyId,
                 'customer_id' => $customer->id,
                 'season_id' => $season?->id,
-                'start_date' => $data['start_date'],
-                'end_date' => $data['end_date'],
-                'date_start' => $startDate,
-                'date_end' => $endDate,
-                'total_price' => $priceBreakdown->total,
+                'check_in_date' => $data['start_date'],
+                'check_out_date' => $data['end_date'],
+                'total_price_amount' => $priceBreakdown->total,
                 'status' => Pending::class,
             ]);
 
