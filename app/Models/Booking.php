@@ -93,11 +93,6 @@ class Booking extends Model
             ->withTimestamps();
     }
 
-    public function cleaningTask(): HasOne
-    {
-        return $this->hasOne(CleaningTask::class);
-    }
-
     public function guests(): HasMany
     {
         return $this->hasMany(Guest::class);

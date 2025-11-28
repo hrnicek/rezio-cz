@@ -19,9 +19,9 @@ class DatabaseSeeder extends Seeder
         $this->command->info('Creating tenants...');
 
         $tenant1 = Tenant::create([
-            'id' => 'chata',
-            'plan' => 'pro',
+            'tenancy_db_name' => 'rezio_chata'
         ]);
+
         $tenant1->domains()->create(['domain' => 'chata.rezio.test']);
 
        
