@@ -12,7 +12,7 @@ defineProps<{
         id: number;
         name: string;
         address?: string;
-    };
+    } | null;
     breadcrumbs?: any[];
 }>();
 
@@ -116,7 +116,7 @@ const isSheetOpen = ref(false);
                  </div>
                  
                  <!-- Mobile Property Header -->
-                 <div v-if="!isDesktop" class="mb-6 flex items-center justify-between pr-10">
+                 <div v-if="!isDesktop && property" class="mb-6 flex items-center justify-between pr-10">
                      <div>
                         <h1 class="text-xl font-bold truncate">{{ property.name }}</h1>
                      </div>

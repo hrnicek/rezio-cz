@@ -187,7 +187,7 @@ const columns = [
     },
     {
         key: 'priority',
-        label: 'Priorita',
+        label: 'Váha',
         sortable: true
     },
     {
@@ -325,7 +325,7 @@ const columns = [
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-2">
-                                <Label for="priority" class="text-xs uppercase text-muted-foreground font-mono">Priorita</Label>
+                                <Label for="priority" class="text-xs uppercase text-muted-foreground font-mono">Váha</Label>
                                 <Input id="priority" v-model.number="form.priority" type="number" class="h-9" />
                                 <div v-if="form.errors.priority" class="text-sm text-destructive">{{ form.errors.priority }}</div>
                             </div>

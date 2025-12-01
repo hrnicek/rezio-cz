@@ -140,7 +140,8 @@ const getStatusVariant = (status: string) => {
 
 const columns = [
     { key: 'customer', label: 'Host' },
-    { key: 'dates', label: 'Termín' },
+    { key: 'check_in', label: 'Od' },
+    { key: 'check_out', label: 'Do' },
     { key: 'total_price', label: 'Cena celkem' },
     { key: 'status', label: 'Stav' },
     { key: 'actions', label: 'Akce', align: 'right' as const },
@@ -195,11 +196,15 @@ const columns = [
                     <div class="text-xs text-muted-foreground font-mono">{{ item.code }}</div>
                 </template>
                 
-                <template #dates="{ item }">
+                <template #check_in="{ item }">
                     <div class="flex items-center gap-2">
                         <Calendar class="h-3 w-3 text-muted-foreground" />
-                        <span class="text-sm font-medium">{{ item.check_in_date }} - {{ item.check_out_date }}</span>
+                        <span class="text-sm font-medium">{{ item.check_in_date }}</span>
                     </div>
+                </template>
+
+                <template #check_out="{ item }">
+                    <span class="text-sm font-medium">{{ item.check_out_date }}</span>
                 </template>
                 
                 <template #total_price="{ item }">
@@ -307,11 +312,15 @@ const columns = [
                     <div class="text-xs text-muted-foreground font-mono">{{ item.code }}</div>
                 </template>
 
-                <template #dates="{ item }">
+                <template #check_in="{ item }">
                     <div class="flex items-center gap-2">
                         <Calendar class="h-3 w-3 text-muted-foreground" />
-                        <span class="text-sm font-medium">{{ item.check_in_date }} - {{ item.check_out_date }}</span>
+                        <span class="text-sm font-medium">{{ item.check_in_date }}</span>
                     </div>
+                </template>
+
+                <template #check_out="{ item }">
+                    <span class="text-sm font-medium">{{ item.check_out_date }}</span>
                 </template>
 
                 <template #total_price="{ item }">
