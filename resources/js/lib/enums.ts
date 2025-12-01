@@ -1,19 +1,19 @@
 export const BookingStatus = {
     Pending: 'pending',
     Confirmed: 'confirmed',
-    Paid: 'paid',
+    CheckedIn: 'checked_in',
+    CheckedOut: 'checked_out',
     Cancelled: 'cancelled',
-    Completed: 'completed',
-    Blocked: 'blocked',
+    NoShow: 'no_show',
 } as const;
 
 export const BookingStatusLabels: Record<string, string> = {
     [BookingStatus.Pending]: 'Čekající',
     [BookingStatus.Confirmed]: 'Potvrzeno',
-    [BookingStatus.Paid]: 'Zaplaceno',
+    [BookingStatus.CheckedIn]: 'Ubytován',
+    [BookingStatus.CheckedOut]: 'Odhlášen',
     [BookingStatus.Cancelled]: 'Zrušeno',
-    [BookingStatus.Completed]: 'Dokončeno',
-    [BookingStatus.Blocked]: 'Blokováno',
+    [BookingStatus.NoShow]: 'Nedostavil se',
     // Fallback for unknown
     'unknown': 'Neznámý',
 };

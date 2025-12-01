@@ -7,9 +7,9 @@ use Spatie\ModelStates\StateConfig;
 
 abstract class BookingState extends State
 {
-    abstract public function color(): string;
-
     abstract public function label(): string;
+
+    abstract public function color(): string;
 
     public static function config(): StateConfig
     {
@@ -17,13 +17,22 @@ abstract class BookingState extends State
             ->default(Pending::class)
             ->allowTransition(Pending::class, Confirmed::class)
             ->allowTransition(Pending::class, Cancelled::class)
-            ->allowTransition(Pending::class, Paid::class)
-            ->allowTransition(Confirmed::class, Completed::class)
+            ->allowTransition(Confirmed::class, CheckedIn::class)
             ->allowTransition(Confirmed::class, Cancelled::class)
-            ->allowTransition(Confirmed::class, Paid::class)
-            ->allowTransition(Paid::class, Completed::class)
-            ->allowTransition(Paid::class, Cancelled::class)
-            ->allowTransition(Pending::class, Blocked::class)
-            ->allowTransition(Confirmed::class, Blocked::class);
+            ->allowTransition(Confirmed::class, NoShow::class)
+            ->allowTransition(CheckedIn::class, CheckedOut::class)
+            ->allowTransition(CheckedIn::class, Confirmed::class) // Correction
+            ->allowTransition(CheckedOut::class, CheckedIn::class) // Correction
+            ->allowTransition(Cancelled::class, Pending::class) // Reopen
+            ->allowTransition(NoShow::class, Pending::class) // Reopen
+            ->allowTransition(NoShow::class, Confirmed::class) // Correction
+            ->registerState([
+                Pending::class,
+                Confirmed::class,
+                CheckedIn::class,
+                CheckedOut::class,
+                Cancelled::class,
+                NoShow::class,
+            ]);
     }
 }

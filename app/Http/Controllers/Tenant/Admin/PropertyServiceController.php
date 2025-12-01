@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Tenant\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Property;
 use App\Models\Configuration\Service;
+use App\Enums\ServicePriceType;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Enum;
 
 class PropertyServiceController extends Controller
 {
@@ -25,8 +27,8 @@ class PropertyServiceController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'price_type' => 'required|in:per_day,flat,per_stay',
-            'price' => 'required|numeric|min:0',
+            'price_type' => ['required', new Enum(ServicePriceType::class)],
+            'price_amount' => 'required|numeric|min:0',
             'max_quantity' => 'required|integer|min:0',
             'is_active' => 'boolean',
         ]);
@@ -41,8 +43,8 @@ class PropertyServiceController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'price_type' => 'required|in:per_day,flat,per_stay',
-            'price' => 'required|numeric|min:0',
+            'price_type' => ['required', new Enum(ServicePriceType::class)],
+            'price_amount' => 'required|numeric|min:0',
             'max_quantity' => 'required|integer|min:0',
             'is_active' => 'boolean',
         ]);

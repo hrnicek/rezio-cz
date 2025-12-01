@@ -19,26 +19,38 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Mail, Edit } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
+import { toast } from 'vue-sonner';
 
 declare const route: any;
 
-const props = defineProps<{
-  property: { id: number; name: string };
-  templates: Array<{
+interface EmailTemplate {
     id: number;
     type: string;
     subject: string;
     body: string;
     is_active: boolean;
-  }>;
-  availableTypes: Array<{
+}
+
+interface TemplateType {
     type: string;
     name: string;
     description: string;
-  }>;
+}
+
+interface EditingTemplate extends TemplateType {
+    id?: number;
+    subject?: string;
+    body?: string;
+    is_active?: boolean;
+}
+
+const props = defineProps<{
+  property: { id: number; name: string };
+  templates: EmailTemplate[];
+  availableTypes: TemplateType[];
 }>();
 
-const editingTemplate = ref<any>(null);
+const editingTemplate = ref<EditingTemplate | null>(null);
 const isDialogOpen = ref(false);
 
 const form = useForm({
@@ -50,15 +62,17 @@ const form = useForm({
 const openEditDialog = (type: string) => {
   const existingTemplate = props.templates.find(t => t.type === type);
   const typeInfo = props.availableTypes.find(t => t.type === type);
+  
+  if (!typeInfo) return;
 
   if (existingTemplate) {
     editingTemplate.value = { ...existingTemplate, ...typeInfo };
     form.subject = existingTemplate.subject;
     form.body = existingTemplate.body;
-    form.is_active = existingTemplate.is_active;
-  } else if (typeInfo) {
+    form.is_active = !!existingTemplate.is_active;
+  } else {
     // Default values for new template
-    editingTemplate.value = { ...typeInfo, id: null };
+    editingTemplate.value = { ...typeInfo, id: undefined };
     
     let defaultSubject = '';
     let defaultBody = '';
@@ -103,16 +117,30 @@ const openEditDialog = (type: string) => {
 };
 
 const saveTemplate = () => {
+  if (!editingTemplate.value) return;
+
   if (editingTemplate.value.id) {
     form.put(route('admin.properties.email-templates.update', [props.property.id, editingTemplate.value.id]), {
-      onSuccess: () => isDialogOpen.value = false,
+      onSuccess: () => {
+          isDialogOpen.value = false;
+          toast.success('Šablona byla úspěšně upravena.');
+      },
+      onError: () => {
+          toast.error('Nepodařilo se upravit šablonu.');
+      }
     });
   } else {
     form.transform((data) => ({
       ...data,
-      type: editingTemplate.value.type,
+      type: editingTemplate.value?.type,
     })).post(route('admin.properties.email-templates.store', props.property.id), {
-      onSuccess: () => isDialogOpen.value = false,
+      onSuccess: () => {
+          isDialogOpen.value = false;
+          toast.success('Šablona byla úspěšně vytvořena.');
+      },
+      onError: () => {
+          toast.error('Nepodařilo se vytvořit šablonu.');
+      }
     });
   }
 };
@@ -159,14 +187,14 @@ const breadcrumbs = [
       </div>
 
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card v-for="type in availableTypes" :key="type.type" class="flex flex-col border shadow-sm hover:shadow-md transition-shadow">
+        <Card v-for="type in availableTypes" :key="type.type" class="flex flex-col shadow-none border-border">
           <CardHeader>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <div class="p-2 bg-primary/10 rounded-full">
                   <Mail class="h-5 w-5 text-primary" />
                 </div>
-                <Badge :variant="getTemplateStatus(type.type) === 'active' ? 'default' : 'secondary'">
+                <Badge :variant="getTemplateStatus(type.type) === 'active' ? 'default' : 'secondary'" class="rounded-sm">
                   {{ getTemplateStatus(type.type) === 'active' ? 'Aktivní' : (getTemplateStatus(type.type) === 'inactive' ? 'Neaktivní' : 'Výchozí') }}
                 </Badge>
               </div>
@@ -178,7 +206,7 @@ const breadcrumbs = [
             <!-- Preview or additional info could go here -->
           </CardContent>
           <CardFooter>
-            <Button class="w-full h-9" variant="outline" @click="openEditDialog(type.type)">
+            <Button class="w-full h-9 shadow-sm" variant="outline" @click="openEditDialog(type.type)">
               <Edit class="mr-2 h-4 w-4" />
               Upravit šablonu
             </Button>
@@ -237,7 +265,7 @@ const breadcrumbs = [
 
           <DialogFooter>
             <Button variant="outline" @click="isDialogOpen = false" class="h-9">Zrušit</Button>
-            <Button @click="saveTemplate" :disabled="form.processing" class="h-9">Uložit změny</Button>
+            <Button @click="saveTemplate" :disabled="form.processing" class="h-9 shadow-sm">Uložit změny</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

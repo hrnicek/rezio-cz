@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import { useForm, usePage, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { TransitionRoot } from '@headlessui/vue';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     mustVerifyEmail?: boolean;
@@ -25,7 +24,7 @@ const updateProfileInformation = () => {
     form.patch(route('profile.update'), {
         preserveScroll: true,
         onSuccess: () => {
-            // Handle success if needed
+            toast.success('Profil byl úspěšně aktualizován.');
         },
     });
 };
@@ -33,58 +32,48 @@ const updateProfileInformation = () => {
 
 <template>
     <SettingsLayout>
-        <div class="space-y-6">
+        <div class="space-y-6 max-w-2xl">
             <div>
-                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">Profile Information</h3>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Update your account's profile information and email address.</p>
+                <h3 class="text-lg font-medium leading-6 text-foreground">Informace o profilu</h3>
+                <p class="mt-1 text-sm text-muted-foreground">Aktualizujte své profilové údaje a e-mailovou adresu.</p>
             </div>
 
             <form @submit.prevent="updateProfileInformation" class="space-y-6">
                 <div class="space-y-2">
-                    <Label for="name">Name</Label>
-                    <Input id="name" v-model="form.name" type="text" required autocomplete="name" />
-                    <div v-if="form.errors.name" class="text-sm text-red-600 dark:text-red-400">{{ form.errors.name }}</div>
+                    <Label for="name">Jméno</Label>
+                    <Input id="name" v-model="form.name" type="text" required autocomplete="name" class="h-9" />
+                    <div v-if="form.errors.name" class="text-sm text-red-500">{{ form.errors.name }}</div>
                 </div>
 
                 <div class="space-y-2">
                     <Label for="email">Email</Label>
-                    <Input id="email" v-model="form.email" type="email" required autocomplete="username" />
-                    <div v-if="form.errors.email" class="text-sm text-red-600 dark:text-red-400">{{ form.errors.email }}</div>
+                    <Input id="email" v-model="form.email" type="email" required autocomplete="username" class="h-9" />
+                    <div v-if="form.errors.email" class="text-sm text-red-500">{{ form.errors.email }}</div>
                 </div>
 
                 <div v-if="props.mustVerifyEmail && user.email_verified_at === null">
-                    <p class="text-sm mt-2 text-gray-800 dark:text-gray-200">
-                        Your email address is unverified.
+                    <p class="text-sm mt-2 text-yellow-600">
+                        Vaše e-mailová adresa není ověřena.
                         <Link
                             :href="route('verification.send')"
                             method="post"
                             as="button"
-                            class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+                            class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >
-                            Click here to re-send the verification email.
+                            Klikněte zde pro opětovné odeslání ověřovacího e-mailu.
                         </Link>
                     </p>
 
                     <div
                         v-show="props.status === 'verification-link-sent'"
-                        class="mt-2 font-medium text-sm text-green-600 dark:text-green-400"
+                        class="mt-2 font-medium text-sm text-green-600"
                     >
-                        A new verification link has been sent to your email address.
+                        Nový ověřovací odkaz byl odeslán na vaši e-mailovou adresu.
                     </div>
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <Button :disabled="form.processing">Save</Button>
-
-                    <TransitionRoot
-                        :show="form.recentlySuccessful"
-                        enter="transition ease-in-out"
-                        enter-from="opacity-0"
-                        leave="transition ease-in-out"
-                        leave-to="opacity-0"
-                    >
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Saved.</p>
-                    </TransitionRoot>
+                    <Button :disabled="form.processing" class="h-9">Uložit</Button>
                 </div>
             </form>
         </div>

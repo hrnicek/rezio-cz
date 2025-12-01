@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Upload from '@/components/Upload.vue';
+import { toast } from 'vue-sonner';
 
 declare const route: any;
 
@@ -28,7 +29,14 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.put(route('admin.properties.update', props.property.id));
+    form.put(route('admin.properties.update', props.property.id), {
+        onSuccess: () => {
+            toast.success('Nemovitost byla úspěšně upravena.');
+        },
+        onError: () => {
+            toast.error('Nepodařilo se upravit nemovitost.');
+        }
+    });
 };
 
 const breadcrumbs = [

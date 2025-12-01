@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Tenant\Widgets\Api;
 
 use App\Enums\BookingItemType;
-use App\Enums\BookingStatus;
+use App\States\Booking\BookingState;
+use App\States\Booking\Pending;
+use App\States\Booking\Cancelled;
 use App\Http\Controllers\Controller;
-use App\Models\BlackoutDate;
 use App\Models\Booking\Booking;
+use App\Models\Configuration\BlockDate;
 use App\Models\CRM\Customer;
 use App\Models\Property;
 use App\Services\BookingPriceCalculator;
@@ -50,12 +52,12 @@ class WidgetReservationStoreController extends Controller
 
         $overlappingBookings = Booking::query()
             ->where('property_id', $id->id)
-            ->where('status', '!=', BookingStatus::Cancelled)
+            ->where('status', '!=', Cancelled::class)
             ->where('check_in_date', '<', $end)
             ->where('check_out_date', '>', $start)
             ->exists();
 
-        $blackouts = BlackoutDate::query()
+        $blackouts = BlockDate::query()
             ->where('start_date', '<=', $end->toDateString())
             ->where('end_date', '>=', $start->toDateString())
             ->exists();
@@ -89,7 +91,7 @@ class WidgetReservationStoreController extends Controller
                 'check_out_date' => $end,
                 'total_price_amount' => $breakdown->total,
                 'currency' => config('booking.currency', 'CZK'),
-                'status' => BookingStatus::Pending,
+                'status' => Pending::class,
                 'notes' => $data['customer']['note'] ?? null,
                 'code' => strtoupper(Str::random(8)), // Ensure code generation
             ]);

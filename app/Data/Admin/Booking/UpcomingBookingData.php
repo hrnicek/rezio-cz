@@ -2,7 +2,6 @@
 
 namespace App\Data\Admin\Booking;
 
-use App\Enums\BookingStatus;
 use Spatie\LaravelData\Data;
 
 class UpcomingBookingData extends Data
@@ -20,9 +19,7 @@ class UpcomingBookingData extends Data
             ? $booking->customer->name
             : 'Unknown';
 
-        $statusLabel = $booking->status instanceof BookingStatus 
-            ? $booking->status->label() 
-            : $booking->status;
+        $statusLabel = $booking->status->label();
 
         return new self(
             id: $booking->id,

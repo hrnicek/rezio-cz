@@ -2,13 +2,16 @@
 
 namespace Database\Factories;
 
+use App\Models\CRM\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Customer>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CRM\Customer>
  */
 class CustomerFactory extends Factory
 {
+    protected $model = Customer::class;
+
     /**
      * Define the model's default state.
      *
@@ -21,6 +24,9 @@ class CustomerFactory extends Factory
             'last_name' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
             'phone' => fake()->phoneNumber(),
+            'is_company' => false,
+            'billing_country' => 'CZ',
+            'is_registered' => false,
         ];
     }
 }

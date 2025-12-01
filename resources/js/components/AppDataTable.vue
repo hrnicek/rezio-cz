@@ -80,6 +80,7 @@ const handleSort = (column: Column) => {
                             v-for="col in columns" 
                             :key="col.key" 
                             :class="[
+                                'text-xs uppercase tracking-wider font-mono text-muted-foreground',
                                 col.class, 
                                 col.align === 'right' ? 'text-right' : (col.align === 'center' ? 'text-center' : 'text-left')
                             ]"

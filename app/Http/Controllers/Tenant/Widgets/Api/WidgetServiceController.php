@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Tenant\Widgets\Api;
 
 use App\Enums\BookingItemType;
-use App\Enums\BookingStatus;
+use App\States\Booking\Cancelled;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Service\CheckAvailabilityRequest;
 use App\Models\Booking\Booking;
@@ -62,7 +62,7 @@ class WidgetServiceController extends Controller
 
             $overlappingBookings = Booking::query()
                 ->where('property_id', $id->id)
-                ->where('status', '!=', BookingStatus::Cancelled)
+                ->where('status', '!=', Cancelled::class)
                 ->where('check_in_date', '<', $end)
                 ->where('check_out_date', '>', $start)
                 ->with(['items']) // Load items

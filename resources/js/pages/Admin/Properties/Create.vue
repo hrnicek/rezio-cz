@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronLeft } from 'lucide-vue-next';
 import Upload from '@/components/Upload.vue';
+import { toast } from 'vue-sonner';
 
 declare const route: any;
 
@@ -19,7 +20,14 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('admin.properties.store'));
+    form.post(route('admin.properties.store'), {
+        onSuccess: () => {
+            toast.success('Nemovitost byla úspěšně vytvořena.');
+        },
+        onError: () => {
+            toast.error('Nepodařilo se vytvořit nemovitost.');
+        }
+    });
 };
 
 const breadcrumbs = [
@@ -49,7 +57,7 @@ const breadcrumbs = [
             </div>
 
             <div class="mx-auto w-full max-w-2xl">
-                <Card>
+                <Card class="shadow-none border-border">
                     <CardHeader>
                         <CardTitle>Detaily nemovitosti</CardTitle>
                         <CardDescription>
@@ -61,25 +69,25 @@ const breadcrumbs = [
                             <div class="space-y-2">
                                 <Label for="name">Název</Label>
                                 <Input id="name" v-model="form.name" placeholder="např. Horská chata" required class="h-9" />
-                                <div v-if="form.errors.name" class="text-sm text-red-500">{{ form.errors.name }}</div>
+                                <div v-if="form.errors.name" class="text-sm text-destructive">{{ form.errors.name }}</div>
                             </div>
 
                             <div class="space-y-2">
                                 <Label for="address">Adresa</Label>
                                 <Textarea id="address" v-model="form.address" placeholder="Celá adresa nemovitosti" />
-                                <div v-if="form.errors.address" class="text-sm text-red-500">{{ form.errors.address }}</div>
+                                <div v-if="form.errors.address" class="text-sm text-destructive">{{ form.errors.address }}</div>
                             </div>
 
                             <div class="space-y-2">
                                 <Label for="description">Popis</Label>
                                 <Textarea id="description" v-model="form.description" placeholder="Krátký popis pro widget" />
-                                <div v-if="form.errors.description" class="text-sm text-red-500">{{ form.errors.description }}</div>
+                                <div v-if="form.errors.description" class="text-sm text-destructive">{{ form.errors.description }}</div>
                             </div>
 
                             <div class="space-y-2">
                                 <Label>Obrázek</Label>
                                 <Upload v-model="form.image" />
-                                <div v-if="form.errors.image" class="text-sm text-red-500">{{ form.errors.image }}</div>
+                                <div v-if="form.errors.image" class="text-sm text-destructive">{{ form.errors.image }}</div>
                             </div>
 
                             <div class="flex justify-end">

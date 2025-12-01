@@ -2,17 +2,17 @@
 
 namespace App\States\Booking;
 
-class Cancelled extends BookingState
+class CheckedIn extends BookingState
 {
-    public static string $name = 'cancelled';
+    public static string $name = 'checked_in';
 
     public function label(): string
     {
-        return 'Zrušeno';
+        return 'Ubytován';
     }
 
     public function color(): string
     {
-        return 'red';
+        return 'blue';
     }
 }

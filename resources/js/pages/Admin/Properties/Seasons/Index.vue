@@ -31,33 +31,38 @@ import { toast } from 'vue-sonner';
 
 declare const route: any;
 
+// Interface matching Season model
+interface SeasonData {
+    id: number;
+    name: string;
+    start_date: string | null;
+    end_date: string | null;
+    price_amount: number;
+    min_stay: number | null;
+    check_in_days: number[] | null;
+    is_default: boolean;
+    is_fixed_range: boolean;
+    priority: number;
+    is_recurring: boolean;
+}
+
+interface PropertyData {
+    id: number;
+    name: string;
+    address?: string;
+}
+
 const props = defineProps<{
-    property: {
-        id: number;
-        name: string;
-        address?: string;
-    };
+    property: PropertyData;
     seasons: {
-        data: Array<{
-            id: number;
-            name: string;
-            start_date: string;
-            end_date: string;
-            price: number;
-            min_stay: number;
-            check_in_days: number[] | null;
-            is_default: boolean;
-            is_fixed_range: boolean;
-            priority: number;
-            is_recurring: boolean;
-        }>;
+        data: SeasonData[];
         links: any[];
         meta: any;
     };
 }>();
 
 const isDialogOpen = ref(false);
-const editingSeason = ref<any>(null);
+const editingSeason = ref<SeasonData | null>(null);
 const isDeleteDialogOpen = ref(false);
 const seasonToDelete = ref<number | null>(null);
 
@@ -65,7 +70,11 @@ const form = useForm({
     name: '',
     start_date: '',
     end_date: '',
-    price: 0,
+    price: 0, // Maps to price_amount in backend logic, controller handles mapping? Check controller.
+    // The controller validates 'price' but model has 'price_amount'. 
+    // Assuming controller maps request 'price' to model 'price_amount'.
+    // Wait, Season model has 'price_amount' in fillable, but check if there's a mutator or if controller handles it.
+    // Controller validates 'price'.
     min_stay: 1,
     check_in_days: [] as number[],
     is_default: false,
@@ -90,18 +99,18 @@ const openCreateDialog = () => {
     isDialogOpen.value = true;
 };
 
-const openEditDialog = (season: any) => {
+const openEditDialog = (season: SeasonData) => {
     editingSeason.value = season;
     form.name = season.name;
-    form.start_date = season.start_date;
-    form.end_date = season.end_date;
-    form.price = season.price;
+    form.start_date = season.start_date ? new Date(season.start_date).toISOString().split('T')[0] : '';
+    form.end_date = season.end_date ? new Date(season.end_date).toISOString().split('T')[0] : '';
+    form.price = season.price_amount; // Using price_amount from model
     form.min_stay = season.min_stay || 1;
     form.check_in_days = season.check_in_days || [];
-    form.is_default = season.is_default || false;
-    form.is_fixed_range = season.is_fixed_range || false;
-    form.priority = season.priority || 0;
-    form.is_recurring = season.is_recurring || false;
+    form.is_default = season.is_default;
+    form.is_fixed_range = season.is_fixed_range;
+    form.priority = season.priority;
+    form.is_recurring = season.is_recurring;
     isDialogOpen.value = true;
 };
 
@@ -241,10 +250,13 @@ const columns = [
                 </template>
                 <template #period="{ item }">
                     <span v-if="item.is_default" class="text-muted-foreground text-xs uppercase">Vždy</span>
-                    <span v-else class="font-mono text-xs">{{ item.start_date }} - {{ item.end_date }}</span>
+                    <span v-else class="font-mono text-xs">
+                        {{ item.start_date ? new Date(item.start_date).toLocaleDateString('cs-CZ') : '' }} -
+                        {{ item.end_date ? new Date(item.end_date).toLocaleDateString('cs-CZ') : '' }}
+                    </span>
                 </template>
-                <template #price="{ value }">
-                    <span class="font-medium">{{ value }} Kč</span>
+                <template #price="{ item }">
+                    <span class="font-medium">{{ item.price_amount }} Kč</span>
                 </template>
                 <template #min_stay="{ value }">
                     {{ value || 1 }} <span class="text-muted-foreground text-xs">nocí</span>

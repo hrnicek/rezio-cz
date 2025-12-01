@@ -2,13 +2,24 @@
 
 namespace Database\Factories;
 
+use App\Models\Booking\Booking;
+use App\Models\CRM\Customer;
+use App\Models\Property;
+use App\States\Booking\Pending;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Booking>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Booking\Booking>
  */
 class BookingFactory extends Factory
 {
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Booking::class;
+
     /**
      * Define the model's default state.
      *
@@ -19,22 +30,21 @@ class BookingFactory extends Factory
         $start = fake()->dateTimeBetween('+1 week', '+3 months');
         $end = (clone $start)->modify('+'.fake()->numberBetween(1, 14).' days');
 
-        // Create a customer for this booking
-        $customer = \App\Models\Customer::factory()->create();
-
         return [
             'code' => fake()->uuid(),
-            'property_id' => \App\Models\Property::factory(),
-            'user_id' => \App\Models\User::factory(),
-            'customer_id' => $customer->id,
-            'start_date' => $start->format('Y-m-d'),
-            'end_date' => $end->format('Y-m-d'),
-            'date_start' => $start,
-            'date_end' => $end,
-            'total_price' => fake()->randomFloat(2, 100, 1000),
+            'property_id' => Property::factory(),
+            'customer_id' => Customer::factory(),
+            'check_in_date' => $start->format('Y-m-d'),
+            'check_out_date' => $end->format('Y-m-d'),
+            'total_price_amount' => fake()->numberBetween(10000, 100000), // Cents
             'currency' => 'CZK',
-            'exchange_rate' => 1.0000,
-            'status' => fake()->randomElement(['pending', 'confirmed', 'paid', 'cancelled']),
+            'status' => Pending::class,
+            'notes' => fake()->sentence(),
+            'reminders_sent_at' => null,
+            'arrival_time_estimate' => null,
+            'departure_time_estimate' => null,
+            'checked_in_at' => null,
+            'checked_out_at' => null,
         ];
     }
 }

@@ -41,12 +41,24 @@ import AppDataTable from '@/components/AppDataTable.vue';
 declare const route: any;
 
 const availablePriceTypes = [
-    ServicePriceType.PerNight,
     ServicePriceType.PerPerson,
+    ServicePriceType.PerNight,
+    ServicePriceType.PerDay,
     ServicePriceType.PerStay,
     ServicePriceType.Fixed,
+    ServicePriceType.Flat,
     ServicePriceType.PerHour
 ];
+
+interface ServiceData {
+    id: number;
+    name: string;
+    description: string | null;
+    price_type: string;
+    price_amount: number;
+    max_quantity: number;
+    is_active: boolean;
+}
 
 const props = defineProps<{
     property: {
@@ -54,22 +66,14 @@ const props = defineProps<{
         name: string;
     };
     services: {
-        data: Array<{
-            id: number;
-            name: string;
-            description: string | null;
-            price_type: string;
-            price: number;
-            max_quantity: number;
-            is_active: boolean;
-        }>;
+        data: ServiceData[];
         links: any[];
         meta: any;
     };
 }>();
 
 const isDialogOpen = ref(false);
-const editingService = ref<any>(null);
+const editingService = ref<ServiceData | null>(null);
 const isDeleteDialogOpen = ref(false);
 const serviceToDelete = ref<number | null>(null);
 
@@ -77,7 +81,7 @@ const form = useForm({
     name: '',
     description: '',
     price_type: ServicePriceType.Fixed,
-    price: 0,
+    price_amount: 0,
     max_quantity: 0,
     is_active: true,
 });
@@ -88,12 +92,12 @@ const openCreateDialog = () => {
     isDialogOpen.value = true;
 };
 
-const openEditDialog = (service: any) => {
+const openEditDialog = (service: ServiceData) => {
     editingService.value = service;
     form.name = service.name;
     form.description = service.description || '';
-    form.price_type = service.price_type;
-    form.price = service.price;
+    form.price_type = service.price_type as any;
+    form.price_amount = service.price_amount;
     form.max_quantity = service.max_quantity;
     form.is_active = !!service.is_active;
     isDialogOpen.value = true;
@@ -162,7 +166,7 @@ const columns = [
         sortable: true
     },
     {
-        key: 'price',
+        key: 'price_amount',
         label: 'Cena',
         sortable: true
     },
@@ -212,20 +216,23 @@ const columns = [
                 search-placeholder="Hledat služby..."
             >
                 <template #name="{ item }">
-                    <div class="font-medium">{{ item.name }}</div>
+                    <div class="font-medium text-foreground">{{ item.name }}</div>
                     <div v-if="item.description" class="text-xs text-muted-foreground truncate max-w-[200px]">{{ item.description }}</div>
                 </template>
-                <template #price="{ value }">
-                    {{ value }} Kč
+                <template #price_amount="{ value }">
+                    <span class="font-mono font-medium">{{ value }} Kč</span>
                 </template>
                 <template #price_type="{ value }">
-                    {{ ServicePriceTypeLabels[value] || value }}
+                    <Badge variant="outline" class="font-normal">
+                        {{ ServicePriceTypeLabels[value] || value }}
+                    </Badge>
                 </template>
                 <template #max_quantity="{ value }">
-                    {{ value === 0 ? 'Neomezeně' : value }}
+                    <span v-if="value === 0" class="text-muted-foreground text-xs">Neomezeně</span>
+                    <span v-else class="font-mono">{{ value }}</span>
                 </template>
                 <template #is_active="{ value }">
-                    <Badge :variant="value ? 'default' : 'secondary'">
+                    <Badge :variant="value ? 'default' : 'secondary'" class="rounded-sm">
                         {{ value ? 'Aktivní' : 'Neaktivní' }}
                     </Badge>
                 </template>
@@ -261,8 +268,8 @@ const columns = [
 
                             <div class="space-y-2">
                                 <Label for="price">Cena (Kč)</Label>
-                                <Input id="price" v-model.number="form.price" type="number" step="0.01" required class="h-9" />
-                                <div v-if="form.errors.price" class="text-sm text-destructive">{{ form.errors.price }}</div>
+                                <Input id="price" v-model.number="form.price_amount" type="number" step="0.01" required class="h-9 font-mono" />
+                                <div v-if="form.errors.price_amount" class="text-sm text-destructive">{{ form.errors.price_amount }}</div>
                             </div>
                         </div>
 
@@ -284,7 +291,7 @@ const columns = [
 
                             <div class="space-y-2">
                                 <Label for="max_quantity">Max. množství (0 pro neomezeně)</Label>
-                                <Input id="max_quantity" v-model.number="form.max_quantity" type="number" min="0" required class="h-9" />
+                                <Input id="max_quantity" v-model.number="form.max_quantity" type="number" min="0" required class="h-9 font-mono" />
                                 <div v-if="form.errors.max_quantity" class="text-sm text-destructive">{{ form.errors.max_quantity }}</div>
                             </div>
                         </div>

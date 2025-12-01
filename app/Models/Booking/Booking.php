@@ -3,20 +3,23 @@
 namespace App\Models\Booking;
 
 use App\Models\CRM\Guest;
-use App\Enums\BookingStatus;
+use App\States\Booking\BookingState;
 use App\Models\CRM\Customer;
 use Illuminate\Support\Carbon;
 use App\Models\Finance\Invoice;
+use App\Models\Finance\Payment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\ModelStates\HasStates;
+use Database\Factories\BookingFactory;
 
 class Booking extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasUuids, SoftDeletes, HasStates;
 
     protected $table = 'bookings';
 
@@ -34,10 +37,15 @@ class Booking extends Model
         'check_out_date' => 'date',
         'reminders_sent_at' => 'datetime',
         'total_price_amount' => 'integer',
-        'status' => BookingStatus::class,
+        'status' => BookingState::class,
         'checked_in_at' => 'datetime',
         'checked_out_at' => 'datetime',
     ];
+    
+    protected static function newFactory()
+    {
+        return BookingFactory::new();
+    }
 
     public function getCheckInTimeAttribute(): string
     {
@@ -91,10 +99,8 @@ class Booking extends Model
         return $this->hasManyThrough(BookingItem::class, Folio::class);
     }
 
-    // --- HELPERS ---
-
-    public function getNightsCountAttribute(): int
+    public function payments(): HasMany
     {
-        return $this->check_in_date->diffInDays($this->check_out_date);
+        return $this->hasMany(Payment::class);
     }
 }

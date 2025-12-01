@@ -21,6 +21,8 @@ import {
 import { Bar } from 'vue-chartjs';
 import axios from 'axios';
 
+declare const route: any;
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -36,12 +38,27 @@ defineProps<{
     properties: Array<{ id: number; name: string }>;
 }>();
 
+interface ChartDataItem {
+    date: string;
+    revenue: number;
+    occupancy: number;
+}
+
+interface ReportStats {
+    total_revenue: number;
+    total_bookings: number;
+    occupancy_rate: number;
+    adr: number;
+    revpar: number;
+    chart_data: ChartDataItem[];
+}
+
 const startDate = ref(new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0]);
 const endDate = ref(new Date().toISOString().split('T')[0]);
-const selectedProperty = ref<string | null>('all');
+const selectedProperty = ref<string>('all');
 
 const loading = ref(false);
-const stats = ref({
+const stats = ref<Omit<ReportStats, 'chart_data'>>({
     total_revenue: 0,
     total_bookings: 0,
     occupancy_rate: 0,
@@ -68,7 +85,6 @@ const chartOptions = {
 };
 
 const exportReport = () => {
-    // @ts-ignore
     const url = route('admin.reports.export', {
         start_date: startDate.value,
         end_date: endDate.value,
@@ -80,8 +96,7 @@ const exportReport = () => {
 const fetchData = async () => {
     loading.value = true;
     try {
-        // @ts-ignore
-        const response = await axios.get(route('admin.reports.data'), {
+        const response = await axios.get<ReportStats>(route('admin.reports.data'), {
             params: {
                 start_date: startDate.value,
                 end_date: endDate.value,
@@ -98,13 +113,13 @@ const fetchData = async () => {
         };
 
         chartData.value = {
-            labels: response.data.chart_data.map((d: any) => d.date),
+            labels: response.data.chart_data.map((d) => d.date),
             datasets: [
                 {
                     label: 'Denní tržby',
                     backgroundColor: '#3b82f6',
                     borderColor: '#3b82f6',
-                    data: response.data.chart_data.map((d: any) => d.revenue),
+                    data: response.data.chart_data.map((d) => d.revenue),
                 },
             ],
         };

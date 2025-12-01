@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Enums\BookingStatus;
-use App\Models\Booking;
+use App\States\Booking\Cancelled;
+use App\Models\Booking\Booking;
 use App\Models\Property;
 use Carbon\Carbon;
 
@@ -15,7 +15,7 @@ class RevenueMetricsService
         $endDate = $endDate->copy()->endOfDay();
 
         $bookingsQuery = Booking::query()
-            ->where('status', '!=', BookingStatus::Cancelled)
+            ->where('status', '!=', Cancelled::class)
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('check_in_date', [$startDate, $endDate])
                     ->orWhereBetween('check_out_date', [$startDate, $endDate])

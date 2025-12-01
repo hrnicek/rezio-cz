@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\CustomerFactory;
 
 class Customer extends Model
 {
@@ -29,6 +30,11 @@ class Customer extends Model
         'has_vat' => 'boolean',
         'is_registered' => 'boolean',
     ];
+    
+    protected static function newFactory()
+    {
+        return CustomerFactory::new();
+    }
 
     // --- RELATIONS ---
 

@@ -6,7 +6,6 @@ use App\Data\Shared\CustomerData;
 use App\Data\Shared\GuestData;
 use App\Data\Shared\PaymentData;
 use App\Data\Admin\Property\PropertyData;
-use App\Enums\BookingStatus;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\DataCollection;
 
@@ -20,7 +19,7 @@ class BookingData extends Data
         public string $check_in_date,
         public string $check_out_date,
         public int $total_price_amount,
-        public BookingStatus $status,
+        public string $status,
         public ?string $notes,
         public string $created_at,
         public string $updated_at,
@@ -45,7 +44,7 @@ class BookingData extends Data
             check_in_date: $booking->check_in_date->format('Y-m-d'),
             check_out_date: $booking->check_out_date->format('Y-m-d'),
             total_price_amount: $booking->total_price_amount,
-            status: $booking->status,
+            status: (string) $booking->status,
             notes: $booking->notes,
             created_at: $booking->created_at->toISOString(),
             updated_at: $booking->updated_at->toISOString(),

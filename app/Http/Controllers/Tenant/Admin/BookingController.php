@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Tenant\Admin;
 
 use Inertia\Inertia;
 use App\Models\Property;
-use App\Enums\BookingStatus;
+use App\States\Booking\BookingState;
+use App\States\Booking\Cancelled;
+use Spatie\ModelStates\Validation\ValidStateRule;
 use App\Models\CRM\Customer;
 use Illuminate\Http\Request;
 use App\Models\Booking\Booking;
@@ -20,6 +22,11 @@ class BookingController extends Controller
         $status = $request->input('status');
         $search = $request->input('search');
         $currentPropertyId = $request->user()->current_property_id;
+
+        $currentProperty = null;
+        if ($currentPropertyId) {
+            $currentProperty = Property::find($currentPropertyId);
+        }
 
         $bookings = Booking::with(['property', 'guests'])
             ->when($currentPropertyId, function ($query, $propertyId) {
@@ -39,6 +46,7 @@ class BookingController extends Controller
             ->withQueryString();
 
         return Inertia::render('Admin/Properties/Bookings/Index', [
+            'property' => $currentProperty ? ['id' => $currentProperty->id, 'name' => $currentProperty->name] : null,
             'bookings' => BookingListData::collect($bookings),
             'filters' => [
                 'status' => $status,
@@ -99,7 +107,7 @@ class BookingController extends Controller
                     $booking->customer->phone ?? '',
                     $booking->check_in_date->format('Y-m-d'),
                     $booking->check_out_date->format('Y-m-d'),
-                    $booking->status instanceof BookingStatus ? $booking->status->label() : $booking->status,
+                    $booking->status->label(),
                     $booking->total_price_amount / 100, // Convert cents to units
                     $booking->notes ?? '',
                 ]);
@@ -117,7 +125,7 @@ class BookingController extends Controller
             'property_id' => 'required|exists:properties,id',
             'check_in_date' => 'required|date',
             'check_out_date' => 'required|date|after:check_in_date',
-            'status' => ['required', Rule::enum(BookingStatus::class)],
+            'status' => ['required', ValidStateRule::make(BookingState::class)],
             'notes' => 'nullable|string',
         ]);
 
@@ -154,7 +162,7 @@ class BookingController extends Controller
         }
 
         $validated = $request->validate([
-            'status' => ['sometimes', 'required', Rule::enum(BookingStatus::class)],
+            'status' => ['sometimes', 'required', ValidStateRule::make(BookingState::class)],
             'check_in_date' => 'sometimes|required|date',
             'check_out_date' => 'sometimes|required|date|after:check_in_date',
             'notes' => 'nullable|string',
@@ -177,7 +185,7 @@ class BookingController extends Controller
     private function hasOverlap($propertyId, $startDate, $endDate, $ignoreBookingId = null)
     {
         return Booking::where('property_id', $propertyId)
-            ->where('status', '!=', BookingStatus::Cancelled)
+            ->where('status', '!=', Cancelled::class)
             ->when($ignoreBookingId, function ($query, $ignoreBookingId) {
                 return $query->where('id', '!=', $ignoreBookingId);
             })

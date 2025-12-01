@@ -2,9 +2,9 @@
 
 namespace App\Actions\Booking;
 
-use App\Models\BlackoutDate;
-use App\Models\Booking;
 use Carbon\Carbon;
+use App\Models\Booking\Booking;
+use App\Models\Configuration\BlockDate;
 
 class ValidateAvailabilityAction
 {
@@ -21,7 +21,7 @@ class ValidateAvailabilityAction
             ->exists();
 
         // Check for blackout dates
-        $blackouts = BlackoutDate::where(function ($query) use ($startDate, $endDate) {
+        $blackouts = BlockDate::where(function ($query) use ($startDate, $endDate) {
             $query->where(function ($q) use ($startDate, $endDate) {
                 $q->where('start_date', '<', $endDate->toDateString())
                     ->where('end_date', '>', $startDate->toDateString());

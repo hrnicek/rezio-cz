@@ -263,7 +263,7 @@ return new class extends Migration
             
             $table->string('name');
             $table->text('description')->nullable();
-            $table->enum('price_type', ['per_person', 'per_night', 'per_day', 'fixed'])->default('fixed');
+            $table->enum('price_type', ['per_person', 'per_night', 'per_day', 'per_stay', 'fixed', 'flat', 'per_hour'])->default('fixed');
             $table->bigInteger('price_amount')->unsigned()->default(0);
             $table->unsignedInteger('max_quantity')->default(0);
             $table->boolean('is_active')->default(true);

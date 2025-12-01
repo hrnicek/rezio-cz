@@ -1,7 +1,7 @@
 🏗️ REZIO CHATA – Technical Project Brief & Architecture
 
 Project Type: SaaS Property Management System (PMS)
-Framework: Laravel 10+
+Framework: Laravel 12
 Architecture: Multi-Database Tenancy (Database-per-tenant via stancl/tenancy)
 
 1. Core Architecture Principles

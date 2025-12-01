@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PropertyLayout from '../Partials/PropertyLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, router, Link } from '@inertiajs/vue3';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,22 +18,42 @@ import { debounce } from 'lodash';
 import { Eye, Check, X, Calendar } from 'lucide-vue-next';
 import { BookingStatusLabels } from '@/lib/enums';
 
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { toast } from 'vue-sonner';
+
 declare const route: any;
 
+// Matches App\Data\Admin\Booking\BookingListData
+interface BookingListItem {
+    id: string;
+    code: string | null;
+    status: string;
+    status_label: string;
+    customer_name: string;
+    check_in_date: string;
+    check_out_date: string;
+    total_price: {
+        amount: number;
+        currency: string;
+        formatted: number;
+        display: string;
+    };
+    created_at_human: string;
+}
+
 const props = defineProps<{
-    property: { id: number; name: string };
+    property: { id: number; name: string } | null;
     bookings: {
-        data: Array<{
-            id: number;
-            customer_name: string;
-            code: string;
-            check_in_date: string;
-            check_out_date: string;
-            total_price: { display: string };
-            status: string;
-            status_label: string;
-            created_at_human: string;
-        }>;
+        data: BookingListItem[];
         links: any;
         meta: any;
     };
@@ -44,15 +65,24 @@ const props = defineProps<{
 
 const statusFilter = ref(props.filters.status || 'all');
 const searchQuery = ref(props.filters.search || '');
+const bookingToUpdate = ref<{ id: string, status: string } | null>(null);
+const isUpdateDialogOpen = ref(false);
 
 const breadcrumbs = [
     { title: 'Nemovitosti', href: route('admin.properties.index') },
-    { title: props.property.name, href: route('admin.properties.edit', props.property.id) },
-    { title: 'Rezervace', href: route('admin.properties.bookings.index', props.property.id) },
+    ...(props.property ? [
+        { title: props.property.name, href: route('admin.properties.edit', props.property.id) },
+        { title: 'Rezervace', href: route('admin.properties.bookings.index', props.property.id) }
+    ] : [
+        { title: 'Rezervace', href: route('admin.bookings.index') }
+    ]),
 ];
 
 const updateFilters = debounce(() => {
-    router.get(route('admin.properties.bookings.index', props.property.id), { 
+    const routeName = props.property
+        ? route('admin.properties.bookings.index', props.property.id)
+        : route('admin.bookings.index');
+    router.get(routeName, {
         status: statusFilter.value === 'all' ? null : statusFilter.value,
         search: searchQuery.value || null
     }, { preserveState: true, replace: true });
@@ -66,25 +96,44 @@ const exportBookings = () => {
     if (statusFilter.value !== 'all') params.append('status', statusFilter.value);
     if (searchQuery.value) params.append('search', searchQuery.value);
     
-    // Note: This export route might need to be specific for property too, but falling back to global export with property_id filter if needed.
-    // Assuming admin.bookings.export can handle property_id or we need a new route.
-    // For now, keeping it as is but be aware it might need backend adjustment.
-    // Ideally: route('admin.properties.bookings.export', props.property.id)
-    window.location.href = route('admin.bookings.export') + '?' + params.toString() + '&property_id=' + props.property.id;
+    // Using appropriate export route
+    const exportRoute = props.property
+        ? route('admin.properties.bookings.export', props.property.id)
+        : route('admin.bookings.export');
+    window.location.href = exportRoute + '?' + params.toString();
 };
 
-const updateStatus = (bookingId: number, status: string) => {
-    if (confirm(`Opravdu chcete označit tuto rezervaci jako "${BookingStatusLabels[status] || status}"?`)) {
-        router.put(route('admin.bookings.update', bookingId), { status });
-    }
+const confirmUpdateStatus = (bookingId: string, status: string) => {
+    bookingToUpdate.value = { id: bookingId, status };
+    isUpdateDialogOpen.value = true;
+};
+
+const executeUpdateStatus = () => {
+    if (!bookingToUpdate.value) return;
+    
+    const { id, status } = bookingToUpdate.value;
+    
+    router.put(route('admin.bookings.update', id), { status }, {
+        preserveScroll: true,
+        onSuccess: () => {
+            toast.success('Stav rezervace byl úspěšně změněn.');
+            isUpdateDialogOpen.value = false;
+            bookingToUpdate.value = null;
+        },
+        onError: () => {
+            toast.error('Nepodařilo se změnit stav rezervace.');
+        }
+    });
 };
 
 const getStatusVariant = (status: string) => {
     switch (status) {
-        case 'confirmed': return 'default'; // primary color
-        case 'pending': return 'secondary'; // gray
-        case 'cancelled': return 'destructive'; // red
-        case 'paid': return 'outline'; // green-ish usually, but outline for now
+        case 'confirmed': return 'outline';
+        case 'checked_in': return 'default';
+        case 'checked_out': return 'secondary';
+        case 'pending': return 'secondary';
+        case 'cancelled': return 'destructive';
+        case 'no_show': return 'destructive';
         default: return 'secondary';
     }
 };
@@ -99,13 +148,13 @@ const columns = [
 </script>
 
 <template>
-    <Head :title="`Rezervace - ${property.name}`" />
+    <Head :title="property ? `Rezervace - ${property.name}` : 'Rezervace'" />
 
-    <PropertyLayout :property="property" :breadcrumbs="breadcrumbs">
+    <PropertyLayout v-if="property" :property="property" :breadcrumbs="breadcrumbs">
         <div class="space-y-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="text-2xl font-bold tracking-tight">Rezervace</h2>
+                    <h2 class="text-2xl font-bold tracking-tight text-foreground">Rezervace</h2>
                     <p class="text-muted-foreground">Přehled a správa rezervací.</p>
                 </div>
                 <Button variant="outline" size="sm" class="h-9 shadow-sm" @click="exportBookings">
@@ -142,50 +191,50 @@ const columns = [
                 no-results-message="Žádné rezervace nenalezeny."
             >
                 <template #customer="{ item }">
-                    <div class="font-medium">{{ item.customer_name }}</div>
-                    <div class="text-xs text-muted-foreground">{{ item.code }}</div>
+                    <div class="font-medium text-foreground">{{ item.customer_name }}</div>
+                    <div class="text-xs text-muted-foreground font-mono">{{ item.code }}</div>
                 </template>
                 
                 <template #dates="{ item }">
                     <div class="flex items-center gap-2">
                         <Calendar class="h-3 w-3 text-muted-foreground" />
-                        <span class="text-sm">{{ item.check_in_date }} - {{ item.check_out_date }}</span>
+                        <span class="text-sm font-medium">{{ item.check_in_date }} - {{ item.check_out_date }}</span>
                     </div>
                 </template>
                 
                 <template #total_price="{ item }">
-                    <span class="font-mono">{{ item.total_price.display }}</span>
+                    <span class="font-mono font-medium">{{ item.total_price.display }}</span>
                 </template>
                 
                 <template #status="{ item }">
-                    <Badge :variant="getStatusVariant(item.status)">
+                    <Badge :variant="getStatusVariant(item.status)" class="rounded-sm px-2 py-0.5 font-normal">
                         {{ item.status_label }}
                     </Badge>
                 </template>
                 
                 <template #actions="{ item }">
                     <div class="flex justify-end gap-2">
-                        <Button variant="ghost" size="icon" as-child class="h-8 w-8">
+                        <Button variant="ghost" size="icon" as-child class="h-8 w-8 text-muted-foreground hover:text-foreground">
                             <Link :href="route('admin.bookings.show', item.id)">
                                 <Eye class="h-4 w-4" />
                             </Link>
                         </Button>
                         <Button 
                             v-if="item.status === 'pending'" 
-                            variant="default"
+                            variant="outline"
                             size="icon"
-                            class="h-8 w-8"
-                            @click="updateStatus(item.id, 'confirmed')"
+                            class="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200"
+                            @click="confirmUpdateStatus(item.id, 'confirmed')"
                             title="Potvrdit"
                         >
                             <Check class="h-4 w-4" />
                         </Button>
                         <Button 
-                            v-if="item.status !== 'cancelled'" 
+                            v-if="['pending', 'confirmed'].includes(item.status)" 
                             variant="ghost" 
                             size="icon" 
-                            class="h-8 w-8 text-destructive hover:text-destructive"
-                            @click="updateStatus(item.id, 'cancelled')"
+                            class="h-8 w-8 text-muted-foreground hover:text-destructive"
+                            @click="confirmUpdateStatus(item.id, 'cancelled')"
                             title="Zrušit"
                         >
                             <X class="h-4 w-4" />
@@ -193,6 +242,136 @@ const columns = [
                     </div>
                 </template>
             </AppDataTable>
+
+            <AlertDialog :open="isUpdateDialogOpen" @update:open="isUpdateDialogOpen = $event">
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Změna stavu rezervace</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Opravdu chcete změnit stav této rezervace?
+                            <span v-if="bookingToUpdate" class="block mt-2 font-medium">
+                                Nový stav: {{ BookingStatusLabels[bookingToUpdate.status] || bookingToUpdate.status }}
+                            </span>
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel @click="bookingToUpdate = null">Zrušit</AlertDialogCancel>
+                        <AlertDialogAction @click="executeUpdateStatus">Potvrdit</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     </PropertyLayout>
+    <AppLayout v-else :breadcrumbs="breadcrumbs">
+        <div class="space-y-6 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold tracking-tight text-foreground">Rezervace</h2>
+                    <p class="text-muted-foreground">Přehled a správa rezervací.</p>
+                </div>
+                <Button variant="outline" size="sm" class="h-9 shadow-sm" @click="exportBookings">
+                    Exportovat CSV
+                </Button>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="w-64">
+                    <Input
+                        v-model="searchQuery"
+                        placeholder="Hledat hosty..."
+                        class="w-full h-9"
+                    />
+                </div>
+                <div class="w-48">
+                    <Select v-model="statusFilter">
+                        <SelectTrigger class="h-9">
+                            <SelectValue placeholder="Filtrovat dle stavu" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Všechny stavy</SelectItem>
+                            <SelectItem v-for="(label, value) in BookingStatusLabels" :key="value" :value="value">
+                                {{ label }}
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+
+            <AppDataTable
+                :data="bookings"
+                :columns="columns"
+                no-results-message="Žádné rezervace nenalezeny."
+            >
+                <template #customer="{ item }">
+                    <div class="font-medium text-foreground">{{ item.customer_name }}</div>
+                    <div class="text-xs text-muted-foreground font-mono">{{ item.code }}</div>
+                </template>
+
+                <template #dates="{ item }">
+                    <div class="flex items-center gap-2">
+                        <Calendar class="h-3 w-3 text-muted-foreground" />
+                        <span class="text-sm font-medium">{{ item.check_in_date }} - {{ item.check_out_date }}</span>
+                    </div>
+                </template>
+
+                <template #total_price="{ item }">
+                    <span class="font-mono font-medium">{{ item.total_price.display }}</span>
+                </template>
+
+                <template #status="{ item }">
+                    <Badge :variant="getStatusVariant(item.status)" class="rounded-sm px-2 py-0.5 font-normal">
+                        {{ item.status_label }}
+                    </Badge>
+                </template>
+
+                <template #actions="{ item }">
+                    <div class="flex justify-end gap-2">
+                        <Button variant="ghost" size="icon" as-child class="h-8 w-8 text-muted-foreground hover:text-foreground">
+                            <Link :href="route('admin.bookings.show', item.id)">
+                                <Eye class="h-4 w-4" />
+                            </Link>
+                        </Button>
+                        <Button
+                            v-if="item.status === 'pending'"
+                            variant="outline"
+                            size="icon"
+                            class="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200"
+                            @click="confirmUpdateStatus(item.id, 'confirmed')"
+                            title="Potvrdit"
+                        >
+                            <Check class="h-4 w-4" />
+                        </Button>
+                        <Button
+                            v-if="['pending', 'confirmed'].includes(item.status)"
+                            variant="ghost"
+                            size="icon"
+                            class="h-8 w-8 text-muted-foreground hover:text-destructive"
+                            @click="confirmUpdateStatus(item.id, 'cancelled')"
+                            title="Zrušit"
+                        >
+                            <X class="h-4 w-4" />
+                        </Button>
+                    </div>
+                </template>
+            </AppDataTable>
+
+            <AlertDialog :open="isUpdateDialogOpen" @update:open="isUpdateDialogOpen = $event">
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Změna stavu rezervace</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Opravdu chcete změnit stav této rezervace?
+                            <span v-if="bookingToUpdate" class="block mt-2 font-medium">
+                                Nový stav: {{ BookingStatusLabels[bookingToUpdate.status] || bookingToUpdate.status }}
+                            </span>
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel @click="bookingToUpdate = null">Zrušit</AlertDialogCancel>
+                        <AlertDialogAction @click="executeUpdateStatus">Potvrdit</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </div>
+    </AppLayout>
 </template>

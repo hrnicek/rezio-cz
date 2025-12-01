@@ -5,7 +5,7 @@ import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { TransitionRoot } from '@headlessui/vue';
+import { toast } from 'vue-sonner';
 
 const passwordInput = ref<HTMLInputElement | null>(null);
 const currentPasswordInput = ref<HTMLInputElement | null>(null);
@@ -22,7 +22,10 @@ const updatePassword = () => {
     form.put(route('user-password.update'), {
         errorBag: 'updatePassword',
         preserveScroll: true,
-        onSuccess: () => form.reset(),
+        onSuccess: () => {
+            form.reset();
+            toast.success('Heslo bylo úspěšně změněno.');
+        },
         onError: () => {
             if (form.errors.password) {
                 form.reset('password', 'password_confirmation');
@@ -40,60 +43,53 @@ const updatePassword = () => {
 
 <template>
     <SettingsLayout>
-        <div class="space-y-6">
+        <div class="space-y-6 max-w-2xl">
             <div>
-                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">Update Password</h3>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Ensure your account is using a long, random password to stay secure.</p>
+                <h3 class="text-lg font-medium leading-6 text-foreground">Změna hesla</h3>
+                <p class="mt-1 text-sm text-muted-foreground">Ujistěte se, že váš účet používá dlouhé a náhodné heslo, abyste zůstali v bezpečí.</p>
             </div>
 
             <form @submit.prevent="updatePassword" class="space-y-6">
                 <div class="space-y-2">
-                    <Label for="current_password">Current Password</Label>
+                    <Label for="current_password">Současné heslo</Label>
                     <Input
                         id="current_password"
                         ref="currentPasswordInput"
                         v-model="form.current_password"
                         type="password"
                         autocomplete="current-password"
+                        class="h-9"
                     />
-                    <div v-if="form.errors.current_password" class="text-sm text-red-600 dark:text-red-400">{{ form.errors.current_password }}</div>
+                    <div v-if="form.errors.current_password" class="text-sm text-red-500">{{ form.errors.current_password }}</div>
                 </div>
 
                 <div class="space-y-2">
-                    <Label for="password">New Password</Label>
+                    <Label for="password">Nové heslo</Label>
                     <Input
                         id="password"
                         ref="passwordInput"
                         v-model="form.password"
                         type="password"
                         autocomplete="new-password"
+                        class="h-9"
                     />
-                    <div v-if="form.errors.password" class="text-sm text-red-600 dark:text-red-400">{{ form.errors.password }}</div>
+                    <div v-if="form.errors.password" class="text-sm text-red-500">{{ form.errors.password }}</div>
                 </div>
 
                 <div class="space-y-2">
-                    <Label for="password_confirmation">Confirm Password</Label>
+                    <Label for="password_confirmation">Potvrzení nového hesla</Label>
                     <Input
                         id="password_confirmation"
                         v-model="form.password_confirmation"
                         type="password"
                         autocomplete="new-password"
+                        class="h-9"
                     />
-                    <div v-if="form.errors.password_confirmation" class="text-sm text-red-600 dark:text-red-400">{{ form.errors.password_confirmation }}</div>
+                    <div v-if="form.errors.password_confirmation" class="text-sm text-red-500">{{ form.errors.password_confirmation }}</div>
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <Button :disabled="form.processing">Save</Button>
-
-                    <TransitionRoot
-                        :show="form.recentlySuccessful"
-                        enter="transition ease-in-out"
-                        enter-from="opacity-0"
-                        leave="transition ease-in-out"
-                        leave-to="opacity-0"
-                    >
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Saved.</p>
-                    </TransitionRoot>
+                    <Button :disabled="form.processing" class="h-9">Uložit</Button>
                 </div>
             </form>
         </div>

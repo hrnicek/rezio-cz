@@ -2,13 +2,15 @@
 
 namespace App\Data\Admin;
 
-use App\Models\Customer;
+use App\Models\CRM\Customer;
 use Spatie\LaravelData\Data;
 
 class CustomerData extends Data
 {
     public function __construct(
         public string $id, // UUID
+        public string $first_name,
+        public string $last_name,
         public string $name, // Kontaktní osoba
         public string $email,
         public ?string $phone,
@@ -36,6 +38,8 @@ class CustomerData extends Data
     {
         return new self(
             id: $customer->id,
+            first_name: $customer->first_name,
+            last_name: $customer->last_name,
             name: $customer->name,
             email: $customer->email,
             phone: $customer->phone,

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Tenant\Widgets\Api;
 
-use App\Enums\BookingStatus;
+use App\States\Booking\Cancelled;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Booking\CalendarRequest;
 use App\Http\Requests\Booking\VerifyAvailabilityRequest;
@@ -30,7 +30,7 @@ class WidgetController extends Controller
 
         $bookings = Booking::query()
             ->where('property_id', $property->id)
-            ->where('status', '!=', BookingStatus::Cancelled)
+            ->where('status', '!=', Cancelled::class)
             ->where('check_in_date', '<', $periodEnd->copy()->endOfDay())
             ->where('check_out_date', '>', $periodStart->copy()->startOfDay())
             ->get();
@@ -110,7 +110,7 @@ class WidgetController extends Controller
 
         $bookings = Booking::query()
             ->where('property_id', $property->id)
-            ->where('status', '!=', BookingStatus::Cancelled)
+            ->where('status', '!=', Cancelled::class)
             ->where('check_in_date', '<', $end)
             ->where('check_out_date', '>', $start)
             ->get();

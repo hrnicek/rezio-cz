@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\BlackoutDate;
-use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Seeder;
+use App\Models\Configuration\BlockDate;
 
 class BlackoutDateSeeder extends Seeder
 {
@@ -44,7 +44,7 @@ class BlackoutDateSeeder extends Seeder
         ];
 
         foreach ($items as $data) {
-            BlackoutDate::query()->create($data);
+            BlockDate::query()->create($data);
         }
     }
 }

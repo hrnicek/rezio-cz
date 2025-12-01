@@ -3,11 +3,7 @@
 namespace App\Data\Admin\Booking;
 
 use App\Data\Shared\MoneyData;
-use App\Enums\BookingStatus;
 use App\Models\Booking\Booking;
-use Carbon\Carbon;
-use Spatie\LaravelData\Attributes\WithCast;
-use Spatie\LaravelData\Casts\DateTimeInterfaceCast;
 use Spatie\LaravelData\Data;
 
 class BookingListData extends Data
@@ -19,11 +15,8 @@ class BookingListData extends Data
         public string $status_label,
         public string $customer_name,
 
-        #[WithCast(DateTimeInterfaceCast::class, format: 'd.m.Y')]
-        public Carbon $check_in_date,
-
-        #[WithCast(DateTimeInterfaceCast::class, format: 'd.m.Y')]
-        public Carbon $check_out_date,
+        public string $check_in_date,
+        public string $check_out_date,
 
         public MoneyData $total_price,
 
@@ -35,11 +28,11 @@ class BookingListData extends Data
         return new self(
             id: $booking->id,
             code: $booking->code,
-            status: $booking->status instanceof BookingStatus ? $booking->status->value : $booking->status,
-            status_label: $booking->status instanceof BookingStatus ? $booking->status->label() : $booking->status,
+            status: (string) $booking->status,
+            status_label: $booking->status->label(),
             customer_name: $booking->customer?->billing_name ?? 'Neznámý',
-            check_in_date: $booking->check_in_date,
-            check_out_date: $booking->check_out_date,
+            check_in_date: $booking->check_in_date->format('d.m.Y'),
+            check_out_date: $booking->check_out_date->format('d.m.Y'),
             total_price: MoneyData::fromModel($booking->total_price_amount, $booking->currency),
             created_at_human: $booking->created_at->diffForHumans(),
         );

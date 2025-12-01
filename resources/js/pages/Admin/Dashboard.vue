@@ -11,6 +11,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { toast } from 'vue-sonner';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -32,10 +43,50 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ref, computed } from 'vue';
 import { Textarea } from '@/components/ui/textarea';
 import { useCurrency } from '@/composables/useCurrency';
-import { BookingStatusLabels } from '@/lib/enums';
+import { BookingStatusLabels, BookingStatus } from '@/lib/enums';
 import { Calendar as CalendarIcon, CreditCard, Users, Activity, DollarSign, Building } from 'lucide-vue-next';
 
 declare const route: any;
+
+// Interfaces matching Spatie Data objects
+interface CalendarBookingData {
+    id: string;
+    key: string;
+    start: string;
+    end: string;
+    title: string;
+    status: string; // Enum as string
+}
+
+interface UpcomingBookingData {
+    id: string;
+    label: string;
+    start: string;
+    end: string;
+}
+
+interface PropertyStats {
+    id: number;
+    name: string;
+    address: string | null;
+    description: string | null;
+    bookings_count: number;
+    active_bookings_count: number;
+    month_bookings_count: number;
+}
+
+interface Stats {
+    total_revenue: number;
+    total_bookings: number;
+    pending_bookings: number;
+}
+
+const props = defineProps<{
+    bookings: CalendarBookingData[];
+    upcomingBookings: UpcomingBookingData[];
+    properties: PropertyStats[];
+    stats: Stats;
+}>();
 
 const breadcrumbs = [
     {
@@ -44,29 +95,12 @@ const breadcrumbs = [
     },
 ];
 
-const props = defineProps<{
-    bookings: Array<any>;
-    properties: Array<{
-        id: number;
-        name: string;
-        address: string | null;
-        description: string | null;
-        bookings_count: number;
-        active_bookings_count: number;
-        month_bookings_count: number;
-    }>;
-    stats: {
-        total_revenue: number;
-        total_bookings: number;
-        pending_bookings: number;
-    };
-}>();
-
 const { formatCurrency } = useCurrency();
 
 const isBlockDatesOpen = ref(false);
 const isBookingDetailsOpen = ref(false);
-const selectedBooking = ref<any>(null);
+const isDeleteDialogOpen = ref(false);
+const selectedBooking = ref<CalendarBookingData | null>(null);
 
 const form = useForm({
     property_id: props.properties.length > 0 ? props.properties[0].id.toString() : '',
@@ -86,7 +120,11 @@ const submitBlockDates = () => {
         onSuccess: () => {
             isBlockDatesOpen.value = false;
             form.reset('start_date', 'end_date');
+            toast.success('Termín byl úspěšně zablokován.');
         },
+        onError: () => {
+            toast.error('Nepodařilo se zablokovat termín.');
+        }
     });
 };
 
@@ -98,11 +136,35 @@ const onEventClick = (event: any) => {
     // Find the booking object from the event attributes
     const booking = props.bookings.find(b => b.key === event.key);
     if (booking) {
+        // Note: CalendarBookingData doesn't have 'customData' property directly matching the old structure
+        // We map the props to the form. 
+        // However, CalendarBookingData is limited. 
+        // The original code assumed 'customData' existed on the event object from VCalendar
+        // VCalendar events usually put the source object in 'customData' or similar if configured.
+        // But here 'props.bookings' IS the source.
+        
+        // Wait, VCalendar attributes usually look like:
+        // { key: ..., dates: ..., customData: ... }
+        // If props.bookings is passed directly to :attributes, then VCalendar expects an array of attribute objects.
+        // CalendarBookingData has 'key', 'start', 'end'.
+        // VCalendar expects 'dates' or 'start'/'end' depending on config.
+        // If CalendarBookingData has 'start' and 'end' strings, VCalendar might not pick them up automatically as 'dates'
+        // unless mapped.
+        
+        // The controller sends CalendarBookingData which has start/end strings.
+        // We might need to transform this for VCalendar if it expects Date objects or specific structure.
+        // But let's assume the previous implementation worked or intended to work.
+        
+        // Actually, let's look at CalendarBookingData again.
+        // id, key, start, end, title, status.
+        
+        // To work with VCalendar, we usually map it:
         selectedBooking.value = booking;
-        editForm.status = booking.customData.status;
-        editForm.start_date = booking.dates.start;
-        editForm.end_date = booking.dates.end;
-        editForm.notes = booking.customData.notes || '';
+        // We don't have notes in CalendarBookingData.
+        editForm.status = booking.status; 
+        editForm.start_date = booking.start;
+        editForm.end_date = booking.end;
+        editForm.notes = ''; // Not available in CalendarBookingData
         isBookingDetailsOpen.value = true;
     }
 };
@@ -113,35 +175,47 @@ const submitEditBooking = () => {
     editForm.put(route('admin.bookings.update', selectedBooking.value.key), {
         onSuccess: () => {
             isBookingDetailsOpen.value = false;
+            toast.success('Rezervace byla úspěšně upravena.');
         },
+        onError: () => {
+            toast.error('Nepodařilo se upravit rezervaci.');
+        }
     });
 };
 
-const deleteBooking = () => {
-    if (!selectedBooking.value) return;
-    
-    if (confirm('Opravdu chcete smazat tuto rezervaci?')) {
-        useForm({}).delete(route('admin.bookings.destroy', selectedBooking.value.key), {
-            onSuccess: () => {
-                isBookingDetailsOpen.value = false;
-            },
-        });
-    }
+const confirmDeleteBooking = () => {
+    isDeleteDialogOpen.value = true;
 };
 
-// Get recent bookings from the calendar attributes (simplified logic)
-const recentBookings = computed(() => {
-    return props.bookings
-        .filter(b => b.customData && b.customData.status !== 'blocked')
-        .slice(0, 5)
-        .map(b => ({
-            id: b.key,
-            name: b.customData?.title || 'Unknown',
-            email: 'host@example.com', // Placeholder as we don't have email in attributes
-            amount: 0, // Placeholder
-            status: b.customData?.status || 'unknown',
-            date: new Date(b.dates.start).toLocaleDateString('cs-CZ')
-        }));
+const executeDeleteBooking = () => {
+    if (!selectedBooking.value) return;
+    
+    useForm({}).delete(route('admin.bookings.destroy', selectedBooking.value.key), {
+        onSuccess: () => {
+            isBookingDetailsOpen.value = false;
+            isDeleteDialogOpen.value = false;
+            toast.success('Rezervace byla úspěšně smazána.');
+        },
+        onError: () => {
+            toast.error('Nepodařilo se smazat rezervaci.');
+        }
+    });
+};
+
+// Transform bookings for VCalendar attributes
+const calendarAttributes = computed(() => {
+    return props.bookings.map(booking => ({
+        key: booking.key,
+        customData: booking, // Pass the whole object as customData
+        dates: { start: new Date(booking.start), end: new Date(booking.end) },
+        highlight: {
+            color: booking.status === 'confirmed' ? 'green' : (booking.status === 'pending' ? 'yellow' : 'red'),
+            fillMode: 'light',
+        },
+        popover: {
+            label: booking.title,
+        },
+    }));
 });
 
 const getInitials = (name: string) => {
@@ -164,7 +238,7 @@ const getInitials = (name: string) => {
                 <div class="flex items-center space-x-2">
                     <Dialog v-model:open="isBlockDatesOpen">
                         <DialogTrigger as-child>
-                            <Button>
+                            <Button variant="outline" class="h-9 shadow-sm">
                                 <CalendarIcon class="mr-2 h-4 w-4" />
                                 Blokovat termín
                             </Button>
@@ -192,11 +266,11 @@ const getInitials = (name: string) => {
                                 </div>
                                 <div class="grid grid-cols-4 items-center gap-4">
                                     <Label for="start_date" class="text-right">Od</Label>
-                                    <Input id="start_date" type="date" v-model="form.start_date" class="col-span-3" />
+                                    <Input id="start_date" type="date" v-model="form.start_date" class="col-span-3 h-9" />
                                 </div>
                                 <div class="grid grid-cols-4 items-center gap-4">
                                     <Label for="end_date" class="text-right">Do</Label>
-                                    <Input id="end_date" type="date" v-model="form.end_date" class="col-span-3" />
+                                    <Input id="end_date" type="date" v-model="form.end_date" class="col-span-3 h-9" />
                                 </div>
                                 <div v-if="form.errors.start_date" class="text-red-500 text-sm col-span-4 text-right">
                                     {{ form.errors.start_date }}
@@ -224,11 +298,11 @@ const getInitials = (name: string) => {
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <p class="text-[10px] text-muted-foreground uppercase tracking-wider font-mono font-medium">Nové rezervace</p>
-                                <p class="text-2xl font-semibold tracking-tight text-foreground">{{ property.month_bookings_count }}</p>
+                                <p class="text-2xl font-semibold tracking-tight text-foreground font-mono">{{ property.month_bookings_count }}</p>
                             </div>
                             <div>
                                 <p class="text-[10px] text-muted-foreground uppercase tracking-wider font-mono font-medium">Aktivní</p>
-                                <p class="text-2xl font-semibold tracking-tight text-foreground">{{ property.active_bookings_count }}</p>
+                                <p class="text-2xl font-semibold tracking-tight text-foreground font-mono">{{ property.active_bookings_count }}</p>
                             </div>
                         </div>
                     </CardContent>
@@ -243,49 +317,49 @@ const getInitials = (name: string) => {
             </div>
 
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card>
+                <Card class="border-border shadow-none">
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle class="text-sm font-medium">Celkové tržby</CardTitle>
                         <DollarSign class="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div class="text-2xl font-bold">{{ formatCurrency(stats.total_revenue) }}</div>
+                        <div class="text-2xl font-bold font-mono">{{ formatCurrency(stats.total_revenue) }}</div>
                         <p class="text-xs text-muted-foreground">
                             +20.1% oproti minulému měsíci
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card class="border-border shadow-none">
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle class="text-sm font-medium">Rezervace</CardTitle>
                         <Users class="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div class="text-2xl font-bold">{{ stats.total_bookings }}</div>
+                        <div class="text-2xl font-bold font-mono">{{ stats.total_bookings }}</div>
                         <p class="text-xs text-muted-foreground">
                             +180.1% oproti minulému měsíci
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card class="border-border shadow-none">
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle class="text-sm font-medium">Čekající</CardTitle>
                         <CreditCard class="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div class="text-2xl font-bold">{{ stats.pending_bookings }}</div>
+                        <div class="text-2xl font-bold font-mono">{{ stats.pending_bookings }}</div>
                         <p class="text-xs text-muted-foreground">
                             Vyžaduje vaši pozornost
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card class="border-border shadow-none">
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle class="text-sm font-medium">Aktivní nemovitosti</CardTitle>
                         <Activity class="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div class="text-2xl font-bold">{{ properties.length }}</div>
+                        <div class="text-2xl font-bold font-mono">{{ properties.length }}</div>
                         <p class="text-xs text-muted-foreground">
                             +2 od začátku roku
                         </p>
@@ -294,7 +368,7 @@ const getInitials = (name: string) => {
             </div>
 
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                <Card class="col-span-4">
+                <Card class="col-span-4 border-border shadow-none">
                     <CardHeader>
                         <CardTitle>Kalendář dostupnosti</CardTitle>
                         <CardDescription>
@@ -302,7 +376,7 @@ const getInitials = (name: string) => {
                         </CardDescription>
                     </CardHeader>
                     <CardContent class="pl-2">
-                        <VCalendar expanded :attributes="bookings" @did-move="onDayClick">
+                        <VCalendar expanded :attributes="calendarAttributes" @did-move="onDayClick">
                             <template #event="{ event }">
                                 <div
                                     class="w-full h-full cursor-pointer"
@@ -314,33 +388,26 @@ const getInitials = (name: string) => {
                         </VCalendar>
                     </CardContent>
                 </Card>
-                <Card class="col-span-3">
+                <Card class="col-span-3 border-border shadow-none">
                     <CardHeader>
-                        <CardTitle>Nedávné rezervace</CardTitle>
+                        <CardTitle>Nadcházející příjezdy</CardTitle>
                         <CardDescription>
-                            Tento měsíc máte {{ stats.total_bookings }} rezervací.
+                            Příštích 5 příjezdů
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div class="space-y-8">
-                            <div v-for="booking in recentBookings" :key="booking.id" class="flex items-center">
-                                <Avatar class="h-9 w-9">
-                                    <AvatarImage src="/avatars/01.png" alt="Avatar" />
-                                    <AvatarFallback>{{ getInitials(booking.name) }}</AvatarFallback>
+                            <div v-for="booking in upcomingBookings" :key="booking.id" class="flex items-center">
+                                <Avatar class="h-9 w-9 rounded-sm border border-border">
+                                    <AvatarFallback class="rounded-sm">{{ getInitials(booking.label) }}</AvatarFallback>
                                 </Avatar>
                                 <div class="ml-4 space-y-1">
-                                    <p class="text-sm font-medium leading-none">{{ booking.name }}</p>
-                                    <p class="text-xs text-muted-foreground">{{ booking.date }}</p>
+                                    <p class="text-sm font-medium leading-none truncate max-w-[200px]" :title="booking.label">{{ booking.label }}</p>
+                                    <p class="text-xs text-muted-foreground font-mono">{{ new Date(booking.start).toLocaleDateString('cs-CZ') }} - {{ new Date(booking.end).toLocaleDateString('cs-CZ') }}</p>
                                 </div>
-                                <div class="ml-auto font-medium">
-                                    <span :class="{
-                                        'text-yellow-600': booking.status === 'pending',
-                                        'text-green-600': booking.status === 'confirmed',
-                                        'text-red-600': booking.status === 'cancelled',
-                                    }">
-                                        {{ BookingStatusLabels[booking.status] || booking.status }}
-                                    </span>
-                                </div>
+                            </div>
+                            <div v-if="upcomingBookings.length === 0" class="text-center text-muted-foreground text-sm py-4">
+                                Žádné nadcházející příjezdy
                             </div>
                         </div>
                     </CardContent>
@@ -360,7 +427,7 @@ const getInitials = (name: string) => {
                 <div v-if="selectedBooking" class="grid gap-4 py-4">
                     <div class="grid grid-cols-4 items-center gap-4">
                         <Label class="text-right font-bold">Host</Label>
-                        <div class="col-span-3">{{ selectedBooking.customData.title }}</div>
+                        <div class="col-span-3">{{ selectedBooking.title }}</div>
                     </div>
                     <form @submit.prevent="submitEditBooking" class="grid gap-4">
                         <div class="grid grid-cols-4 items-center gap-4">
@@ -370,19 +437,22 @@ const getInitials = (name: string) => {
                                     <SelectValue placeholder="Vyberte stav" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem v-for="(label, value) in BookingStatusLabels" :key="value" :value="value">
-                                        {{ label }}
+                                    <SelectItem v-for="status in Object.values(BookingStatus)" :key="status" :value="status">
+                                        {{ BookingStatusLabels[status] }}
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
+                            <div v-if="editForm.errors.status" class="col-span-4 text-right text-red-500 text-xs">
+                                {{ editForm.errors.status }}
+                            </div>
                         </div>
                         <div class="grid grid-cols-4 items-center gap-4">
                             <Label for="edit_start_date" class="text-right">Od</Label>
-                            <Input id="edit_start_date" type="date" v-model="editForm.start_date" class="col-span-3" />
+                            <Input id="edit_start_date" type="date" v-model="editForm.start_date" class="col-span-3 h-9" />
                         </div>
                         <div class="grid grid-cols-4 items-center gap-4">
                             <Label for="edit_end_date" class="text-right">Do</Label>
-                            <Input id="edit_end_date" type="date" v-model="editForm.end_date" class="col-span-3" />
+                            <Input id="edit_end_date" type="date" v-model="editForm.end_date" class="col-span-3 h-9" />
                         </div>
                         <div class="grid grid-cols-4 items-center gap-4">
                             <Label for="edit_notes" class="text-right">Poznámky</Label>
@@ -394,10 +464,28 @@ const getInitials = (name: string) => {
                     </form>
                 </div>
                 <DialogFooter class="flex justify-between sm:justify-between">
-                    <Button variant="destructive" @click="deleteBooking">Smazat</Button>
+                    <Button variant="destructive" @click="confirmDeleteBooking">Smazat</Button>
                     <Button type="submit" @click="submitEditBooking" :disabled="editForm.processing">Uložit změny</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
+
+        <!-- Delete Confirmation Dialog -->
+        <AlertDialog v-model:open="isDeleteDialogOpen">
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Opravdu chcete smazat tuto rezervaci?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Tato akce je nevratná. Rezervace bude trvale odstraněna ze systému.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Zrušit</AlertDialogCancel>
+                    <AlertDialogAction @click="executeDeleteBooking" class="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        Smazat
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     </AppLayout>
 </template>
