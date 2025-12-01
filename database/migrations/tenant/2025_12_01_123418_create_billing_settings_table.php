@@ -19,7 +19,7 @@ return new class extends Migration
             $table->boolean('is_vat_payer')->default(false);
             $table->string('ico')->nullable();
             $table->string('dic')->nullable();
-            $table->string('company_name'); // Billing Name
+            $table->string('company_name')->nullable(); // Billing Name
             $table->string('street')->nullable();
             $table->string('city')->nullable();
             $table->string('zip')->nullable();

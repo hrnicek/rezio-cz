@@ -4,11 +4,9 @@ namespace Tests\Feature\Tenant;
 
 use App\Models\Booking\Booking;
 use App\Models\Property;
-use App\Models\CRM\Customer;
-use App\States\Booking\Pending;
-use App\States\Booking\Confirmed;
-use App\States\Booking\Cancelled;
 use App\States\Booking\CheckedIn;
+use App\States\Booking\Confirmed;
+use App\States\Booking\Pending;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TenantTestCase;
 
@@ -47,37 +45,37 @@ class BookingTest extends TenantTestCase
     public function test_booking_status_serialization()
     {
         $booking = Booking::factory()->create();
-        
+
         // Simulate serialization via BookingData or array
         $array = $booking->toArray();
-        
-        // Note: toArray() uses the model's attributes. 
+
+        // Note: toArray() uses the model's attributes.
         // If 'status' is in casts, it might be serialized to the class name or alias depending on Spatie config.
         // But we know (string) cast returns alias.
-        
+
         $this->assertEquals('pending', (string) $booking->status);
     }
-    
+
     public function test_admin_can_update_booking_status()
     {
         $user = \App\Models\User::factory()->create();
         $property = Property::factory()->create();
         $user->properties()->attach($property);
         $user->update(['current_property_id' => $property->id]);
-        
+
         $booking = Booking::factory()->create([
             'property_id' => $property->id,
             'status' => Pending::class,
         ]);
-        
+
         $response = $this->actingAs($user)
             ->put(route('admin.bookings.update', $booking->id), [
                 'status' => 'confirmed',
             ]);
-            
+
         $response->assertRedirect();
         $response->assertSessionHas('success');
-        
+
         $booking->refresh();
         $this->assertTrue($booking->status->equals(Confirmed::class));
     }
@@ -88,19 +86,19 @@ class BookingTest extends TenantTestCase
         $property = Property::factory()->create();
         $user->properties()->attach($property);
         $user->update(['current_property_id' => $property->id]);
-        
+
         $booking = Booking::factory()->create([
             'property_id' => $property->id,
             'status' => Pending::class,
         ]);
-        
+
         $response = $this->actingAs($user)
             ->put(route('admin.bookings.update', $booking->id), [
                 'status' => 'checked_in', // Invalid transition from Pending
             ]);
-            
+
         $response->assertSessionHasErrors('status');
-        
+
         $booking->refresh();
         $this->assertTrue($booking->status->equals(Pending::class));
     }

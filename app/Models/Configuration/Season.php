@@ -3,9 +3,9 @@
 namespace App\Models\Configuration;
 
 use App\Models\Property;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Season extends Model
 {
@@ -48,7 +48,7 @@ class Season extends Model
             return false; // Default seasons don't match specific dates
         }
 
-        if (!$this->start_date || !$this->end_date) {
+        if (! $this->start_date || ! $this->end_date) {
             return false;
         }
 

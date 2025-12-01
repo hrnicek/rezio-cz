@@ -95,7 +95,7 @@ const breadcrumbs = [
                         <div class="grid gap-2">
                             <Label>Obrázek</Label>
                             <div v-if="props.property.image && form.image === props.property.image" class="mb-2">
-                                <img :src="'/storage/' + props.property.image" alt="Current Image" class="h-32 w-auto rounded-md object-cover" />
+                                <img :src="props.property.image" alt="Current Image" class="h-32 w-auto rounded-md object-cover border border-border" />
                             </div>
                             <Upload v-model="form.image" label="Změnit obrázek" />
                             <div v-if="form.errors.image" class="text-sm text-destructive">{{ form.errors.image }}</div>

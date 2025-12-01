@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers\Tenant\Admin;
 
-use Inertia\Inertia;
+use App\Data\Admin\Booking\BookingData;
+use App\Data\Admin\Booking\BookingListData;
+use App\Http\Controllers\Controller;
+use App\Models\Booking\Booking;
+use App\Models\CRM\Customer;
 use App\Models\Property;
 use App\States\Booking\BookingState;
 use App\States\Booking\Cancelled;
-use Spatie\ModelStates\Validation\ValidStateRule;
-use App\Models\CRM\Customer;
 use Illuminate\Http\Request;
-use App\Models\Booking\Booking;
-use Illuminate\Validation\Rule;
-use App\Http\Controllers\Controller;
-use App\Data\Admin\Booking\BookingData;
-use App\Data\Admin\Booking\BookingListData;
+use Inertia\Inertia;
+use Spatie\ModelStates\Validation\ValidStateRule;
 
 class BookingController extends Controller
 {

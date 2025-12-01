@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Tenant\Admin;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Models\Booking\Booking;
-use App\Http\Controllers\Controller;
 use App\Data\Admin\Booking\CalendarBookingData;
 use App\Data\Admin\Booking\UpcomingBookingData;
+use App\Http\Controllers\Controller;
+use App\Models\Booking\Booking;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
@@ -52,7 +52,7 @@ class DashboardController extends Controller
                 },
                 'bookings as month_bookings_count' => function ($query) {
                     $query->whereBetween('check_in_date', [now()->startOfMonth(), now()->endOfMonth()]);
-                }
+                },
             ])->get(['id', 'name', 'address', 'description']),
             'stats' => $stats,
         ]);

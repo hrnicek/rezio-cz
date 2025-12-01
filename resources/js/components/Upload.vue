@@ -29,22 +29,36 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['update:modelValue']);
 
 const serverOptions = {
-    url: '/filepond',
-    process: '/process',
-    revert: '/revert',
+    process: '/filepond/process',
+    revert: '/filepond/revert',
     headers: {
         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
     },
 };
 
 const handleProcessFile = (error: any, file: any) => {
-    if (!error) {
+    if (error) return;
+
+    if (props.allowMultiple) {
+        const current = Array.isArray(props.modelValue) ? [...props.modelValue] : [];
+        if (!current.includes(file.serverId)) {
+            emit('update:modelValue', [...current, file.serverId]);
+        }
+    } else {
         emit('update:modelValue', file.serverId);
     }
 };
 
-const handleRemoveFile = () => {
-    emit('update:modelValue', null);
+const handleRemoveFile = (error: any, file: any) => {
+    if (error) return;
+
+    if (props.allowMultiple) {
+        const current = Array.isArray(props.modelValue) ? [...props.modelValue] : [];
+        const newValue = current.filter((id) => id !== file.serverId);
+        emit('update:modelValue', newValue);
+    } else {
+        emit('update:modelValue', null);
+    }
 };
 </script>
 
@@ -68,9 +82,10 @@ const handleRemoveFile = () => {
 /* Custom styling to match app theme if needed */
 :deep(.filepond--panel-root) {
     background-color: transparent;
-    border: 1px dashed #e5e7eb;
+    border: 1px dashed var(--border);
+    border-radius: calc(var(--radius) - 2px);
 }
 :deep(.filepond--drop-label) {
-    color: #4b5563;
+    color: var(--muted-foreground);
 }
 </style>

@@ -1,15 +1,17 @@
 <?php
 
-namespace App\Models; 
+namespace App\Models;
 
 use App\Models\Booking\Booking;
+use App\Models\Configuration\BillingSetting;
+use App\Models\Configuration\BlockDate;
+use App\Models\Configuration\Season;
+use App\Models\Configuration\Service;
 use App\Models\Finance\Invoice;
-use App\Models\Configuration\Season;     
-use App\Models\Configuration\Service;    
-use App\Models\Configuration\BlockDate;  
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Property extends Model
 {
@@ -19,7 +21,7 @@ class Property extends Model
 
     protected $fillable = [
         'name', 'slug', 'address', 'description', 'image',
-        'default_check_in_time', 'default_check_out_time'
+        'default_check_in_time', 'default_check_out_time',
     ];
 
     protected $casts = [
@@ -53,5 +55,10 @@ class Property extends Model
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function billingSetting(): HasOne
+    {
+        return $this->hasOne(BillingSetting::class);
     }
 }

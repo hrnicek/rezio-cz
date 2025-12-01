@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Tenant\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\Property;
-use App\Models\Configuration\Service;
 use App\Enums\ServicePriceType;
+use App\Http\Controllers\Controller;
+use App\Models\Configuration\Service;
+use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
 

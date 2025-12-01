@@ -4,12 +4,12 @@ namespace App\Models\CRM;
 
 use App\Models\Booking\Booking;
 use App\Models\Booking\Folio;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Database\Factories\CustomerFactory;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Customer extends Model
 {
@@ -22,7 +22,7 @@ class Customer extends Model
         'email', 'phone', 'is_company',
         'first_name', 'last_name', 'company_name', 'ico', 'dic', 'has_vat',
         'billing_street', 'billing_city', 'billing_zip', 'billing_country',
-        'internal_notes', 'is_registered'
+        'internal_notes', 'is_registered',
     ];
 
     protected $casts = [
@@ -30,7 +30,7 @@ class Customer extends Model
         'has_vat' => 'boolean',
         'is_registered' => 'boolean',
     ];
-    
+
     protected static function newFactory()
     {
         return CustomerFactory::new();

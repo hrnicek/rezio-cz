@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8c07cc5eb7f48a6e179d2a2df231a4d9",
+    "content-hash": "ce8640d6bb5d966c6362d1521d0ac464",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -2336,6 +2336,77 @@
                 }
             ],
             "time": "2025-08-22T14:27:06+00:00"
+        },
+        {
+            "name": "h4kuna/ares",
+            "version": "v3.0.13",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/h4kuna/ares.git",
+                "reference": "d695e8b57b0410738d8eb9d7157bb8c7ec340d72"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/h4kuna/ares/zipball/d695e8b57b0410738d8eb9d7157bb8c7ec340d72",
+                "reference": "d695e8b57b0410738d8eb9d7157bb8c7ec340d72",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-simplexml": "*",
+                "nette/utils": "^2.0 || ^3.0 || ^4.0",
+                "php": ">=8.0",
+                "psr/http-factory": "^1.0",
+                "psr/http-message": "^1.0.1 || ^2.0"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "^7.5",
+                "nette/tester": "^2.4",
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-strict-rules": "^2.0",
+                "tracy/tracy": "^2.9"
+            },
+            "suggest": {
+                "guzzlehttp/guzzle": "As default implementation for PSR-7, PSR-17 and PSR-18 standards."
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/aliases.php"
+                ],
+                "psr-4": {
+                    "h4kuna\\Ares\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Milan Matějček",
+                    "email": "milan.matejcek@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Provides information about subjects by their identification number from the ARES database (in Czech Republic).",
+            "homepage": "https://github.com/h4kuna/ares",
+            "support": {
+                "issues": "https://github.com/h4kuna/ares/issues",
+                "source": "https://github.com/h4kuna/ares/tree/v3.0.13"
+            },
+            "funding": [
+                {
+                    "url": "https://revolut.me/milan2m/czk1000/ares",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/h4kuna",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-05-30T15:51:00+00:00"
         },
         {
             "name": "inertiajs/inertia-laravel",

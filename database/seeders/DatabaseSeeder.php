@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use App\Models\Central\Tenant;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\DatabaseManager;
 
 class DatabaseSeeder extends Seeder
 {
@@ -26,18 +25,16 @@ class DatabaseSeeder extends Seeder
 
         // Drop and recreate tenant database
         try {
-            DB::connection('mysql')->statement("DROP DATABASE IF EXISTS rezio_chata");
+            DB::connection('mysql')->statement('DROP DATABASE IF EXISTS rezio_chata');
         } catch (\Exception $e) {
             // Database might not exist yet
         }
 
         $tenant1 = Tenant::create([
-            'tenancy_db_name' => 'rezio_chata'
+            'tenancy_db_name' => 'rezio_chata',
         ]);
 
         $tenant1->domains()->create(['domain' => 'chata.rezio.test']);
-
-       
 
         // 2. Seed Tenant 1 (Chata u Lipna)
         $this->command->info('Seeding Tenant 1: Chata u Lipna...');

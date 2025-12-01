@@ -5,12 +5,12 @@ namespace App\Models\Booking;
 use App\Enums\FolioStatus;
 use App\Models\CRM\Customer;
 use App\Models\Finance\Payment;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Folio extends Model
 {
@@ -19,8 +19,8 @@ class Folio extends Model
     protected $table = 'folios';
 
     protected $fillable = [
-        'booking_id', 'customer_id', 'name', 'status', 
-        'total_amount', 'currency'
+        'booking_id', 'customer_id', 'name', 'status',
+        'total_amount', 'currency',
     ];
 
     protected $casts = [
@@ -56,7 +56,7 @@ class Folio extends Model
     public function recalculateTotal(): void
     {
         $this->update([
-            'total_amount' => $this->items()->sum('total_price_amount')
+            'total_amount' => $this->items()->sum('total_price_amount'),
         ]);
     }
 }

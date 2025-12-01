@@ -13,6 +13,8 @@ class CalendarBookingData extends Data
         public string $end,
         public string $title,
         public string $status,
+        public ?string $total_price = null,
+        public ?int $guests = null,
     ) {}
 
     public static function fromModel($booking): self
@@ -26,6 +28,8 @@ class CalendarBookingData extends Data
                 ? $booking->customer->name
                 : 'Unknown',
             status: (string) $booking->status,
+            total_price: $booking->total_price_amount ? number_format($booking->total_price_amount, 0, ',', ' ') . ' ' . $booking->total_price_currency : null,
+            guests: ($booking->adults ?? 0) + ($booking->children ?? 0),
         );
     }
 }

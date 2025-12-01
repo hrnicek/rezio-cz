@@ -2,10 +2,10 @@
 
 namespace App\Data\Admin\Booking;
 
+use App\Data\Admin\Property\PropertyData;
 use App\Data\Shared\CustomerData;
 use App\Data\Shared\GuestData;
 use App\Data\Shared\PaymentData;
-use App\Data\Admin\Property\PropertyData;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\DataCollection;
 

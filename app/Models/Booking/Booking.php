@@ -2,24 +2,24 @@
 
 namespace App\Models\Booking;
 
-use App\Models\CRM\Guest;
-use App\States\Booking\BookingState;
 use App\Models\CRM\Customer;
-use Illuminate\Support\Carbon;
+use App\Models\CRM\Guest;
 use App\Models\Finance\Invoice;
 use App\Models\Finance\Payment;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Spatie\ModelStates\HasStates;
+use App\States\Booking\BookingState;
 use Database\Factories\BookingFactory;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
+use Spatie\ModelStates\HasStates;
 
 class Booking extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes, HasStates;
+    use HasFactory, HasStates, HasUuids, SoftDeletes;
 
     protected $table = 'bookings';
 
@@ -29,7 +29,7 @@ class Booking extends Model
         'total_price_amount', 'currency',
         'notes', 'reminders_sent_at',
         'arrival_time_estimate', 'departure_time_estimate',
-        'checked_in_at', 'checked_out_at'
+        'checked_in_at', 'checked_out_at',
     ];
 
     protected $casts = [
@@ -41,7 +41,7 @@ class Booking extends Model
         'checked_in_at' => 'datetime',
         'checked_out_at' => 'datetime',
     ];
-    
+
     protected static function newFactory()
     {
         return BookingFactory::new();
@@ -49,13 +49,13 @@ class Booking extends Model
 
     public function getCheckInTimeAttribute(): string
     {
-    // 1. Má host specifický čas příjezdu? (např. Early Check-in)
-    if ($this->arrival_time_estimate) {
-        return $this->arrival_time_estimate;
-    }
-    
-    // 2. Pokud ne, vrať standardní čas nemovitosti
-    return $this->property->default_check_in_time;
+        // 1. Má host specifický čas příjezdu? (např. Early Check-in)
+        if ($this->arrival_time_estimate) {
+            return $this->arrival_time_estimate;
+        }
+
+        // 2. Pokud ne, vrať standardní čas nemovitosti
+        return $this->property->default_check_in_time;
     }
 
     // Helper pro Frontend: Kdy přesně má nárok na klíče?
@@ -63,7 +63,7 @@ class Booking extends Model
     {
         // Spojí Datum (Booking) + Čas (Vypočítaný)
         return Carbon::parse(
-            $this->check_in_date->format('Y-m-d') . ' ' . $this->check_in_time
+            $this->check_in_date->format('Y-m-d').' '.$this->check_in_time
         );
     }
 

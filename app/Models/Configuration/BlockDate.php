@@ -3,11 +3,10 @@
 namespace App\Models\Configuration;
 
 use App\Models\Property;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BlockDate extends Model
 {
@@ -17,12 +16,12 @@ class BlockDate extends Model
     protected $table = 'blackout_dates';
 
     // Nemáme UUID, protože toto je interní "Inventory" tabulka s BigInt ID
-    
+
     protected $fillable = [
         'property_id',
         'start_date',
         'end_date',
-        'reason'
+        'reason',
     ];
 
     protected $casts = [
@@ -48,7 +47,7 @@ class BlockDate extends Model
     {
         return $query->where(function ($q) use ($checkIn, $checkOut) {
             $q->where('start_date', '<', $checkOut)
-              ->where('end_date', '>', $checkIn);
+                ->where('end_date', '>', $checkIn);
         });
     }
 

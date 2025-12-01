@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Tenant\Admin\BillingController;
 use App\Http\Controllers\Tenant\Admin\BookingController;
+use App\Http\Controllers\Tenant\Admin\CalendarController;
 use App\Http\Controllers\Tenant\Admin\DashboardController;
 use App\Http\Controllers\Tenant\Admin\EmailTemplateController;
 use App\Http\Controllers\Tenant\Admin\PropertyController;
@@ -14,7 +16,11 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('calendar', [CalendarController::class, 'index'])->name('calendar.index');
 Route::post('/switch-property', SwitchPropertyController::class)->name('switch-property');
+
+Route::get('properties/{property}/billing', [BillingController::class, 'edit'])->name('properties.billing.edit');
+Route::put('properties/{property}/billing', [BillingController::class, 'update'])->name('properties.billing.update');
 
 Route::resource('properties', PropertyController::class);
 Route::resource('properties.seasons', SeasonController::class)->except(['show', 'create', 'edit']);

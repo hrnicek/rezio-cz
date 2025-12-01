@@ -3,8 +3,8 @@
 namespace App\Actions\Booking;
 
 use App\Models\Booking;
-use App\Models\CRM\Customer;
 use App\Models\Configuration\Service;
+use App\Models\CRM\Customer;
 use App\Rules\Booking\CheckInDayRule;
 use App\Rules\Booking\MinStayRule;
 use App\Services\BookingPriceCalculator;

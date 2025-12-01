@@ -2,10 +2,10 @@
 
 namespace App\Models\Finance;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class InvoiceItem extends Model
 {
@@ -21,7 +21,7 @@ class InvoiceItem extends Model
         'unit_price_amount',
         'total_price_amount',
         'tax_amount',
-        'tax_rate'
+        'tax_rate',
     ];
 
     protected $casts = [

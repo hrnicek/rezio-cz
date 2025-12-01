@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Tenant\Admin\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Tenant\FilePondController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -66,14 +67,14 @@ Route::middleware([
         }
     });
 
+    // FilePond Routes
+    Route::prefix('filepond')->controller(FilePondController::class)->group(function () {
+        Route::post('process', 'process')->name('filepond.process');
+        Route::delete('revert', 'revert')->name('filepond.revert');
+    });
+
     Route::get('/', function () {
         return redirect()->route('admin.bookings.index');
     })->middleware('auth');
 
-    Route::group(['middleware' => config('filepond.middleware', ['web', 'auth'])], function () {
-        Route::post(config('filepond.server.url', '/filepond'), [config('filepond.controller', FilepondController::class), 'process'])->name('filepond-process');
-        Route::patch(config('filepond.server.url', '/filepond'), [config('filepond.controller', FilepondController::class), 'patch'])->name('filepond-patch');
-        Route::get(config('filepond.server.url', '/filepond'), [config('filepond.controller', FilepondController::class), 'head'])->name('filepond-head');
-        Route::delete(config('filepond.server.url', '/filepond'), [config('filepond.controller', FilepondController::class), 'revert'])->name('filepond-revert');
-    });
 });

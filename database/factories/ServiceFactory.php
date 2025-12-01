@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Enums\ServicePriceType;
-use App\Models\Configuration\Service;
 use App\Models\Property;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

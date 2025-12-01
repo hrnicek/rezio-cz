@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Support\Carbon;
-use Illuminate\Database\Seeder;
 use App\Models\Configuration\BlockDate;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 
 class BlackoutDateSeeder extends Seeder
 {

@@ -20,7 +20,7 @@ class MoneyData extends Data
             amount: $amount,
             currency: $currency,
             formatted: $amount / 100,
-            display: number_format($amount / 100, 0, ',', ' ') . ' ' . $currency
+            display: number_format($amount / 100, 0, ',', ' ').' '.$currency
         );
     }
 }

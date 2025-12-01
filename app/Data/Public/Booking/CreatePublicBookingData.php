@@ -2,8 +2,8 @@
 
 namespace App\Data\Public\Booking;
 
-use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Attributes\Validation\Rule;
+use Spatie\LaravelData\Data;
 
 class CreatePublicBookingData extends Data
 {

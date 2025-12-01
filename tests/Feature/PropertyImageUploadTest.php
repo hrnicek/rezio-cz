@@ -5,11 +5,9 @@ namespace Tests\Feature;
 use App\Models\Property;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use RahulHaque\Filepond\Facades\Filepond;
 use Tests\TestCase;
-use App\Models\Central\Tenant;
 
 class PropertyImageUploadTest extends TestCase
 {
@@ -17,18 +15,18 @@ class PropertyImageUploadTest extends TestCase
 
     protected $tenant;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $id = 'test_' . uniqid();
+        $id = 'test_'.uniqid();
         $this->tenant = \App\Models\Central\Tenant::create(['id' => $id]);
-        $this->tenant->domains()->create(['domain' => $id . '.localhost']);
+        $this->tenant->domains()->create(['domain' => $id.'.localhost']);
 
         tenancy()->initialize($this->tenant);
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         if ($this->tenant) {
             $this->tenant->delete();
@@ -49,14 +47,14 @@ class PropertyImageUploadTest extends TestCase
             ->once()
             ->with('some-server-id')
             ->andReturnSelf();
-        
+
         Filepond::shouldReceive('moveTo')
             ->once()
             ->andReturn(['filepath' => 'properties/images/1/test.jpg']);
 
         $this->withoutExceptionHandling();
-        
-        $url = 'http://' . $this->tenant->domains->first()->domain . route('admin.properties.store', [], false);
+
+        $url = 'http://'.$this->tenant->domains->first()->domain.route('admin.properties.store', [], false);
         dump($url);
 
         $response = $this->post($url, [
@@ -77,7 +75,7 @@ class PropertyImageUploadTest extends TestCase
     public function test_property_can_be_updated_with_image()
     {
         Storage::fake('public');
-        
+
         $user = User::factory()->create();
         $this->actingAs($user);
 
@@ -90,12 +88,12 @@ class PropertyImageUploadTest extends TestCase
             ->once()
             ->with('new-server-id')
             ->andReturnSelf();
-        
+
         Filepond::shouldReceive('moveTo')
             ->once()
-            ->andReturn(['filepath' => 'properties/images/' . $property->id . '/new.jpg']);
+            ->andReturn(['filepath' => 'properties/images/'.$property->id.'/new.jpg']);
 
-        $url = 'http://' . $this->tenant->domains->first()->domain . route('admin.properties.update', $property, false);
+        $url = 'http://'.$this->tenant->domains->first()->domain.route('admin.properties.update', $property, false);
 
         $response = $this->put($url, [
             'name' => 'Updated Property',
@@ -109,7 +107,7 @@ class PropertyImageUploadTest extends TestCase
         $this->assertDatabaseHas('properties', [
             'id' => $property->id,
             'name' => 'Updated Property',
-            'image' => 'properties/images/' . $property->id . '/new.jpg',
+            'image' => 'properties/images/'.$property->id.'/new.jpg',
         ]);
     }
 }

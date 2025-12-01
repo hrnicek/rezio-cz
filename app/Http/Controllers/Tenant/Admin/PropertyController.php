@@ -6,6 +6,7 @@ use App\Data\Admin\Property\PropertyData;
 use App\Http\Controllers\Controller;
 use App\Models\Property;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -44,14 +45,20 @@ class PropertyController extends Controller
         ]);
 
         $property = Property::create([
-            ...$validated,
+            'name' => $validated['name'],
+            'address' => $validated['address'] ?? null,
+            'description' => $validated['description'] ?? null,
             'slug' => Str::slug($validated['name']).'-'.Str::random(6),
         ]);
 
         if ($request->filled('image')) {
-            $fileInfo = \RahulHaque\Filepond\Facades\Filepond::field($request->image)
-                ->moveTo('properties/images/'.$property->id);
-            $property->update(['image' => $fileInfo['filepath']]);
+            $tempPath = $request->image;
+            if (Storage::disk('public')->exists($tempPath)) {
+                $newPath = 'properties/images/'.$property->id.'/'.basename($tempPath);
+                if (Storage::disk('public')->move($tempPath, $newPath)) {
+                    $property->update(['image' => $newPath]);
+                }
+            }
         }
 
         return redirect()->route('admin.properties.index');
@@ -87,16 +94,34 @@ class PropertyController extends Controller
             'image' => 'nullable|string',
         ]);
 
-        $property->update($validated);
+        $property->update([
+            'name' => $validated['name'],
+            'address' => $validated['address'] ?? null,
+            'description' => $validated['description'] ?? null,
+        ]);
 
         if ($request->filled('image') && $request->image !== $property->image) {
-            try {
-                $fileInfo = \RahulHaque\Filepond\Facades\Filepond::field($request->image)
-                    ->moveTo('properties/images/'.$property->id);
-                $property->update(['image' => $fileInfo['filepath']]);
-            } catch (\Throwable $e) {
-                // Ignore if it's not a valid FilePond serverId (e.g. existing image path)
+            $tempPath = $request->image;
+            
+            // Only attempt to move if it looks like a temp path (or we just check existence)
+            if (Storage::disk('public')->exists($tempPath)) {
+                $newPath = 'properties/images/'.$property->id.'/'.basename($tempPath);
+                
+                // Clean up old image if it exists
+                if ($property->image && Storage::disk('public')->exists($property->image)) {
+                    Storage::disk('public')->delete($property->image);
+                }
+
+                if (Storage::disk('public')->move($tempPath, $newPath)) {
+                    $property->update(['image' => $newPath]);
+                }
             }
+        } elseif (empty($request->image) && $property->image) {
+             // If image is cleared
+             if (Storage::disk('public')->exists($property->image)) {
+                Storage::disk('public')->delete($property->image);
+             }
+             $property->update(['image' => null]);
         }
 
         return redirect()->route('admin.properties.index');

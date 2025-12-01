@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Data\PriceBreakdown;
-use App\Models\Configuration\Service;
 use App\Enums\ServicePriceType;
+use App\Models\Configuration\Service;
 use Carbon\Carbon;
 
 class BookingPriceCalculator
@@ -39,7 +39,9 @@ class BookingPriceCalculator
         foreach ($selections as $selection) {
             // Support both old and new payload structure if necessary, or just standardize
             $serviceId = $selection['service_id'] ?? $selection['extra_id'] ?? null;
-            if (!$serviceId) continue;
+            if (! $serviceId) {
+                continue;
+            }
 
             $service = Service::find($serviceId);
             $quantity = (int) ($selection['quantity'] ?? 0);

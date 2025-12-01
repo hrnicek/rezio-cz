@@ -28,11 +28,11 @@ const mainNavItems: NavItem[] = [
     {
         title: 'Rezervace',
         href: route('admin.bookings.index'),
-        icon: Calendar,
+        icon: BookOpen,
     },
-     {
+    {
         title: 'Kalendář',
-        href: route('admin.bookings.index'),
+        href: route('admin.calendar.index'),
         icon: Calendar,
     },
     {

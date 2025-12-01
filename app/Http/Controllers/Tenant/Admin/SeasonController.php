@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Tenant\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Property;
 use App\Models\Configuration\Season;
+use App\Models\Property;
 use Illuminate\Http\Request;
 
 class SeasonController extends Controller

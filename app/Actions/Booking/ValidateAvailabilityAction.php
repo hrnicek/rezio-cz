@@ -2,9 +2,9 @@
 
 namespace App\Actions\Booking;
 
-use Carbon\Carbon;
 use App\Models\Booking\Booking;
 use App\Models\Configuration\BlockDate;
+use Carbon\Carbon;
 
 class ValidateAvailabilityAction
 {

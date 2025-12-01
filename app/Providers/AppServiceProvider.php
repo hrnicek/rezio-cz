@@ -2,12 +2,12 @@
 
 namespace App\Providers;
 
-use App\States\Booking\Pending;
-use App\States\Booking\Confirmed;
+use App\States\Booking\Cancelled;
 use App\States\Booking\CheckedIn;
 use App\States\Booking\CheckedOut;
-use App\States\Booking\Cancelled;
+use App\States\Booking\Confirmed;
 use App\States\Booking\NoShow;
+use App\States\Booking\Pending;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;

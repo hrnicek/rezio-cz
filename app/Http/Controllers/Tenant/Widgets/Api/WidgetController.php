@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Tenant\Widgets\Api;
 
-use App\States\Booking\Cancelled;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Booking\CalendarRequest;
 use App\Http\Requests\Booking\VerifyAvailabilityRequest;
@@ -12,6 +11,7 @@ use App\Models\Configuration\BlockDate;
 use App\Models\CRM\Customer;
 use App\Models\Property;
 use App\Services\SeasonalPricingService;
+use App\States\Booking\Cancelled;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 

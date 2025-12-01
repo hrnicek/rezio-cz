@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\States\Booking\Cancelled;
 use App\Models\Booking\Booking;
 use App\Models\Property;
+use App\States\Booking\Cancelled;
 use Carbon\Carbon;
 
 class RevenueMetricsService

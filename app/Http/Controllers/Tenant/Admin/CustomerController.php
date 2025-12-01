@@ -46,7 +46,7 @@ class CustomerController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
-            
+
             'is_company' => ['boolean'],
             'company_name' => ['nullable', 'string', 'max:255'],
             'ico' => ['nullable', 'string', 'max:20'],
@@ -57,7 +57,7 @@ class CustomerController extends Controller
             'billing_city' => ['nullable', 'string', 'max:100'],
             'billing_zip' => ['nullable', 'string', 'max:20'],
             'billing_country' => ['nullable', 'string', 'size:2'],
-            
+
             'internal_notes' => ['nullable', 'string'],
             'is_registered' => ['boolean'],
         ]);
@@ -74,7 +74,7 @@ class CustomerController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
-            
+
             'is_company' => ['boolean'],
             'company_name' => ['nullable', 'string', 'max:255'],
             'ico' => ['nullable', 'string', 'max:20'],
@@ -85,7 +85,7 @@ class CustomerController extends Controller
             'billing_city' => ['nullable', 'string', 'max:100'],
             'billing_zip' => ['nullable', 'string', 'max:20'],
             'billing_country' => ['nullable', 'string', 'size:2'],
-            
+
             'internal_notes' => ['nullable', 'string'],
             'is_registered' => ['boolean'],
         ]);

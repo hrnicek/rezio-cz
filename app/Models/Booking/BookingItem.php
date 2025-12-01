@@ -3,10 +3,10 @@
 namespace App\Models\Booking;
 
 use App\Enums\BookingItemType;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BookingItem extends Model
 {
@@ -19,7 +19,7 @@ class BookingItem extends Model
         'booking_id', 'folio_id',
         'type', 'name', 'quantity',
         'unit_price_amount', 'total_price_amount',
-        'net_amount', 'tax_amount', 'tax_rate'
+        'net_amount', 'tax_amount', 'tax_rate',
     ];
 
     protected $casts = [

@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use Illuminate\Support\Str;
 use App\Models\Booking\Booking;
+use Illuminate\Support\Str;
 
 class BookingObserver
 {
@@ -14,9 +14,7 @@ class BookingObserver
         }
     }
 
-    public function created(Booking $booking): void
-    {
-    }
+    public function created(Booking $booking): void {}
 
     private function generateUniqueCode(): string
     {

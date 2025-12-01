@@ -7,7 +7,8 @@ import {
     ConciergeBell,
     Mail,
     CalendarDays,
-    ChevronLeft
+    ChevronLeft,
+    Receipt
 } from 'lucide-vue-next';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -45,7 +46,7 @@ const items = computed(() => {
             disabled: !route().has('admin.properties.bookings.index'),
         },
         {
-            title: 'Služby',
+            title: 'Příplatky & poplatky',
             href: route('admin.properties.services.index', props.property.id),
             icon: ConciergeBell,
             active: route().current('admin.properties.services.*'),
@@ -61,6 +62,12 @@ const items = computed(() => {
             href: route('admin.properties.email-templates.index', props.property.id),
             icon: Mail,
             active: route().current('admin.properties.email-templates.*'),
+        },
+        {
+            title: 'Fakturace',
+            href: route('admin.properties.billing.edit', props.property.id),
+            icon: Receipt,
+            active: route().current('admin.properties.billing.*'),
         },
     ];
 });

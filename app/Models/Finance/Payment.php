@@ -4,10 +4,10 @@ namespace App\Models\Finance;
 
 use App\Models\Booking\Booking;
 use App\Models\Booking\Folio;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
@@ -19,7 +19,7 @@ class Payment extends Model
         'booking_id', 'folio_id',
         'amount', 'currency',
         'status', 'payment_method', 'gateway', 'transaction_id',
-        'paid_at'
+        'paid_at',
     ];
 
     protected $casts = [

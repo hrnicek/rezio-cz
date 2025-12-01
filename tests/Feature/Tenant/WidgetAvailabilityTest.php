@@ -3,8 +3,8 @@
 namespace Tests\Feature\Tenant;
 
 use App\Models\Booking;
-use App\Models\Property;
 use App\Models\Configuration\Service;
+use App\Models\Property;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TenantTestCase;

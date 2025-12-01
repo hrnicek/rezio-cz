@@ -3,9 +3,6 @@
 namespace App\Http\Controllers\Tenant\Widgets\Api;
 
 use App\Enums\BookingItemType;
-use App\States\Booking\BookingState;
-use App\States\Booking\Pending;
-use App\States\Booking\Cancelled;
 use App\Http\Controllers\Controller;
 use App\Models\Booking\Booking;
 use App\Models\Configuration\BlockDate;
@@ -13,6 +10,8 @@ use App\Models\CRM\Customer;
 use App\Models\Property;
 use App\Services\BookingPriceCalculator;
 use App\Services\SeasonalPricingService;
+use App\States\Booking\Cancelled;
+use App\States\Booking\Pending;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;

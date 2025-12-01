@@ -5,12 +5,12 @@ namespace App\Models\Finance;
 use App\Enums\InvoiceStatus;
 use App\Models\Booking\Booking;
 use App\Models\Booking\Folio;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Invoice extends Model
 {
@@ -25,7 +25,7 @@ class Invoice extends Model
         'supplier_name', 'supplier_ico', 'supplier_dic', 'supplier_address',
         'customer_name', 'customer_ico', 'customer_dic', 'customer_address',
         'total_price_amount', 'total_net_amount', 'total_tax_amount', 'currency',
-        'status', 'notes'
+        'status', 'notes',
     ];
 
     protected $casts = [

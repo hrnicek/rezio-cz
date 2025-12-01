@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Property;
 use App\Models\Configuration\Season;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -10,6 +9,7 @@ use Illuminate\Support\Collection;
 class SeasonalPricingService
 {
     private ?Collection $seasonsCache = null;
+
     private ?int $cachedPropertyId = null;
 
     private function loadSeasons(int $propertyId): Collection
@@ -27,7 +27,7 @@ class SeasonalPricingService
     public function getSeasonForDate(int $propertyId, Carbon $date): ?Season
     {
         $seasons = $this->loadSeasons($propertyId);
-        
+
         // Find specific season (High priority first)
         return $seasons->where('is_default', false)
             ->sortByDesc('priority')
@@ -35,6 +35,7 @@ class SeasonalPricingService
                 if ($season->start_date && $season->end_date) {
                     return $date->between($season->start_date, $season->end_date);
                 }
+
                 return false;
             });
     }

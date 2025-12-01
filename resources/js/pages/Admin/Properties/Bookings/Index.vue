@@ -13,9 +13,9 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import AppDataTable from '@/components/AppDataTable.vue';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { debounce } from 'lodash';
-import { Eye, Check, X, Calendar } from 'lucide-vue-next';
+import { Eye, Check, X, Calendar, Building } from 'lucide-vue-next';
 import { BookingStatusLabels } from '@/lib/enums';
 
 import {
@@ -39,6 +39,7 @@ interface BookingListItem {
     status: string;
     status_label: string;
     customer_name: string;
+    property_name: string | null;
     check_in_date: string;
     check_out_date: string;
     total_price: {
@@ -138,14 +139,22 @@ const getStatusVariant = (status: string) => {
     }
 };
 
-const columns = [
-    { key: 'customer', label: 'Host' },
-    { key: 'check_in', label: 'Od' },
-    { key: 'check_out', label: 'Do' },
-    { key: 'total_price', label: 'Cena celkem' },
-    { key: 'status', label: 'Stav' },
-    { key: 'actions', label: 'Akce', align: 'right' as const },
-];
+const columns = computed(() => {
+    const cols = [
+        { key: 'customer', label: 'Host' },
+        { key: 'check_in', label: 'Od' },
+        { key: 'check_out', label: 'Do' },
+        { key: 'total_price', label: 'Cena celkem' },
+        { key: 'status', label: 'Stav' },
+        { key: 'actions', label: 'Akce', align: 'right' as const },
+    ];
+
+    if (!props.property) {
+        cols.unshift({ key: 'property', label: 'Nemovitost' });
+    }
+
+    return cols;
+});
 </script>
 
 <template>
@@ -191,6 +200,13 @@ const columns = [
                 :columns="columns"
                 no-results-message="Žádné rezervace nenalezeny."
             >
+                <template #property="{ item }">
+                    <div class="flex items-center gap-2">
+                        <Building class="h-3 w-3 text-muted-foreground" />
+                        <span class="font-medium text-foreground">{{ item.property_name }}</span>
+                    </div>
+                </template>
+
                 <template #customer="{ item }">
                     <div class="font-medium text-foreground">{{ item.customer_name }}</div>
                     <div class="text-xs text-muted-foreground font-mono">{{ item.code }}</div>
@@ -307,6 +323,13 @@ const columns = [
                 :columns="columns"
                 no-results-message="Žádné rezervace nenalezeny."
             >
+                <template #property="{ item }">
+                    <div class="flex items-center gap-2">
+                        <Building class="h-3 w-3 text-muted-foreground" />
+                        <span class="font-medium text-foreground">{{ item.property_name }}</span>
+                    </div>
+                </template>
+
                 <template #customer="{ item }">
                     <div class="font-medium text-foreground">{{ item.customer_name }}</div>
                     <div class="text-xs text-muted-foreground font-mono">{{ item.code }}</div>

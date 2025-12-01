@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Tenant\Widgets\Api;
 
 use App\Enums\BookingItemType;
-use App\States\Booking\Cancelled;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Service\CheckAvailabilityRequest;
 use App\Models\Booking\Booking;
 use App\Models\Configuration\Service;
 use App\Models\Property;
+use App\States\Booking\Cancelled;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -23,11 +23,11 @@ class WidgetServiceController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'price_type', 'price_amount', 'max_quantity']);
 
-        // Transform price_amount (cents) to price (float) for API if needed, 
-        // or just return price_amount and let frontend handle it. 
+        // Transform price_amount (cents) to price (float) for API if needed,
+        // or just return price_amount and let frontend handle it.
         // The previous code returned 'price', let's see if we should map it.
-        // Assuming frontend expects 'price' as float or integer. 
-        // Let's return price_amount as 'price' for now to match existing structure roughly, 
+        // Assuming frontend expects 'price' as float or integer.
+        // Let's return price_amount as 'price' for now to match existing structure roughly,
         // but strictly it should be price_amount.
         // Old code: ->get(['id', 'name', 'price_type', 'price', 'max_quantity']);
         // New Service model likely has price_amount.
@@ -91,6 +91,7 @@ class WidgetServiceController extends Controller
                         'is_available' => false,
                     ];
                     $overallAvailable = false;
+
                     continue;
                 }
 
@@ -101,7 +102,7 @@ class WidgetServiceController extends Controller
                     $items = $booking->items->filter(function ($item) use ($service) {
                         return $item->type === BookingItemType::Service && $item->name === $service->name;
                     });
-                    
+
                     $bookedQty += $items->sum('quantity');
                 }
 

@@ -14,6 +14,7 @@ class BookingListData extends Data
         public string $status,
         public string $status_label,
         public string $customer_name,
+        public ?string $property_name,
 
         public string $check_in_date,
         public string $check_out_date,
@@ -31,6 +32,7 @@ class BookingListData extends Data
             status: (string) $booking->status,
             status_label: $booking->status->label(),
             customer_name: $booking->customer?->billing_name ?? 'Neznámý',
+            property_name: $booking->property?->name,
             check_in_date: $booking->check_in_date->format('d.m.Y'),
             check_out_date: $booking->check_out_date->format('d.m.Y'),
             total_price: MoneyData::fromModel($booking->total_price_amount, $booking->currency),
