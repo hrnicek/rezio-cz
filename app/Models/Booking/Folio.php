@@ -5,16 +5,18 @@ namespace App\Models\Booking;
 use App\Enums\FolioStatus;
 use App\Models\CRM\Customer;
 use App\Models\Finance\Payment;
+use App\States\Folio\FolioState;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\ModelStates\HasStates;
 
 class Folio extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasStates, HasUuids, SoftDeletes;
 
     protected $table = 'folios';
 
@@ -25,7 +27,7 @@ class Folio extends Model
 
     protected $casts = [
         'total_amount' => 'integer',
-        'status' => FolioStatus::class,
+        'status' => FolioState::class,
     ];
 
     // --- RELATIONS ---

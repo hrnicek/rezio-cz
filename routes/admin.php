@@ -39,6 +39,9 @@ Route::get('reports/export', [ReportController::class, 'export'])->name('reports
 
 Route::get('bookings/export', [BookingController::class, 'export'])->name('bookings.export');
 Route::resource('bookings', BookingController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+Route::resource('bookings.payments', \App\Http\Controllers\Tenant\Admin\BookingPaymentController::class)->only(['store', 'destroy']);
+
+Route::resource('invoices', \App\Http\Controllers\Tenant\Admin\InvoiceController::class)->only(['index']);
 
 Route::redirect('settings', '/settings/profile');
 

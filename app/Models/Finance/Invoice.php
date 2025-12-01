@@ -3,6 +3,7 @@
 namespace App\Models\Finance;
 
 use App\Enums\InvoiceStatus;
+use App\Enums\InvoiceType;
 use App\Models\Booking\Booking;
 use App\Models\Booking\Folio;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -19,7 +20,7 @@ class Invoice extends Model
     protected $table = 'invoices';
 
     protected $fillable = [
-        'booking_id', 'folio_id',
+        'booking_id', 'folio_id', 'payment_id', 'type',
         'number', 'variable_symbol',
         'issued_date', 'due_date', 'tax_date',
         'supplier_name', 'supplier_ico', 'supplier_dic', 'supplier_address',
@@ -36,6 +37,7 @@ class Invoice extends Model
         'total_net_amount' => 'integer',
         'total_tax_amount' => 'integer',
         'status' => InvoiceStatus::class,
+        'type' => InvoiceType::class,
     ];
 
     // --- RELATIONS ---
@@ -48,6 +50,11 @@ class Invoice extends Model
     public function folio(): BelongsTo
     {
         return $this->belongsTo(Folio::class);
+    }
+
+    public function payment(): BelongsTo
+    {
+        return $this->belongsTo(Payment::class);
     }
 
     // Zde odkazujeme na InvoiceItem, abychom se vyhnuli kolizi v namespace Finance

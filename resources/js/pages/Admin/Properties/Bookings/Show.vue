@@ -9,10 +9,20 @@ import { Separator } from '@/components/ui/separator';
 import { 
     ArrowLeft, Calendar, User, Mail, Phone, MapPin, 
     ExternalLink, Copy, CheckCircle2, XCircle, MoreVertical,
-    Pencil, Trash2, Building2, FileText
+    Pencil, Trash2, Building2, FileText, Plus
 } from 'lucide-vue-next';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -108,6 +118,59 @@ const props = defineProps<{
     booking: BookingData;
 }>();
 
+const isPaymentDialogOpen = ref(false);
+const paymentForm = useForm({
+    amount: '',
+    paid_at: new Date().toISOString().split('T')[0],
+    notes: '',
+});
+
+const submitPayment = () => {
+    paymentForm.post(route('admin.bookings.payments.store', props.booking.id), {
+        onSuccess: () => {
+            isPaymentDialogOpen.value = false;
+            paymentForm.reset();
+            paymentForm.paid_at = new Date().toISOString().split('T')[0];
+            toast.success('Platba byla úspěšně přidána.');
+        },
+        onError: () => {
+            toast.error('Nepodařilo se přidat platbu.');
+        }
+    });
+};
+
+const paidAmount = computed(() => {
+    return props.booking.payments.reduce((sum: number, payment: PaymentData) => {
+        // Assuming 'paid' status means strictly paid. 
+        // Adjust comparison if status is 'succeeded' or similar depending on Enum serialization
+        return (payment.status === 'paid' || payment.status === 'succeeded') ? sum + Number(payment.amount) : sum;
+    }, 0);
+});
+
+const remainingToPay = computed(() => {
+    return props.booking.total_price_amount - paidAmount.value;
+});
+
+// Helper to parse amount for calculation
+const currentPaymentAmount = computed(() => {
+    return Number(paymentForm.amount) * 100; // Convert to cents
+});
+
+const remainingAfterPayment = computed(() => {
+    return remainingToPay.value - currentPaymentAmount.value;
+});
+
+const deletePayment = (paymentId: string) => {
+    if (confirm('Opravdu smazat tuto platbu?')) {
+        router.delete(route('admin.bookings.payments.destroy', [props.booking.id, paymentId]), {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Platba byla smazána.');
+            }
+        });
+    }
+};
+
 const isEditOpen = ref(false);
 const bookingStatusToUpdate = ref<string | null>(null);
 const isUpdateDialogOpen = ref(false);
@@ -120,7 +183,7 @@ const form = useForm({
     notes: props.booking.notes || '',
 });
 
-const formatDate = (date: string) => {
+const formatDate = (date: string | null | undefined) => {
     if (!date) return '';
     return new Date(date).toLocaleDateString('cs-CZ', {
         day: 'numeric',
@@ -129,7 +192,7 @@ const formatDate = (date: string) => {
     });
 };
 
-const formatDateTime = (date: string) => {
+const formatDateTime = (date: string | null | undefined) => {
     if (!date) return '';
     return new Date(date).toLocaleString('cs-CZ', {
         day: 'numeric',
@@ -172,14 +235,6 @@ const calculateNights = (start: string, end: string) => {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
 };
-
-const paidAmount = computed(() => {
-    return props.booking.payments.reduce((sum: number, payment: PaymentData) => {
-        // Assuming 'paid' status means strictly paid. 
-        // Adjust comparison if status is 'succeeded' or similar depending on Enum serialization
-        return (payment.status === 'paid' || payment.status === 'succeeded') ? sum + Number(payment.amount) : sum;
-    }, 0);
-});
 
 const getInitials = (firstName?: string | null, lastName?: string | null) => {
     return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
@@ -430,8 +485,11 @@ const executeDeleteBooking = () => {
 
                         <TabsContent value="payments" class="mt-4">
                             <Card class="shadow-none border-border">
-                                <CardHeader>
+                                <CardHeader class="flex flex-row items-center justify-between">
                                     <CardTitle>Historie plateb</CardTitle>
+                                    <Button @click="isPaymentDialogOpen = true" size="sm" class="h-8">
+                                        <Plus class="w-4 h-4 mr-2" /> Přidat platbu
+                                    </Button>
                                 </CardHeader>
                                 <CardContent>
                                     <Table>
@@ -440,6 +498,7 @@ const executeDeleteBooking = () => {
                                                 <TableHead class="text-xs uppercase tracking-wider font-mono text-muted-foreground">Částka</TableHead>
                                                 <TableHead class="text-xs uppercase tracking-wider font-mono text-muted-foreground">Datum</TableHead>
                                                 <TableHead class="text-xs uppercase tracking-wider font-mono text-muted-foreground">Stav</TableHead>
+                                                <TableHead class="text-right text-xs uppercase tracking-wider font-mono text-muted-foreground">Akce</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -456,9 +515,14 @@ const executeDeleteBooking = () => {
                                                         {{ payment.status }}
                                                     </Badge>
                                                 </TableCell>
+                                                <TableCell class="text-right">
+                                                     <Link :href="route('admin.bookings.payments.destroy', [booking.id, payment.id])" method="delete" as="button" class="text-muted-foreground hover:text-destructive transition-colors">
+                                                        <Trash2 class="h-4 w-4" />
+                                                     </Link>
+                                                </TableCell>
                                             </TableRow>
                                             <TableRow v-if="booking.payments.length === 0">
-                                                <TableCell colspan="3" class="text-center text-muted-foreground py-8">
+                                                <TableCell colspan="4" class="text-center text-muted-foreground py-8">
                                                     Žádné záznamy o platbách
                                                 </TableCell>
                                             </TableRow>
@@ -586,5 +650,93 @@ const executeDeleteBooking = () => {
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
+
+        <Dialog :open="isPaymentDialogOpen" @update:open="isPaymentDialogOpen = $event">
+            <DialogContent class="sm:max-w-[900px] p-0 overflow-hidden gap-0">
+                <div class="grid grid-cols-1 md:grid-cols-2 h-full">
+                    <!-- Left Side: Summary -->
+                    <div class="bg-muted/30 p-6 border-r border-border flex flex-col gap-6">
+                        <div>
+                            <h3 class="text-lg font-semibold tracking-tight mb-6">Platba</h3>
+                            
+                            <div class="space-y-6">
+                                 <div class="flex justify-between items-center">
+                                    <span class="text-muted-foreground font-medium">Cena celkem</span>
+                                    <span class="text-xl font-bold text-primary tracking-tight">{{ formatCurrency(booking.total_price_amount) }}</span>
+                                 </div>
+                                 
+                                 <!-- List of existing payments -->
+                                 <div class="space-y-3 py-2">
+                                    <div v-for="payment in booking.payments" :key="payment.id" class="flex justify-between text-sm items-center group">
+                                        <div class="flex items-center gap-3 text-muted-foreground">
+                                            <span class="font-mono text-xs">{{ formatDate(payment.paid_at) }}</span>
+                                            <div class="flex gap-1">
+                                                <FileText class="h-3 w-3" />
+                                                <Trash2 @click="deletePayment(payment.id)" class="h-3 w-3 opacity-0 group-hover:opacity-100 cursor-pointer hover:text-destructive transition-opacity" />
+                                            </div>
+                                        </div>
+                                        <span class="font-medium text-green-600 font-mono">{{ formatCurrency(payment.amount) }}</span>
+                                    </div>
+                                 </div>
+                                 
+                                 <Separator />
+                                 
+                                 <div class="flex justify-between items-center font-medium">
+                                    <span>Zbývá doplatit</span>
+                                    <span class="font-mono text-lg" :class="{'text-destructive': remainingToPay > 0}">
+                                        {{ formatCurrency(remainingToPay) }}
+                                    </span>
+                                 </div>
+
+                                 <div class="pt-4" v-if="paymentForm.amount">
+                                     <div class="text-sm text-muted-foreground mb-2">Po zaplacení:</div>
+                                     <div class="flex justify-between items-center font-medium">
+                                        <span>Nový zůstatek</span>
+                                        <span class="font-mono" :class="{'text-green-600': remainingAfterPayment <= 0}">
+                                            {{ formatCurrency(remainingAfterPayment) }}
+                                        </span>
+                                     </div>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Side: Form -->
+                    <div class="p-6 flex flex-col h-full">
+                        <DialogHeader class="mb-6">
+                             <DialogTitle class="text-xl">Ručně potvrdit platbu</DialogTitle>
+                             <DialogDescription v-if="booking.code">
+                                Variabilní symbol <span class="font-mono font-medium text-foreground">{{ booking.code }}</span>
+                             </DialogDescription>
+                        </DialogHeader>
+                        
+                        <div class="space-y-5 flex-1">
+                            <div class="space-y-2">
+                                <Label>Datum přijetí platby</Label>
+                                <Input type="date" v-model="paymentForm.paid_at" class="h-9" />
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <Label>Částka</Label>
+                                <div class="relative">
+                                    <Input type="number" v-model="paymentForm.amount" placeholder="0" class="h-9 pr-10 font-mono" />
+                                    <span class="absolute right-3 top-2 text-sm text-muted-foreground font-medium">Kč</span>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <Label>Poznámka</Label>
+                                <Textarea v-model="paymentForm.notes" placeholder="Poznámka k platbě..." class="resize-none min-h-[100px] text-sm" />
+                            </div>
+                        </div>
+                        
+                        <DialogFooter class="mt-8 gap-2 sm:justify-end">
+                            <Button variant="outline" @click="submitPayment" :disabled="paymentForm.processing">POTVRDIT A POSLAT MAIL</Button>
+                            <Button @click="submitPayment" :disabled="paymentForm.processing">POTVRDIT</Button>
+                        </DialogFooter>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
     </AppLayout>
 </template>

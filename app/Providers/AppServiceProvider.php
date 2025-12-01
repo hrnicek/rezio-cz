@@ -9,6 +9,7 @@ use App\States\Booking\Confirmed;
 use App\States\Booking\NoShow;
 use App\States\Booking\Pending;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,6 +28,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Event::listen(
+            \App\Events\PaymentCreated::class,
+            \App\Listeners\CreatePaymentConfirmationInvoice::class,
+        );
+
+        Event::listen(
+            \App\Events\PaymentUpdated::class,
+            \App\Listeners\CreatePaymentConfirmationInvoice::class,
+        );
+
         Relation::morphMap([
             'pending' => Pending::class,
             'confirmed' => Confirmed::class,

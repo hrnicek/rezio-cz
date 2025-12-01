@@ -47,7 +47,7 @@ const mainNavItems: NavItem[] = [
     },
         {
         title: 'Fakturace',
-        href: route('admin.reports.index'),
+        href: route('admin.invoices.index'),
         icon: BarChart,
     },
     {
