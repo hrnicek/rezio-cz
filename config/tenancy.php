@@ -67,6 +67,8 @@ return [
          */
         'central_domains' => [
             'rezio.test',
+            'rezio.cz',
+            'staging.rezio.cz'
         ],
 
         /**
