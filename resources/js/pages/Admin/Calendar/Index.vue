@@ -45,6 +45,13 @@ import { ref, computed } from 'vue';
 
 declare const route: any;
 
+interface MoneyData {
+    amount: number;
+    value: number;
+    currency: string;
+    formatted: string;
+}
+
 interface CalendarBookingData {
     id: string;
     key: string;
@@ -52,7 +59,7 @@ interface CalendarBookingData {
     end: string;
     title: string;
     status: string;
-    total_price?: string;
+    total_price?: MoneyData;
     guests?: number;
 }
 
@@ -273,7 +280,7 @@ const calendarAttributes = computed(() => {
                                         </div>
                                         <div class="text-xs text-muted-foreground mt-1 flex justify-between items-center">
                                             <span v-if="attr.customData.guests">{{ attr.customData.guests }} os.</span>
-                                            <span v-if="attr.customData.total_price" class="font-mono font-medium text-foreground">{{ attr.customData.total_price }}</span>
+                                            <span v-if="attr.customData.total_price" class="font-mono font-medium text-foreground">{{ attr.customData.total_price.formatted }}</span>
                                         </div>
                                     </div>
                                 </div>

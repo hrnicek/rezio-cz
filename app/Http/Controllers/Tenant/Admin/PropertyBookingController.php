@@ -86,8 +86,8 @@ class PropertyBookingController extends Controller
                     $booking->customer->phone ?? '',
                     $booking->check_in_date->format('Y-m-d'),
                     $booking->check_out_date->format('Y-m-d'),
-                    $booking->status,
-                    $booking->total_price,
+                    $booking->status->label(),
+                    $booking->total_price_amount->format(),
                     $booking->notes,
                 ]);
             }

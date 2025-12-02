@@ -26,9 +26,9 @@ class InvoiceItem extends Model
 
     protected $casts = [
         'quantity' => 'integer',
-        'unit_price_amount' => 'integer',
-        'total_price_amount' => 'integer',
-        'tax_amount' => 'integer',
+        'unit_price_amount' => \App\Casts\MoneyCast::class,
+        'total_price_amount' => \App\Casts\MoneyCast::class,
+        'tax_amount' => \App\Casts\MoneyCast::class,
         'tax_rate' => 'integer', // např. 2100 = 21.00%
     ];
 

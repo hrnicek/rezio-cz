@@ -1,17 +1,21 @@
 <?php
 
-namespace App\Events;
+namespace App\Events\Booking;
 
-use App\Models\Finance\Payment;
+use App\Models\Booking\Booking;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class PaymentUpdated
+class BookingCreated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public Payment $payment)
+    /**
+     * Create a new event instance.
+     */
+    public function __construct(public Booking $booking)
     {
+        //
     }
 }

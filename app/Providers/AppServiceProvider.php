@@ -29,13 +29,23 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Event::listen(
-            \App\Events\PaymentCreated::class,
-            \App\Listeners\CreatePaymentConfirmationInvoice::class,
+            \App\Events\Payment\PaymentCreated::class,
+            \App\Listeners\Payment\CreatePaymentConfirmationInvoice::class,
         );
 
         Event::listen(
-            \App\Events\PaymentUpdated::class,
-            \App\Listeners\CreatePaymentConfirmationInvoice::class,
+            \App\Events\Payment\PaymentUpdated::class,
+            \App\Listeners\Payment\CreatePaymentConfirmationInvoice::class,
+        );
+
+        Event::listen(
+            \App\Events\Payment\PaymentDeleted::class,
+            \App\Listeners\Payment\HandlePaymentDeleted::class,
+        );
+
+        Event::listen(
+            \App\Events\Booking\BookingCreated::class,
+            \App\Listeners\Booking\CreateProformaInvoice::class,
         );
 
         Relation::morphMap([

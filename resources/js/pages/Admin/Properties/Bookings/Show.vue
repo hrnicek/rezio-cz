@@ -75,9 +75,16 @@ interface CustomerData {
     internal_notes?: string | null;
 }
 
+interface MoneyData {
+    amount: number; // Cents
+    value: number; // Float
+    currency: string;
+    formatted: string;
+}
+
 interface PaymentData {
     id: string;
-    amount: number; // Cents
+    amount: MoneyData;
     payment_method: string; // Enum value
     paid_at: string | null;
     status: string; // Enum value
@@ -100,7 +107,7 @@ interface BookingData {
     customer: CustomerData | null;
     check_in_date: string; // Y-m-d
     check_out_date: string; // Y-m-d
-    total_price_amount: number; // Cents
+    total_price: MoneyData;
     status: string;
     notes: string | null;
     created_at: string;
@@ -143,12 +150,12 @@ const paidAmount = computed(() => {
     return props.booking.payments.reduce((sum: number, payment: PaymentData) => {
         // Assuming 'paid' status means strictly paid. 
         // Adjust comparison if status is 'succeeded' or similar depending on Enum serialization
-        return (payment.status === 'paid' || payment.status === 'succeeded') ? sum + Number(payment.amount) : sum;
+        return (payment.status === 'paid' || payment.status === 'succeeded') ? sum + payment.amount.amount : sum;
     }, 0);
 });
 
 const remainingToPay = computed(() => {
-    return props.booking.total_price_amount - paidAmount.value;
+    return props.booking.total_price.amount - paidAmount.value;
 });
 
 // Helper to parse amount for calculation
@@ -503,7 +510,7 @@ const executeDeleteBooking = () => {
                                         </TableHeader>
                                         <TableBody>
                                             <TableRow v-for="payment in booking.payments" :key="payment.id">
-                                                <TableCell class="font-medium font-mono">{{ formatCurrency(payment.amount) }}</TableCell>
+                                                <TableCell class="font-medium font-mono">{{ payment.amount.formatted }}</TableCell>
                                                 <TableCell>
                                                     <div v-if="payment.paid_at" class="text-xs text-muted-foreground font-mono">
                                                         {{ formatDateTime(payment.paid_at) }}
@@ -596,22 +603,45 @@ const executeDeleteBooking = () => {
                         <CardHeader>
                             <CardTitle>Platba</CardTitle>
                         </CardHeader>
-                        <CardContent class="space-y-4">
+                        <CardContent>
+                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <div class="text-muted-foreground">Celková cena</div>
+                                    <div class="font-medium text-foreground">{{ booking.total_price.formatted }}</div>
+                                </div>
+                                <div>
+                                    <div class="text-muted-foreground">Zaplaceno</div>
+                                    <div class="font-medium text-green-600">{{ formatCurrency(paidAmount) }}</div>
+                                </div>
+                                <div class="col-span-2 pt-2 border-t border-border mt-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-medium text-muted-foreground">Zbývá doplatit</span>
+                                        <span class="text-xl font-bold tracking-tight">{{ formatCurrency(remainingToPay) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <!-- Payment Status Card -->
+                    <Card v-if="remainingToPay > 0">
+                        <CardHeader class="pb-3">
+                            <CardTitle class="text-lg font-semibold flex items-center gap-2">
+                                <div class="h-2 w-2 rounded-full bg-yellow-500" />
+                                Čeká na doplatek
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
                             <div class="flex justify-between items-center">
-                                <span class="text-muted-foreground">Celková cena</span>
-                                <span class="text-xl font-bold tracking-tight">{{ formatCurrency(booking.total_price_amount) }}</span>
-                            </div>
-                            <div class="flex justify-between items-center text-sm">
-                                <span class="text-muted-foreground">Uhrazeno</span>
-                                <span class="font-medium text-green-600">{{ formatCurrency(paidAmount) }}</span>
-                            </div>
-                            <Separator />
-                            <div class="flex justify-between items-center font-medium">
-                                <span>Zbývá uhradit</span>
-                                <span :class="{'text-destructive': booking.total_price_amount - paidAmount > 0}">
-                                    {{ formatCurrency(booking.total_price_amount - paidAmount) }}
+                                <span class="text-muted-foreground">Zbývá uhradit:</span>
+                                <span :class="{'text-destructive': remainingToPay > 0}">
+                                    {{ formatCurrency(remainingToPay) }}
                                 </span>
                             </div>
+                            <Button class="w-full mt-4" @click="isPaymentDialogOpen = true">
+                                <Plus class="w-4 h-4 mr-2" />
+                                Přidat platbu
+                            </Button>
                         </CardContent>
                     </Card>
                 </div>
@@ -662,7 +692,7 @@ const executeDeleteBooking = () => {
                             <div class="space-y-6">
                                  <div class="flex justify-between items-center">
                                     <span class="text-muted-foreground font-medium">Cena celkem</span>
-                                    <span class="text-xl font-bold text-primary tracking-tight">{{ formatCurrency(booking.total_price_amount) }}</span>
+                                    <span class="text-xl font-bold text-primary tracking-tight">{{ booking.total_price.formatted }}</span>
                                  </div>
                                  
                                  <!-- List of existing payments -->
@@ -675,7 +705,7 @@ const executeDeleteBooking = () => {
                                                 <Trash2 @click="deletePayment(payment.id)" class="h-3 w-3 opacity-0 group-hover:opacity-100 cursor-pointer hover:text-destructive transition-opacity" />
                                             </div>
                                         </div>
-                                        <span class="font-medium text-green-600 font-mono">{{ formatCurrency(payment.amount) }}</span>
+                                        <span class="font-medium text-green-600 font-mono">{{ payment.amount.formatted }}</span>
                                     </div>
                                  </div>
                                  

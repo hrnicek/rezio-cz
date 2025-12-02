@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tenant\Admin;
 
+use App\Data\Shared\MoneyData;
 use App\Http\Controllers\Controller;
 use App\Models\Finance\Invoice;
 use Illuminate\Http\Request;
@@ -29,8 +30,7 @@ class InvoiceController extends Controller
                 'customer_name' => $invoice->customer_name,
                 'property_name' => $invoice->booking?->property?->name ?? '-',
                 'variable_symbol' => $invoice->variable_symbol,
-                'total_price_amount' => $invoice->total_price_amount,
-                'currency' => $invoice->currency,
+                'total_price' => MoneyData::fromModel($invoice->total_price_amount, $invoice->currency),
                 'status' => $invoice->status,
                 'status_label' => $invoice->status?->label(),
                 'status_color' => $invoice->status?->color(),

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace App\Events\Payment;
 
 use App\Models\Finance\Payment;
 use Illuminate\Broadcasting\InteractsWithSockets;

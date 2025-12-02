@@ -32,7 +32,7 @@ class Season extends Model
         'is_fixed_range' => 'boolean',
         'is_default' => 'boolean',
         'check_in_days' => 'array',
-        'price_amount' => 'integer',
+        'price_amount' => \App\Casts\MoneyCast::class,
         'min_stay' => 'integer',
         'priority' => 'integer',
     ];

@@ -10,7 +10,7 @@ class PaymentData extends Data
 {
     public function __construct(
         public string $id,
-        public int $amount,
+        public MoneyData $amount,
         public PaymentMethod $payment_method,
         public ?string $paid_at,
         public PaymentStatus $status,
@@ -20,7 +20,7 @@ class PaymentData extends Data
     {
         return new self(
             id: $payment->id,
-            amount: (int) $payment->amount,
+            amount: MoneyData::fromModel($payment->amount, $payment->currency),
             payment_method: $payment->payment_method instanceof \BackedEnum ? $payment->payment_method : PaymentMethod::from($payment->payment_method),
             paid_at: $payment?->paid_at?->toISOString(),
             status: $payment->status instanceof \BackedEnum ? $payment->status : PaymentStatus::from($payment->status),

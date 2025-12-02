@@ -37,8 +37,7 @@ const columns = [
     { key: 'customer_name', label: 'Jméno' },
     { key: 'property_name', label: 'Objekt' },
     { key: 'variable_symbol', label: 'VS' },
-    { key: 'total_price_amount', label: 'Cena', align: 'right' as const },
-    { key: 'currency', label: 'Měna', align: 'center' as const },
+    { key: 'total_price', label: 'Cena', align: 'right' as const },
     { key: 'actions', label: 'Akce', align: 'right' as const },
 ]
 
@@ -88,25 +87,15 @@ watch(search, (value) => {
             <AppDataTable :data="invoices" :columns="columns">
                 <template #number="{ item }">
                     <div class="font-medium">{{ item.number }}</div>
-                    <div class="text-xs mt-1" v-if="item.status_label">
-                        <Badge variant="outline" :class="{
-                            'text-green-600 border-green-200 bg-green-50': item.status === 'paid',
-                            'text-blue-600 border-blue-200 bg-blue-50': item.status === 'issued',
-                            'text-red-600 border-red-200 bg-red-50': item.status === 'cancelled',
-                            'text-gray-600 border-gray-200 bg-gray-50': item.status === 'draft'
-                        }">
-                            {{ item.status_label }}
-                        </Badge>
-                    </div>
                 </template>
 
                 <template #type="{ item }">
                     {{ item.type_label }}
                 </template>
 
-                <template #total_price_amount="{ item }">
-                    <span class="font-bold">
-                        {{ new Intl.NumberFormat('cs-CZ', { style: 'decimal', minimumFractionDigits: 2 }).format(item.total_price_amount) }}
+                <template #total_price="{ item }">
+                    <span class="font-bold font-mono">
+                        {{ item.total_price.formatted }}
                     </span>
                 </template>
 

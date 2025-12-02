@@ -2,6 +2,7 @@
 
 namespace App\Data\Admin\Booking;
 
+use App\Data\Shared\MoneyData;
 use Spatie\LaravelData\Data;
 
 class CalendarBookingData extends Data
@@ -13,7 +14,7 @@ class CalendarBookingData extends Data
         public string $end,
         public string $title,
         public string $status,
-        public ?string $total_price = null,
+        public ?MoneyData $total_price = null,
         public ?int $guests = null,
     ) {}
 
@@ -28,7 +29,7 @@ class CalendarBookingData extends Data
                 ? $booking->customer->name
                 : 'Unknown',
             status: (string) $booking->status,
-            total_price: $booking->total_price_amount ? number_format($booking->total_price_amount, 0, ',', ' ') . ' ' . $booking->total_price_currency : null,
+            total_price: MoneyData::fromModel($booking->total_price_amount, $booking->currency),
             guests: ($booking->adults ?? 0) + ($booking->children ?? 0),
         );
     }

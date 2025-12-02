@@ -5,6 +5,7 @@ namespace App\Data\Admin\Booking;
 use App\Data\Admin\Property\PropertyData;
 use App\Data\Shared\CustomerData;
 use App\Data\Shared\GuestData;
+use App\Data\Shared\MoneyData;
 use App\Data\Shared\PaymentData;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\DataCollection;
@@ -18,7 +19,7 @@ class BookingData extends Data
         public ?CustomerData $customer,
         public string $check_in_date,
         public string $check_out_date,
-        public int $total_price_amount,
+        public MoneyData $total_price,
         public string $status,
         public ?string $notes,
         public string $created_at,
@@ -43,7 +44,7 @@ class BookingData extends Data
             customer: $booking->customer ? CustomerData::from($booking->customer) : null,
             check_in_date: $booking->check_in_date->format('Y-m-d'),
             check_out_date: $booking->check_out_date->format('Y-m-d'),
-            total_price_amount: $booking->total_price_amount,
+            total_price: MoneyData::fromModel($booking->total_price_amount, $booking->currency),
             status: (string) $booking->status,
             notes: $booking->notes,
             created_at: $booking->created_at->toISOString(),

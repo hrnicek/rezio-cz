@@ -20,7 +20,7 @@ class Service extends Model
     ];
 
     protected $casts = [
-        'price_amount' => 'integer',
+        'price_amount' => \App\Casts\MoneyCast::class,
         'max_quantity' => 'integer',
         'is_active' => 'boolean',
     ];

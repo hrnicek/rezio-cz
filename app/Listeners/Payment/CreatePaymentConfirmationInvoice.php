@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Listeners;
+namespace App\Listeners\Payment;
 
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
 use App\Enums\PaymentMethod;
-use App\Events\PaymentCreated;
-use App\Events\PaymentUpdated;
+use App\Events\Payment\PaymentCreated;
+use App\Events\Payment\PaymentUpdated;
 use App\Models\Finance\Invoice;
 use App\Models\Finance\Payment;
 use App\States\Payment\Paid;
@@ -57,9 +57,10 @@ class CreatePaymentConfirmationInvoice
 
     protected function invoiceExists(Payment $payment): bool
     {
-        // Check if an invoice already exists for this payment
+        // Check if a confirmation invoice already exists for this payment
         return Invoice::query()
             ->where('payment_id', $payment->id)
+            ->where('type', InvoiceType::PaymentConfirmation)
             ->exists();
     }
 
@@ -149,6 +150,7 @@ class CreatePaymentConfirmationInvoice
 
         $lastInvoice = Invoice::query()
             ->where('number', 'like', "$prefix%")
+            ->where('type', '!=', InvoiceType::Proforma)
             ->orderByDesc('number')
             ->first();
 

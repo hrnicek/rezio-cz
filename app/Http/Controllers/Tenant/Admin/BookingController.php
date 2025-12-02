@@ -101,14 +101,14 @@ class BookingController extends Controller
                 fputcsv($file, [
                     $booking->id,
                     $booking->property->name,
-                    $booking->customer ? $booking->customer->name : '',
-                    $booking->customer->email ?? '',
-                    $booking->customer->phone ?? '',
+                    $booking->customer ? $booking->customer->name : 'N/A',
+                    $booking->customer ? $booking->customer->email : 'N/A',
+                    $booking->customer ? $booking->customer->phone : 'N/A',
                     $booking->check_in_date->format('Y-m-d'),
                     $booking->check_out_date->format('Y-m-d'),
                     $booking->status->label(),
-                    $booking->total_price_amount / 100, // Convert cents to units
-                    $booking->notes ?? '',
+                    $booking->total_price_amount->format(),
+                    $booking->notes,
                 ]);
             }
 

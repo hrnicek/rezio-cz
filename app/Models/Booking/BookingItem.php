@@ -23,10 +23,10 @@ class BookingItem extends Model
     ];
 
     protected $casts = [
-        'unit_price_amount' => 'integer',
-        'total_price_amount' => 'integer',
-        'net_amount' => 'integer',
-        'tax_amount' => 'integer',
+        'unit_price_amount' => \App\Casts\MoneyCast::class,
+        'total_price_amount' => \App\Casts\MoneyCast::class,
+        'net_amount' => \App\Casts\MoneyCast::class,
+        'tax_amount' => \App\Casts\MoneyCast::class,
         'quantity' => 'integer',
         'type' => BookingItemType::class,
     ];

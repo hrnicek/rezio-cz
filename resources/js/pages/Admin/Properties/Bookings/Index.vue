@@ -44,9 +44,9 @@ interface BookingListItem {
     check_out_date: string;
     total_price: {
         amount: number;
+        value: number;
         currency: string;
-        formatted: number;
-        display: string;
+        formatted: string;
     };
     created_at_human: string;
 }
@@ -224,7 +224,7 @@ const columns = computed(() => {
                 </template>
                 
                 <template #total_price="{ item }">
-                    <span class="font-mono font-medium">{{ item.total_price.display }}</span>
+                    <span class="font-mono font-medium">{{ item.total_price.formatted }}</span>
                 </template>
                 
                 <template #status="{ item }">

@@ -33,9 +33,9 @@ class Invoice extends Model
         'issued_date' => 'date',
         'due_date' => 'date',
         'tax_date' => 'date',
-        'total_price_amount' => 'integer',
-        'total_net_amount' => 'integer',
-        'total_tax_amount' => 'integer',
+        'total_price_amount' => \App\Casts\MoneyCast::class,
+        'total_net_amount' => \App\Casts\MoneyCast::class,
+        'total_tax_amount' => \App\Casts\MoneyCast::class,
         'status' => InvoiceStatus::class,
         'type' => InvoiceType::class,
     ];

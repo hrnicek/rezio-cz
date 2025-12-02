@@ -36,10 +36,14 @@ class Booking extends Model
         'check_in_date' => 'date',
         'check_out_date' => 'date',
         'reminders_sent_at' => 'datetime',
-        'total_price_amount' => 'integer',
+        'total_price_amount' => \App\Casts\MoneyCast::class,
         'status' => BookingState::class,
         'checked_in_at' => 'datetime',
         'checked_out_at' => 'datetime',
+    ];
+
+    protected $dispatchesEvents = [
+        'created' => \App\Events\Booking\BookingCreated::class,
     ];
 
     protected static function newFactory()

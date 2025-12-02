@@ -50,26 +50,25 @@ const availablePriceTypes = [
     ServicePriceType.PerHour
 ];
 
-interface ServiceData {
+interface Property {
     id: number;
     name: string;
+}
+
+interface ServiceData {
+    id: number;
+    property_id: number;
+    name: string;
     description: string | null;
+    price_amount: { value: number; formatted: string; amount: number };
     price_type: string;
-    price_amount: number;
     max_quantity: number;
     is_active: boolean;
 }
 
 const props = defineProps<{
-    property: {
-        id: number;
-        name: string;
-    };
-    services: {
-        data: ServiceData[];
-        links: any[];
-        meta: any;
-    };
+    property: Property;
+    services: ServiceData[];
 }>();
 
 const isDialogOpen = ref(false);
@@ -80,10 +79,10 @@ const serviceToDelete = ref<number | null>(null);
 const form = useForm({
     name: '',
     description: '',
-    price_type: ServicePriceType.Fixed,
     price_amount: 0,
+    price_type: ServicePriceType.PerNight as string,
     max_quantity: 0,
-    is_active: true,
+    is_active: true
 });
 
 const openCreateDialog = () => {
@@ -96,8 +95,11 @@ const openEditDialog = (service: ServiceData) => {
     editingService.value = service;
     form.name = service.name;
     form.description = service.description || '';
-    form.price_type = service.price_type as any;
-    form.price_amount = service.price_amount;
+    form.price_type = service.price_type;
+    // Here we assume the form expects the float value (e.g. 60.00 for 6000 cents)
+    // Since we are using money package on backend, we should check if we need to convert.
+    // The cast on backend handles conversion. The money object returns `value` as float.
+    form.price_amount = service.price_amount.value;
     form.max_quantity = service.max_quantity;
     form.is_active = !!service.is_active;
     isDialogOpen.value = true;
@@ -220,7 +222,7 @@ const columns = [
                     <div v-if="item.description" class="text-xs text-muted-foreground truncate max-w-[200px]">{{ item.description }}</div>
                 </template>
                 <template #price_amount="{ value }">
-                    <span class="font-mono font-medium">{{ value }} Kč</span>
+                    <span class="font-mono font-medium">{{ value.formatted }}</span>
                 </template>
                 <template #price_type="{ value }">
                     <Badge variant="outline" class="font-normal">

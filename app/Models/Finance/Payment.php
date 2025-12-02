@@ -27,16 +27,16 @@ class Payment extends Model
     ];
 
     protected $casts = [
-        'amount' => 'integer',
+        'amount' => \App\Casts\MoneyCast::class,
         'paid_at' => 'datetime',
         'status' => PaymentState::class,
         'payment_method' => PaymentMethod::class,
     ];
 
     protected $dispatchesEvents = [
-        'created' => \App\Events\PaymentCreated::class,
-        'updated' => \App\Events\PaymentUpdated::class,
-        'deleted' => \App\Events\PaymentDeleted::class,
+        'created' => \App\Events\Payment\PaymentCreated::class,
+        'updated' => \App\Events\Payment\PaymentUpdated::class,
+        'deleted' => \App\Events\Payment\PaymentDeleted::class,
     ];
 
     // --- RELATIONS ---

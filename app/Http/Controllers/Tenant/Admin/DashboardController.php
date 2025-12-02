@@ -26,7 +26,7 @@ class DashboardController extends Controller
             ->get();
 
         $stats = [
-            'total_revenue' => $bookingsCollection->where('status', '!=', 'cancelled')->sum('total_price_amount'),
+            'total_revenue' => $bookingsCollection->where('status', '!=', 'cancelled')->sum('total_price_amount') / 100,
             'total_bookings' => $bookingsCollection->count(),
             'pending_bookings' => $bookingsCollection->where('status', 'pending')->count(),
         ];
