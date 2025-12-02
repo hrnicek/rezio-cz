@@ -23,7 +23,7 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->domain('rezio.test')
+            ->domain(env('APP_URL'))
             ->default()
             ->id('central')
             ->path('central')
