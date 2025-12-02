@@ -87,7 +87,7 @@ const emit = defineEmits<{
                 <span class="text-foreground">{{ ex.name }}</span>
               </div>
               <span class="font-medium text-foreground">
-                {{ formatCurrency(ex.price_type === ServicePriceType.PerNight ? (ex.price * extraSelection[ex.id] * selectedNights) : (ex.price * extraSelection[ex.id])) }}
+                {{ formatCurrency((ex.price_type === ServicePriceType.PerNight ? (ex.price.amount * extraSelection[ex.id] * selectedNights) : (ex.price.amount * extraSelection[ex.id])) / 100) }}
               </span>
             </div>
           </div>
@@ -104,7 +104,7 @@ const emit = defineEmits<{
             <div class="text-xs text-muted-foreground">Včetně DPH a všech poplatků</div>
           </div>
           <div class="text-2xl font-bold text-primary tracking-tight">
-            {{ formatCurrency(grandTotalPrice) }}
+            {{ formatCurrency(grandTotalPrice / 100) }}
           </div>
         </div>
       </div>

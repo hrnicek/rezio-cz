@@ -20,7 +20,7 @@ class Property extends Model
     protected $table = 'properties';
 
     protected $fillable = [
-        'name', 'slug', 'address', 'description', 'image',
+        'name', 'short_name', 'slug', 'address', 'description', 'image',
         'default_check_in_time', 'default_check_out_time',
     ];
 

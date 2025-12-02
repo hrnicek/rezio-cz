@@ -32,12 +32,19 @@ import { toast } from 'vue-sonner';
 declare const route: any;
 
 // Interface matching Season model
+interface MoneyData {
+    amount: number;
+    currency: string;
+    value: number;
+    formatted: string;
+}
+
 interface SeasonData {
     id: number;
     name: string;
     start_date: string | null;
     end_date: string | null;
-    price_amount: number;
+    price_amount: MoneyData;
     min_stay: number | null;
     check_in_days: number[] | null;
     is_default: boolean;
@@ -104,7 +111,7 @@ const openEditDialog = (season: SeasonData) => {
     form.name = season.name;
     form.start_date = season.start_date ? new Date(season.start_date).toISOString().split('T')[0] : '';
     form.end_date = season.end_date ? new Date(season.end_date).toISOString().split('T')[0] : '';
-    form.price = season.price_amount; // Using price_amount from model
+    form.price = season.price_amount.value; // Using price_amount from model
     form.min_stay = season.min_stay || 1;
     form.check_in_days = season.check_in_days || [];
     form.is_default = season.is_default;
@@ -256,7 +263,7 @@ const columns = [
                     </span>
                 </template>
                 <template #price="{ item }">
-                    <span class="font-medium">{{ item.price_amount }} Kč</span>
+                    <span class="font-medium">{{ item.price_amount.formatted }}</span>
                 </template>
                 <template #min_stay="{ value }">
                     {{ value || 1 }} <span class="text-muted-foreground text-xs">nocí</span>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tenant\Admin;
 
+use App\Data\Admin\Property\SeasonData;
 use App\Http\Controllers\Controller;
 use App\Models\Configuration\Season;
 use App\Models\Property;
@@ -13,10 +14,12 @@ class SeasonController extends Controller
     {
         return inertia('Admin/Properties/Seasons/Index', [
             'property' => $property,
-            'seasons' => $property->seasons()
-                ->orderBy('start_date')
-                ->paginate(request('per_page', 10))
-                ->withQueryString(),
+            'seasons' => SeasonData::collect(
+                $property->seasons()
+                    ->orderBy('start_date')
+                    ->paginate(request('per_page', 10))
+                    ->withQueryString()
+            ),
         ]);
     }
 
@@ -38,6 +41,10 @@ class SeasonController extends Controller
         if ($request->boolean('is_default')) {
             $property->seasons()->where('is_default', true)->update(['is_default' => false]);
         }
+
+        // Convert price (units) to price_amount (cents)
+        $validated['price_amount'] = (int) ($validated['price'] * 100);
+        unset($validated['price']);
 
         $property->seasons()->create($validated);
 
@@ -62,6 +69,10 @@ class SeasonController extends Controller
         if ($request->boolean('is_default') && ! $season->is_default) {
             $property->seasons()->where('is_default', true)->update(['is_default' => false]);
         }
+
+        // Convert price (units) to price_amount (cents)
+        $validated['price_amount'] = (int) ($validated['price'] * 100);
+        unset($validated['price']);
 
         $season->update($validated);
 

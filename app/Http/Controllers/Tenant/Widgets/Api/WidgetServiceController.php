@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tenant\Widgets\Api;
 
+use App\Data\Shared\MoneyData;
 use App\Enums\BookingItemType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Service\CheckAvailabilityRequest;
@@ -21,23 +22,15 @@ class WidgetServiceController extends Controller
             ->where('property_id', $id->id)
             ->where('is_active', true)
             ->orderBy('name')
-            ->get(['id', 'name', 'price_type', 'price_amount', 'max_quantity']);
-
-        // Transform price_amount (cents) to price (float) for API if needed,
-        // or just return price_amount and let frontend handle it.
-        // The previous code returned 'price', let's see if we should map it.
-        // Assuming frontend expects 'price' as float or integer.
-        // Let's return price_amount as 'price' for now to match existing structure roughly,
-        // but strictly it should be price_amount.
-        // Old code: ->get(['id', 'name', 'price_type', 'price', 'max_quantity']);
-        // New Service model likely has price_amount.
+            ->get(['id', 'name', 'description', 'price_type', 'price_amount', 'max_quantity']);
 
         $services = $services->map(function ($service) {
             return [
                 'id' => $service->id,
                 'name' => $service->name,
+                'description' => $service->description,
                 'price_type' => $service->price_type,
-                'price' => $service->price_amount, // Return integer cents
+                'price' => MoneyData::fromModel($service->price_amount),
                 'max_quantity' => $service->max_quantity,
             ];
         });

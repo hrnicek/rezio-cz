@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tenant\Widgets\Api;
 
+use App\Data\Shared\MoneyData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Booking\CalendarRequest;
 use App\Http\Requests\Booking\VerifyAvailabilityRequest;
@@ -69,7 +70,7 @@ class WidgetController extends Controller
                 'date' => $date->toDateString(),
                 'available' => $meetsLead && ! ($isBlackout || $isBooked),
                 'blackout' => $isBlackout,
-                'price' => $price,
+                'price' => MoneyData::fromModel($price, 'CZK'),
                 'season' => $season ? [
                     'id' => $season->id,
                     'name' => $season->name,

@@ -74,7 +74,7 @@ const selectedNights = computed(() => Math.max(0, rangeDates.value.length - 1));
 
 const selectedTotalPrice = computed(() => {
    const nights = rangeDates.value.slice(0, -1);
-   return nights.reduce((sum, iso) => sum + Number(calendar.getDayInfo(iso)?.price || 0), 0);
+   return nights.reduce((sum, iso) => sum + Number(calendar.getDayInfo(iso)?.price?.amount || 0), 0);
 });
 
 // --- LOGIC: EXTRAS ---
@@ -88,7 +88,8 @@ const selectedExtras = computed(() => validExtras.value.filter(e => (extraSelect
 const addonsTotalPrice = computed(() => {
   return selectedExtras.value.reduce((sum, ex) => {
     const qty = extraSelection.value[ex.id] || 0;
-    const cost = ex.price_type === ServicePriceType.PerNight ? (ex.price * qty * selectedNights.value) : (ex.price * qty);
+    const price = ex.price.amount;
+    const cost = ex.price_type === ServicePriceType.PerNight ? (price * qty * selectedNights.value) : (price * qty);
     return sum + cost;
   }, 0);
 });

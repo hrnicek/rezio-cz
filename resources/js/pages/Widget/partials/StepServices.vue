@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { Button } from "@/components/ui/button";
 import { Plus, Minus, PawPrint } from "lucide-vue-next";
-import { useCurrency } from "@/composables/useCurrency";
 import { ServicePriceTypeLabels } from "@/lib/enums";
 
 import type { ExtraService } from "../types";
-
-const { formatCurrency } = useCurrency();
 
 const props = defineProps<{
   validExtras: ExtraService[];
@@ -43,7 +40,7 @@ const updateExtra = (id: number, delta: number) => {
             <p class="text-sm text-muted-foreground mt-1">{{ extra.description }}</p>
           </div>
           <div class="text-right">
-            <div class="font-bold text-primary">{{ formatCurrency(extra.price) }}</div>
+            <div class="font-bold text-primary">{{ extra.price.formatted }}</div>
             <div class="text-xs text-muted-foreground">{{ ServicePriceTypeLabels[extra.price_type] }}</div>
           </div>
         </div>

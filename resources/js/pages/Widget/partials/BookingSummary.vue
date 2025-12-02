@@ -49,7 +49,7 @@ defineProps<{
           </div>
           <div class="flex justify-between text-muted-foreground">
             <span>Cena ubytování</span>
-            <span class="font-medium text-foreground">{{ formatCurrency(selectedTotalPrice) }}</span>
+            <span class="font-medium text-foreground">{{ formatCurrency(selectedTotalPrice / 100) }}</span>
           </div>
           <div class="flex justify-between text-muted-foreground">
             <span>Sezóna</span>
@@ -57,14 +57,14 @@ defineProps<{
           </div>
           <div v-if="addonsTotalPrice > 0" class="flex justify-between text-muted-foreground">
             <span>Služby</span>
-            <span class="font-medium text-foreground">{{ formatCurrency(addonsTotalPrice) }}</span>
+            <span class="font-medium text-foreground">{{ formatCurrency(addonsTotalPrice / 100) }}</span>
           </div>
         </div>
 
         <div class="border-t border-border pt-4 mt-4">
           <div class="flex items-end justify-between">
             <span class="font-medium text-foreground">Celkem</span>
-            <span class="text-xl font-bold text-primary">{{ formatCurrency(grandTotalPrice) }}</span>
+            <span class="text-xl font-bold text-primary">{{ formatCurrency(grandTotalPrice / 100) }}</span>
           </div>
         </div>
       </CardContent>

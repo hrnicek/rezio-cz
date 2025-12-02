@@ -51,6 +51,7 @@ return new class extends Migration
         Schema::create('properties', function (Blueprint $table) {
             $table->id(); // BigInt
             $table->string('name');
+            $table->string('short_name')->nullable();
             $table->string('slug')->unique(); // Veřejný identifikátor v URL
 
             // Adresa (pro jednoduchost text, nebo rozbít na sloupce)

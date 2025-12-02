@@ -60,7 +60,11 @@ class RevenueMetricsService
 
             // Calculate daily rate for this booking (in cents)
             $bookingNights = $bookingStart->diffInDays($bookingEnd);
-            $dailyRateCents = $bookingNights > 0 ? $booking->total_price_amount / $bookingNights : $booking->total_price_amount;
+            $totalPriceCents = $booking->total_price_amount instanceof \App\Support\Money
+                ? $booking->total_price_amount->getAmount()
+                : (int) $booking->total_price_amount;
+
+            $dailyRateCents = $bookingNights > 0 ? $totalPriceCents / $bookingNights : $totalPriceCents;
 
             // Iterate through each night of the booking
             $night = $bookingStart->copy();

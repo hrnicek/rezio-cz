@@ -40,15 +40,24 @@ class SeasonalPricingService
             });
     }
 
+    private function getPriceAmount(mixed $price): int
+    {
+        if ($price instanceof \App\Support\Money) {
+            return (int) $price->getAmount();
+        }
+
+        return (int) $price;
+    }
+
     public function getPriceForDate(int $propertyId, Carbon $date): int
     {
         $seasons = $this->loadSeasons($propertyId);
         $defaultSeason = $seasons->firstWhere('is_default', true);
-        $basePrice = $defaultSeason ? (int) $defaultSeason->price_amount : 0;
+        $basePrice = $defaultSeason ? $this->getPriceAmount($defaultSeason->price_amount) : 0;
 
         $matchingSeason = $this->getSeasonForDate($propertyId, $date);
 
-        return $matchingSeason ? (int) $matchingSeason->price_amount : $basePrice;
+        return $matchingSeason ? $this->getPriceAmount($matchingSeason->price_amount) : $basePrice;
     }
 
     public function calculate_stay_price(int $propertyId, $checkInDate, $checkOutDate): int

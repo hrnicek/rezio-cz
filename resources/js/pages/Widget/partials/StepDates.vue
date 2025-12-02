@@ -2,11 +2,8 @@
 import { ref } from "vue";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
-import { useCurrency } from "@/composables/useCurrency";
 
 import type { CalendarService } from "../types";
-
-const { formatCurrency } = useCurrency();
 
 const props = defineProps<{
   calendar: CalendarService;
@@ -109,7 +106,7 @@ const handleDateClick = (date: string) => {
           >
               <span class="text-sm font-medium self-end" :class="{'opacity-25': !cell.inCurrent}">{{ cell.day }}</span>
               <span v-if="calendar.getDayInfo(cell.date)?.price" class="text-xs font-medium self-start">
-                 {{ formatCurrency(calendar.getDayInfo(cell.date).price) }}
+                 {{ calendar.getDayInfo(cell.date).price.formatted }}
               </span>
           </button>
        </div>

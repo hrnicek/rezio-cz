@@ -9,10 +9,17 @@ export interface Customer {
     note: string;
 }
 
+export interface MoneyData {
+    amount: number;
+    currency: string;
+    value: number;
+    formatted: string;
+}
+
 export interface ExtraService {
     id: number;
     name: string;
-    price: number;
+    price: MoneyData;
     price_type: typeof ServicePriceType[keyof typeof ServicePriceType];
     description?: string;
 }
