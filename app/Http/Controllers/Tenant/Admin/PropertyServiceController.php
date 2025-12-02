@@ -33,6 +33,9 @@ class PropertyServiceController extends Controller
             'is_active' => 'boolean',
         ]);
 
+        // Convert price from units (frontend) to cents (backend)
+        $validated['price_amount'] = (int) round($validated['price_amount'] * 100);
+
         $property->services()->create($validated);
 
         return redirect()->route('admin.properties.services.index', $property);
@@ -48,6 +51,9 @@ class PropertyServiceController extends Controller
             'max_quantity' => 'required|integer|min:0',
             'is_active' => 'boolean',
         ]);
+
+        // Convert price from units (frontend) to cents (backend)
+        $validated['price_amount'] = (int) round($validated['price_amount'] * 100);
 
         $service->update($validated);
 

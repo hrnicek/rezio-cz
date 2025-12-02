@@ -3,6 +3,7 @@ import PropertyLayout from '../Partials/PropertyLayout.vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { MoneyInput } from '@/components/ui/money-input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Pencil, Trash2 } from 'lucide-vue-next';
@@ -310,8 +311,8 @@ const columns = [
                             </div>
 
                             <div class="space-y-2">
-                                <Label for="price" class="text-xs uppercase text-muted-foreground font-mono">Cena za noc (Kč)</Label>
-                                <Input id="price" v-model.number="form.price" type="number" step="0.01" required class="h-9" />
+                                <Label for="price" class="text-xs uppercase text-muted-foreground font-mono">Cena za noc</Label>
+                                <MoneyInput id="price" v-model="form.price" class="h-9" />
                                 <div v-if="form.errors.price" class="text-sm text-destructive">{{ form.errors.price }}</div>
                             </div>
                         </div>
