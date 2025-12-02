@@ -2,12 +2,12 @@
 
 namespace App\Models\Central;
 
-use Stancl\Tenancy\ResourceSyncing\TenantPivot;
-use Stancl\Tenancy\Database\Concerns\HasDomains;
 use Stancl\Tenancy\Database\Concerns\HasDatabase;
+use Stancl\Tenancy\Database\Concerns\HasDomains;
 use Stancl\Tenancy\Database\Concerns\MaintenanceMode;
-use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
 use Stancl\Tenancy\Database\Contracts\TenantWithDatabase;
+use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
+use Stancl\Tenancy\ResourceSyncing\TenantPivot;
 
 class Tenant extends BaseTenant implements TenantWithDatabase
 {

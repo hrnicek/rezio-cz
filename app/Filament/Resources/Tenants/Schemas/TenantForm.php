@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Tenants\Schemas;
 
 use Filament\Schemas\Schema;
-use Filament\Forms\Components\TextInput;
 
 class TenantForm
 {
@@ -11,7 +10,7 @@ class TenantForm
     {
         return $schema
             ->components([
-             
+
             ]);
     }
 }

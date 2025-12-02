@@ -2,21 +2,15 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Tenant\Api\AresController;
 use App\Http\Controllers\Tenant\FilePondController;
-use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
-use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use App\Http\Controllers\Tenant\Widgets\Api\WidgetController;
-use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
-use Stancl\Tenancy\Middleware\PreventAccessFromUnwantedDomains;
-use App\Http\Controllers\Tenant\Widgets\WidgetBookingController;
-use App\Http\Controllers\Tenant\Admin\Auth\NewPasswordController;
-use Stancl\Tenancy\Middleware\InitializeTenancyByDomainOrSubdomain;
-use App\Http\Controllers\Tenant\Widgets\Api\WidgetServiceController;
-use App\Http\Controllers\Tenant\Admin\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Tenant\Admin\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Tenant\Widgets\Api\WidgetReservationStoreController;
+use App\Http\Controllers\Tenant\Widgets\Api\WidgetServiceController;
+use App\Http\Controllers\Tenant\Widgets\WidgetBookingController;
+use Illuminate\Support\Facades\Route;
+use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
+use Stancl\Tenancy\Middleware\PreventAccessFromUnwantedDomains;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,39 +30,12 @@ Route::middleware([
     'web',
 ])->group(function () {
 
-
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
-        ->name('login')
-        ->middleware('guest');
-
-    Route::post('login', [AuthenticatedSessionController::class, 'store'])
-        ->name('login.store')
-        ->middleware('guest');
-
-    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
-        ->name('logout')
-        ->middleware('auth');
-
-    // Password Reset Routes
-    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
-        ->name('password.request')
-        ->middleware('guest');
-
-    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
-        ->name('password.email')
-        ->middleware('guest');
-
-    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
-        ->name('password.reset')
-        ->middleware('guest');
-
-    Route::post('reset-password', [NewPasswordController::class, 'store'])
-        ->name('password.store')
-        ->middleware('guest');
-
+    // Web
+    require base_path('routes/tenant-web.php');
+    require base_path('routes/tenant-admin.php');
     // Admin routes
-    Route::name('admin.')->middleware(['auth'])->group(base_path('routes/admin.php'));
-  
+    // Route::name('admin.')->middleware(['auth'])->group(base_path('routes/tenant-admin.php'));
+
     Route::get('/ares/{ico}', [AresController::class, 'show'])
         ->name('api.ares.show');
 
@@ -81,11 +48,11 @@ Route::middleware([
     Route::get('widget/{property:id}', [WidgetBookingController::class, 'show'])->name('widget.show');
 
     Route::prefix('app/check-in/{token}')->name('check-in.')->group(function () {
-                Route::get('/', [\App\Http\Controllers\Tenant\Guest\CheckInController::class, 'show'])->name('show');
-                Route::post('/guests', [\App\Http\Controllers\Tenant\Guest\CheckInController::class, 'store'])->name('guests.store');
-                Route::put('/guests/{guest}', [\App\Http\Controllers\Tenant\Guest\CheckInController::class, 'update'])->name('guests.update');
-                Route::delete('/guests/{guest}', [\App\Http\Controllers\Tenant\Guest\CheckInController::class, 'destroy'])->name('guests.destroy');
-            });
+        Route::get('/', [\App\Http\Controllers\Tenant\Guest\CheckInController::class, 'show'])->name('show');
+        Route::post('/guests', [\App\Http\Controllers\Tenant\Guest\CheckInController::class, 'store'])->name('guests.store');
+        Route::put('/guests/{guest}', [\App\Http\Controllers\Tenant\Guest\CheckInController::class, 'update'])->name('guests.update');
+        Route::delete('/guests/{guest}', [\App\Http\Controllers\Tenant\Guest\CheckInController::class, 'destroy'])->name('guests.destroy');
+    });
 
     Route::prefix('api/widgets/{id}')
         ->group(function () {

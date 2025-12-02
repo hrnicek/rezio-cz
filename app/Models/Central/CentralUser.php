@@ -2,14 +2,12 @@
 
 namespace App\Models\Central;
 
-use Illuminate\Support\Str;
 use App\Models\User as TenantUser;
 use Illuminate\Database\Eloquent\Model;
-use Stancl\Tenancy\ResourceSyncing\SyncMaster;
-use Stancl\Tenancy\ResourceSyncing\TenantPivot;
-use Stancl\Tenancy\ResourceSyncing\ResourceSyncing;
+use Illuminate\Support\Str;
 use Stancl\Tenancy\Database\Concerns\CentralConnection;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Stancl\Tenancy\ResourceSyncing\ResourceSyncing;
+use Stancl\Tenancy\ResourceSyncing\SyncMaster;
 
 class CentralUser extends Model implements SyncMaster
 {

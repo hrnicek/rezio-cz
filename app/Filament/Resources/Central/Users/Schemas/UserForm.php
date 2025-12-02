@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources\Central\Users\Schemas;
 
-use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\Hash;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Hash;
 
 class UserForm
 {
@@ -20,7 +20,7 @@ class UserForm
                     ->email()
                     ->required()
                     ->maxLength(255),
-              TextInput::make('password')
+                TextInput::make('password')
                     ->password()
                     ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                     ->dehydrated(fn ($state) => filled($state))
