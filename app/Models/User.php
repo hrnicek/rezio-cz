@@ -67,7 +67,7 @@ class User extends Authenticatable implements Syncable
 
     public function getCentralModelName(): string
     {
-        return \App\Models\Central\User::class;
+        return \App\Models\Central\CentralUser::class;
     }
 
     public function getSyncedAttributeNames(): array

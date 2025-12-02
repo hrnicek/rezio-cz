@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Tenant\FilePondController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Tenant\FilePondController;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
+use Stancl\Tenancy\Middleware\InitializeTenancyByDomainOrSubdomain;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,9 +21,9 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 |
 */
 
-Route::domain('app.rezio.test')->middleware([
-    // InitializeTenancyByDomain::class,
+Route::middleware([
     PreventAccessFromCentralDomains::class,
+    InitializeTenancyBySubdomain::class,
     'web',
 ])->group(function () {
 
