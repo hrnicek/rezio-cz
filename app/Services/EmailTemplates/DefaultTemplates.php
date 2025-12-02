@@ -61,7 +61,7 @@ class DefaultTemplates
                 'trigger_offset_days' => 0,
                 'subject' => '##objekt## - zrušení rezervace',
                 'title' => 'Vaše rezervace byla stornována',
-                'content' => "Je nám líto, ale neuvidíme se. Rezervaci ##objekt## jsme na základě žádosti zrušili.",
+                'content' => 'Je nám líto, ale neuvidíme se. Rezervaci ##objekt## jsme na základě žádosti zrušili.',
             ],
             'BEFORE_ARRIVAL_INFO' => [
                 'type' => 'BEFORE_ARRIVAL_INFO',

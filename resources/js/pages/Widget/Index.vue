@@ -31,7 +31,7 @@ const booking = useBookingStore();
 const { customer, startDate, endDate, extras, extraSelection } = storeToRefs(booking);
 
 // --- UTILS ---
-const { formatPrice } = useCurrency();
+const { formatCurrency } = useCurrency();
 
 // --- CONSTANTS ---
 const STEPS = [
@@ -378,15 +378,15 @@ onMounted(async () => {
             <div class="space-y-3 text-sm">
                <div class="flex justify-between text-muted-foreground">
                   <span>Ubytování ({{ selectedNights }} nocí)</span>
-                  <span class="font-medium text-foreground">{{ formatPrice(selectedTotalPrice) }}</span>
+                  <span class="font-medium text-foreground">{{ formatCurrency(selectedTotalPrice) }}</span>
                </div>
                <div v-if="addonsTotalPrice > 0" class="flex justify-between text-muted-foreground">
                   <span>Služby a poplatky</span>
-                  <span class="font-medium text-foreground">{{ formatPrice(addonsTotalPrice) }}</span>
+                  <span class="font-medium text-foreground">{{ formatCurrency(addonsTotalPrice) }}</span>
                </div>
                <div class="pt-3 border-t border-border flex justify-between items-end">
                   <span class="font-bold text-foreground">Celkem</span>
-                  <span class="text-xl font-bold text-primary">{{ formatPrice(grandTotalPrice) }}</span>
+                  <span class="text-xl font-bold text-primary">{{ formatCurrency(grandTotalPrice) }}</span>
                </div>
             </div>
         </div>
@@ -398,7 +398,7 @@ onMounted(async () => {
                  Celkem za pobyt <Info class="h-3 w-3" />
               </div>
               <div class="flex items-center gap-2">
-                 <span class="text-lg font-bold text-primary">{{ formatPrice(grandTotalPrice) }}</span>
+                 <span class="text-lg font-bold text-primary">{{ formatCurrency(grandTotalPrice) }}</span>
                  <ChevronUp class="h-4 w-4 text-muted-foreground transition-transform duration-200" :class="{'rotate-180': showMobilePriceDetails}" />
               </div>
            </div>

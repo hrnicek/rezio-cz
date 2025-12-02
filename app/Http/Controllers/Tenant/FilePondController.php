@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Tenant;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class FilePondController extends Controller
 {
@@ -19,13 +18,13 @@ class FilePondController extends Controller
         ]);
 
         $file = $request->file('filepond');
-        
-        // Store in a temporary directory. 
+
+        // Store in a temporary directory.
         // Since this is a tenant controller, Storage::disk('public') might be tenant-scoped if configured,
         // or we might need to use a specific disk.
         // For now, we'll assume the default disk is appropriate or we use 'public'.
         // We'll store it in 'tmp' directory.
-        
+
         $path = $file->store('tmp', 'public');
 
         // Return the path as the serverId

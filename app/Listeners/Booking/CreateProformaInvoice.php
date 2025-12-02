@@ -6,8 +6,6 @@ use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
 use App\Events\Booking\BookingCreated;
 use App\Models\Finance\Invoice;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
 class CreateProformaInvoice
 {
@@ -37,11 +35,11 @@ class CreateProformaInvoice
         $property = $booking->property;
         $billing = $property->billingSetting;
 
-        $invoice = new Invoice();
+        $invoice = new Invoice;
         $invoice->booking_id = $booking->id;
         // Link to main folio if exists, or find first folio
-        $invoice->folio_id = $booking->folios()->first()?->id; 
-        
+        $invoice->folio_id = $booking->folios()->first()?->id;
+
         $invoice->type = InvoiceType::Proforma;
         $invoice->status = InvoiceStatus::Issued; // Proforma is issued immediately
 
@@ -56,12 +54,12 @@ class CreateProformaInvoice
         $invoice->supplier_name = $billing?->company_name ?? $property->name;
         $invoice->supplier_ico = $billing?->ico;
         $invoice->supplier_dic = $billing?->dic;
-        
+
         $supplierAddressParts = array_filter([
             $billing?->street ?? $property->address,
             $billing?->city,
             $billing?->zip,
-            $billing?->country
+            $billing?->country,
         ]);
         $invoice->supplier_address = implode(', ', $supplierAddressParts) ?: 'Adresa neuvedena';
 
@@ -70,12 +68,12 @@ class CreateProformaInvoice
             $invoice->customer_name = $customer->billing_name;
             $invoice->customer_ico = $customer->ico;
             $invoice->customer_dic = $customer->dic;
-            
+
             $addressParts = array_filter([
                 $customer->billing_street,
                 $customer->billing_city,
                 $customer->billing_zip,
-                $customer->billing_country
+                $customer->billing_country,
             ]);
             $invoice->customer_address = implode(', ', $addressParts) ?: 'Adresa neuvedena';
         } else {
@@ -88,7 +86,7 @@ class CreateProformaInvoice
         // For simplicity, we treat proforma as simple request for payment.
         // If VAT payer, we should calculate tax.
         // But Booking total_price_amount is usually gross.
-        
+
         $invoice->currency = $booking->currency;
         $invoice->total_tax_amount = 0; // Calculate properly if needed, for now simple
 
@@ -113,9 +111,9 @@ class CreateProformaInvoice
         // Let's use "202590001" (9xxxxx series for proforma) or just "P2025..."
         // For simplicity and integer-like sorting in DB (if number is string but numeric):
         // Let's try to find if BillingSetting has prefix.
-        
+
         $year = now()->year;
-        $prefix = (string) $year . "9"; // 20259...
+        $prefix = (string) $year.'9'; // 20259...
 
         $lastInvoice = Invoice::query()
             ->where('type', InvoiceType::Proforma)
@@ -128,6 +126,7 @@ class CreateProformaInvoice
         }
 
         $lastNumber = (int) substr($lastInvoice->number, 5); // after 20259
+
         return $prefix.str_pad((string) ($lastNumber + 1), 5, '0', STR_PAD_LEFT);
     }
 }

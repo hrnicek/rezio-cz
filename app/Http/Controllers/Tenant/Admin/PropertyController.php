@@ -102,11 +102,11 @@ class PropertyController extends Controller
 
         if ($request->filled('image') && $request->image !== $property->image) {
             $tempPath = $request->image;
-            
+
             // Only attempt to move if it looks like a temp path (or we just check existence)
             if (Storage::disk('public')->exists($tempPath)) {
                 $newPath = 'properties/images/'.$property->id.'/'.basename($tempPath);
-                
+
                 // Clean up old image if it exists
                 if ($property->image && Storage::disk('public')->exists($property->image)) {
                     Storage::disk('public')->delete($property->image);
@@ -117,11 +117,11 @@ class PropertyController extends Controller
                 }
             }
         } elseif (empty($request->image) && $property->image) {
-             // If image is cleared
-             if (Storage::disk('public')->exists($property->image)) {
+            // If image is cleared
+            if (Storage::disk('public')->exists($property->image)) {
                 Storage::disk('public')->delete($property->image);
-             }
-             $property->update(['image' => null]);
+            }
+            $property->update(['image' => null]);
         }
 
         return redirect()->route('admin.properties.index');

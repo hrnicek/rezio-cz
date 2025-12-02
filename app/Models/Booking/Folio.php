@@ -2,7 +2,6 @@
 
 namespace App\Models\Booking;
 
-use App\Enums\FolioStatus;
 use App\Models\CRM\Customer;
 use App\Models\Finance\Payment;
 use App\States\Folio\FolioState;

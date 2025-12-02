@@ -6,7 +6,6 @@ use App\Models\Central\Tenant;
 use App\Models\Communication\EmailTemplate;
 use App\Models\Property;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class EmailTemplateTest extends TestCase
@@ -22,7 +21,7 @@ class EmailTemplateTest extends TestCase
         // Create a tenant for testing
         // We use a random ID to avoid conflicts
         $this->tenant = Tenant::create([
-            'id' => 'test_' . uniqid(),
+            'id' => 'test_'.uniqid(),
         ]);
 
         // Initialize tenancy
@@ -32,7 +31,7 @@ class EmailTemplateTest extends TestCase
         // Usually tenancy package handles this if configured, but let's be safe or check config.
         // Assuming standard setup where creation triggers DB creation & migration.
         // If not, we might need Artisan::call('tenants:migrate');
-        
+
         // No seeding needed for virtual defaults
     }
 
@@ -42,7 +41,7 @@ class EmailTemplateTest extends TestCase
         if ($this->tenant) {
             $this->tenant->delete();
         }
-        
+
         parent::tearDown();
     }
 
@@ -53,7 +52,7 @@ class EmailTemplateTest extends TestCase
 
         // Fetch a default template
         $template = EmailTemplate::findForProperty('RESERVATION_CONFIRMED', null);
-        
+
         $this->assertNotNull($template);
         $this->assertNull($template->id); // It's virtual, so no ID
         $this->assertNull($template->property_id);

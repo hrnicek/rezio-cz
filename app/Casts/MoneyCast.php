@@ -2,8 +2,8 @@
 
 namespace App\Casts;
 
-use App\Support\Money;
 use Akaunting\Money\Currency;
+use App\Support\Money;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 
 class MoneyCast implements CastsAttributes
@@ -20,7 +20,7 @@ class MoneyCast implements CastsAttributes
         if ($value === null) {
             return null;
         }
-        
+
         // If model has a currency attribute, use it
         $currency = $attributes['currency'] ?? $this->currency;
 
@@ -37,7 +37,7 @@ class MoneyCast implements CastsAttributes
             return $value->getAmount();
         }
 
-        // If value is float/int (e.g. from form input 60.00), 
+        // If value is float/int (e.g. from form input 60.00),
         // we usually want to convert to cents IF it's not already cents.
         // BUT, standard Laravel behavior is: set(6000) -> 6000.
         // set(60.00) -> 60.
@@ -47,12 +47,12 @@ class MoneyCast implements CastsAttributes
         // The Akaunting Money package constructor takes amount in SUBUNITS (cents).
         // So if I do new Money(60, 'CZK'), I get 0.60 CZK.
         // So if I want 60 CZK, I must provide 6000.
-        
+
         // For the setter:
         // If I do $model->price = 6000; -> I expect 60 CZK.
         // If I do $model->price = 60; -> I expect 0.60 CZK.
         // So I will just cast to int.
-        
+
         return (int) $value;
     }
 }

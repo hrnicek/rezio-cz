@@ -2,9 +2,9 @@
 
 namespace App\Models\Finance;
 
+use App\Enums\PaymentMethod;
 use App\Models\Booking\Booking;
 use App\Models\Booking\Folio;
-use App\Enums\PaymentMethod;
 use App\States\Payment\PaymentState;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

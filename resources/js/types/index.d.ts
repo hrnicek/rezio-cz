@@ -35,13 +35,6 @@ export interface Property {
     slug: string;
 }
 
-export interface MoneyData {
-    amount: number;
-    currency: string;
-    value: number;
-    formatted: string;
-}
-
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {

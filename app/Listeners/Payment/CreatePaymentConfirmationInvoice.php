@@ -10,8 +10,6 @@ use App\Events\Payment\PaymentUpdated;
 use App\Models\Finance\Invoice;
 use App\Models\Finance\Payment;
 use App\States\Payment\Paid;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
 class CreatePaymentConfirmationInvoice
 {
@@ -34,11 +32,11 @@ class CreatePaymentConfirmationInvoice
             // However, the event object doesn't easily carry 'wasChanged' state after model is refreshed or serialized.
             // But standard model events usually fire after save.
             // If we use explicit Dispatchable events from model, we might rely on the current state.
-            
+
             if (! ($payment->status instanceof Paid)) {
                 return;
             }
-            
+
             // Check if invoice already exists to avoid duplicates
             if ($this->invoiceExists($payment)) {
                 return;
@@ -73,7 +71,7 @@ class CreatePaymentConfirmationInvoice
 
         $customer = $booking->customer;
 
-        $invoice = new Invoice();
+        $invoice = new Invoice;
         $invoice->booking_id = $payment->booking_id;
         $invoice->folio_id = $payment->folio_id;
         $invoice->payment_id = $payment->id;
@@ -94,12 +92,12 @@ class CreatePaymentConfirmationInvoice
         $invoice->supplier_name = $billing?->company_name ?? $property->name;
         $invoice->supplier_ico = $billing?->ico;
         $invoice->supplier_dic = $billing?->dic;
-        
+
         $supplierAddressParts = array_filter([
             $billing?->street ?? $property->address,
             $billing?->city,
             $billing?->zip,
-            $billing?->country
+            $billing?->country,
         ]);
         $invoice->supplier_address = implode(', ', $supplierAddressParts) ?: 'Adresa neuvedena';
 
@@ -108,12 +106,12 @@ class CreatePaymentConfirmationInvoice
             $invoice->customer_name = $customer->billing_name; // Use accessor
             $invoice->customer_ico = $customer->ico;
             $invoice->customer_dic = $customer->dic;
-            
+
             $addressParts = array_filter([
                 $customer->billing_street,
                 $customer->billing_city,
                 $customer->billing_zip,
-                $customer->billing_country
+                $customer->billing_country,
             ]);
             $invoice->customer_address = implode(', ', $addressParts) ?: 'Adresa neuvedena';
         } else {
@@ -129,12 +127,12 @@ class CreatePaymentConfirmationInvoice
         $invoice->save();
 
         // Create a line item for the payment
-        $methodLabel = $payment->payment_method instanceof PaymentMethod 
-            ? $payment->payment_method->label() 
+        $methodLabel = $payment->payment_method instanceof PaymentMethod
+            ? $payment->payment_method->label()
             : $payment->payment_method;
 
         $invoice->items()->create([
-            'name' => 'Přijatá platba' . ($methodLabel ? " - {$methodLabel}" : ''),
+            'name' => 'Přijatá platba'.($methodLabel ? " - {$methodLabel}" : ''),
             'quantity' => 1,
             'unit_price_amount' => $payment->amount,
             'total_price_amount' => $payment->amount,
@@ -160,7 +158,7 @@ class CreatePaymentConfirmationInvoice
 
         // Assuming number is numeric string like "202500001"
         $lastNumber = (int) substr($lastInvoice->number, 4);
-        
+
         return $prefix.str_pad((string) ($lastNumber + 1), 5, '0', STR_PAD_LEFT);
     }
 }
