@@ -33,12 +33,6 @@ class CentralUser extends Model implements SyncMaster
         });
     }
 
-    public function tenants(): BelongsToMany
-    {
-        return $this->belongsToMany(Tenant::class, 'tenant_users', 'global_user_id', 'tenant_id', 'global_id')
-            ->using(TenantPivot::class);
-    }
-
     /**
      * Class name of the tenant resource model.
      *

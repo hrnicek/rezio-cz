@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Central\Auth;
+namespace App\Http\Controllers\Tenant\Admin\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\PasswordReset;

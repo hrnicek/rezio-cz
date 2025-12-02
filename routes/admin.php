@@ -15,6 +15,8 @@ use App\Http\Controllers\Tenant\Admin\SwitchPropertyController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+Route::group(['middleware' => ['web', 'auth']], function () {
+
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('calendar', [CalendarController::class, 'index'])->name('calendar.index');
 Route::post('/switch-property', SwitchPropertyController::class)->name('switch-property');
@@ -61,3 +63,4 @@ Route::get('settings/appearance', function () {
 
 Route::get('settings/two-factor', [TwoFactorAuthenticationController::class, 'show'])
     ->name('two-factor.show');
+});
