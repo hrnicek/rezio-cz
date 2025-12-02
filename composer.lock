@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b9adde179675d57c594cd60c4e342d6e",
+    "content-hash": "e499f31b026fb34858ed9c22c72b1197",
     "packages": [
         {
             "name": "akaunting/laravel-money",
@@ -4737,20 +4737,20 @@
         },
         {
             "name": "nette/utils",
-            "version": "v4.0.9",
+            "version": "v4.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/utils.git",
-                "reference": "505a30ad386daa5211f08a318e47015b501cad30"
+                "reference": "fa1f0b8261ed150447979eb22e373b7b7ad5a8e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/utils/zipball/505a30ad386daa5211f08a318e47015b501cad30",
-                "reference": "505a30ad386daa5211f08a318e47015b501cad30",
+                "url": "https://api.github.com/repos/nette/utils/zipball/fa1f0b8261ed150447979eb22e373b7b7ad5a8e0",
+                "reference": "fa1f0b8261ed150447979eb22e373b7b7ad5a8e0",
                 "shasum": ""
             },
             "require": {
-                "php": "8.0 - 8.5"
+                "php": "8.2 - 8.5"
             },
             "conflict": {
                 "nette/finder": "<3",
@@ -4773,7 +4773,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.0-dev"
+                    "dev-master": "4.1-dev"
                 }
             },
             "autoload": {
@@ -4820,9 +4820,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/utils/issues",
-                "source": "https://github.com/nette/utils/tree/v4.0.9"
+                "source": "https://github.com/nette/utils/tree/v4.1.0"
             },
-            "time": "2025-10-31T00:45:47+00:00"
+            "time": "2025-12-01T17:49:23+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -7235,16 +7235,16 @@
         },
         {
             "name": "stancl/jobpipeline",
-            "version": "v1.8.1",
+            "version": "v2.0.0-rc6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/archtechx/jobpipeline.git",
-                "reference": "c4ba5ef04c99176eb000abb05fc81fb0f44f5d9c"
+                "reference": "4a8f566a5e9dcaf4b72ca6977fd5cfaf86211aed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/archtechx/jobpipeline/zipball/c4ba5ef04c99176eb000abb05fc81fb0f44f5d9c",
-                "reference": "c4ba5ef04c99176eb000abb05fc81fb0f44f5d9c",
+                "url": "https://api.github.com/repos/archtechx/jobpipeline/zipball/4a8f566a5e9dcaf4b72ca6977fd5cfaf86211aed",
+                "reference": "4a8f566a5e9dcaf4b72ca6977fd5cfaf86211aed",
                 "shasum": ""
             },
             "require": {
@@ -7275,40 +7275,45 @@
             "description": "Turn any series of jobs into Laravel listeners.",
             "support": {
                 "issues": "https://github.com/archtechx/jobpipeline/issues",
-                "source": "https://github.com/archtechx/jobpipeline/tree/v1.8.1"
+                "source": "https://github.com/archtechx/jobpipeline/tree/v2.0.0-rc6"
             },
-            "time": "2025-07-29T20:21:17+00:00"
+            "time": "2025-07-29T20:16:31+00:00"
         },
         {
             "name": "stancl/tenancy",
-            "version": "v3.9.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/archtechx/tenancy.git",
-                "reference": "d98a170fbd2e114604bfec3bc6267a3d6e02dec1"
+                "reference": "45cf7029af2ed4785ed779005fd710c3e74f9b64"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/archtechx/tenancy/zipball/d98a170fbd2e114604bfec3bc6267a3d6e02dec1",
-                "reference": "d98a170fbd2e114604bfec3bc6267a3d6e02dec1",
+                "url": "https://api.github.com/repos/archtechx/tenancy/zipball/45cf7029af2ed4785ed779005fd710c3e74f9b64",
+                "reference": "45cf7029af2ed4785ed779005fd710c3e74f9b64",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "facade/ignition-contracts": "^1.0.2",
-                "illuminate/support": "^10.0|^11.0|^12.0",
-                "php": "^8.0",
+                "illuminate/support": "^12.0",
+                "laravel/prompts": "0.*",
+                "laravel/tinker": "^2.0",
+                "php": "^8.4",
                 "ramsey/uuid": "^4.7.3",
-                "stancl/jobpipeline": "^1.8.0",
+                "spatie/invade": "*",
+                "stancl/jobpipeline": "2.0.0-rc6",
                 "stancl/virtualcolumn": "^1.5.0"
             },
             "require-dev": {
                 "doctrine/dbal": "^3.6.0",
-                "laravel/framework": "^10.0|^11.0|^12.0",
+                "larastan/larastan": "^3.0",
+                "laravel/framework": "^12.0",
                 "league/flysystem-aws-s3-v3": "^3.12.2",
-                "orchestra/testbench": "^8.0|^9.0|^10.0",
-                "spatie/valuestore": "^1.3.2"
+                "orchestra/testbench": "^10.0",
+                "pestphp/pest": "^3.0",
+                "spatie/valuestore": "^1.2.5"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -7336,7 +7341,7 @@
             "authors": [
                 {
                     "name": "Samuel Štancl",
-                    "email": "samuel.stancl@gmail.com"
+                    "email": "samuel@archte.ch"
                 }
             ],
             "description": "Automatic multi-tenancy for your Laravel application.",
@@ -7344,11 +7349,12 @@
                 "laravel",
                 "multi-database",
                 "multi-tenancy",
+                "multitenancy",
                 "tenancy"
             ],
             "support": {
                 "issues": "https://github.com/archtechx/tenancy/issues",
-                "source": "https://github.com/archtechx/tenancy/tree/v3.9.1"
+                "source": "https://github.com/archtechx/tenancy/tree/master"
             },
             "funding": [
                 {
@@ -7360,7 +7366,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-03-13T16:02:11+00:00"
+            "time": "2025-11-14T09:59:31+00:00"
         },
         {
             "name": "stancl/virtualcolumn",
@@ -11683,16 +11689,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "11.5.44",
+            "version": "11.5.45",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "c346885c95423eda3f65d85a194aaa24873cda82"
+                "reference": "faf5fff4fb9beb290affa53f812b05380819c51a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c346885c95423eda3f65d85a194aaa24873cda82",
-                "reference": "c346885c95423eda3f65d85a194aaa24873cda82",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/faf5fff4fb9beb290affa53f812b05380819c51a",
+                "reference": "faf5fff4fb9beb290affa53f812b05380819c51a",
                 "shasum": ""
             },
             "require": {
@@ -11764,7 +11770,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.44"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.45"
             },
             "funding": [
                 {
@@ -11788,7 +11794,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-11-13T07:17:35+00:00"
+            "time": "2025-12-01T07:38:43+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -12956,8 +12962,10 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
-    "stability-flags": {},
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "stancl/tenancy": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

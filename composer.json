@@ -19,7 +19,7 @@
         "spatie/laravel-data": "^4.18",
         "spatie/laravel-model-states": "^2.12",
         "spatie/laravel-permission": "^6.23",
-        "stancl/tenancy": "^3.9",
+        "stancl/tenancy": "dev-master",
         "tightenco/ziggy": "^2.6"
     },
     "require-dev": {
@@ -100,6 +100,6 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }

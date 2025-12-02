@@ -2,15 +2,16 @@
 
 namespace App\Models\Central;
 
-use Stancl\Tenancy\Contracts\TenantWithDatabase;
-use Stancl\Tenancy\Database\Concerns\HasDatabase;
+use Stancl\Tenancy\ResourceSyncing\TenantPivot;
 use Stancl\Tenancy\Database\Concerns\HasDomains;
+use Stancl\Tenancy\Database\Concerns\HasDatabase;
+use Stancl\Tenancy\Database\Concerns\MaintenanceMode;
 use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
-use Stancl\Tenancy\Database\Models\TenantPivot;
+use Stancl\Tenancy\Database\Contracts\TenantWithDatabase;
 
 class Tenant extends BaseTenant implements TenantWithDatabase
 {
-    use HasDatabase, HasDomains;
+    use HasDatabase, HasDomains, MaintenanceMode;
 
     public function users()
     {
@@ -18,24 +19,10 @@ class Tenant extends BaseTenant implements TenantWithDatabase
             ->using(TenantPivot::class);
     }
 
-    protected $fillable = [
-        'name',
-        'email',
-        'phone',
-        'password',
-        'is_active',
-        'data',
-    ];
-
     public static function getCustomColumns(): array
     {
         return [
             'id',
-            'name',
-            'email',
-            'phone',
-            'password',
-            'is_active',
             'data',
         ];
     }

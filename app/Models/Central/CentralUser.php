@@ -2,24 +2,27 @@
 
 namespace App\Models\Central;
 
+use Illuminate\Support\Str;
 use App\Models\User as TenantUser;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Str;
-use Stancl\Tenancy\Contracts\SyncMaster;
+use Stancl\Tenancy\ResourceSyncing\SyncMaster;
+use Stancl\Tenancy\ResourceSyncing\TenantPivot;
+use Stancl\Tenancy\ResourceSyncing\ResourceSyncing;
 use Stancl\Tenancy\Database\Concerns\CentralConnection;
-use Stancl\Tenancy\Database\Concerns\ResourceSyncing;
-use Stancl\Tenancy\Database\Models\TenantPivot;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class CentralUser extends Model implements SyncMaster
 {
     use CentralConnection, ResourceSyncing;
 
-    protected $guarded = [];
-
-    public $timestamps = true;
-
     public $table = 'users';
+
+    protected $fillable = [
+        'global_id',
+        'name',
+        'email',
+        'password',
+    ];
 
     protected static function booted()
     {
@@ -36,32 +39,41 @@ class CentralUser extends Model implements SyncMaster
             ->using(TenantPivot::class);
     }
 
+    /**
+     * Class name of the tenant resource model.
+     *
+     * In our example, the tenant resource is TenantUser.
+     */
     public function getTenantModelName(): string
     {
         return TenantUser::class;
     }
 
-    public function getGlobalIdentifierKey()
-    {
-        return $this->getAttribute($this->getGlobalIdentifierKeyName());
-    }
-
-    public function getGlobalIdentifierKeyName(): string
-    {
-        return 'global_id';
-    }
-
+    /**
+     * Class name of the related central resource model.
+     *
+     * Since the class we're in is actually the central
+     * resource, we can just return static::class.
+     */
     public function getCentralModelName(): string
     {
         return static::class;
     }
 
+    /**
+     * List of all attributes to keep in sync with the other resource
+     * (meaning the tenant model described in the other tab above).
+     *
+     * When this resource gets updated, the other resource's columns
+     * with the same names will automatically be updated too.
+     */
     public function getSyncedAttributeNames(): array
     {
         return [
+            'global_id',
             'name',
-            'email',
             'password',
+            'email',
         ];
     }
 }

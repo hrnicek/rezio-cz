@@ -4,12 +4,12 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Traits\HasPropertyRoles;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
+use Stancl\Tenancy\ResourceSyncing\Syncable;
+use Stancl\Tenancy\ResourceSyncing\ResourceSyncing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
-use Stancl\Tenancy\Contracts\Syncable;
-use Stancl\Tenancy\Database\Concerns\ResourceSyncing;
 
 class User extends Authenticatable implements Syncable
 {
@@ -26,7 +26,6 @@ class User extends Authenticatable implements Syncable
         'name',
         'email',
         'password',
-        // 'current_property_id', // Removed - users are now scoped to tenants
     ];
 
     /**
@@ -55,16 +54,6 @@ class User extends Authenticatable implements Syncable
         ];
     }
 
-    public function getGlobalIdentifierKey()
-    {
-        return $this->getAttribute($this->getGlobalIdentifierKeyName());
-    }
-
-    public function getGlobalIdentifierKeyName(): string
-    {
-        return 'global_id';
-    }
-
     public function getCentralModelName(): string
     {
         return \App\Models\Central\CentralUser::class;
@@ -73,6 +62,7 @@ class User extends Authenticatable implements Syncable
     public function getSyncedAttributeNames(): array
     {
         return [
+            'global_id',
             'name',
             'email',
             'password',

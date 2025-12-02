@@ -22,10 +22,10 @@ use Stancl\Tenancy\Middleware\InitializeTenancyByDomainOrSubdomain;
 */
 
 Route::middleware([
-    PreventAccessFromCentralDomains::class,
-    InitializeTenancyBySubdomain::class,
     'web',
 ])->group(function () {
+
+    // dd(\DB::connection()->getDatabaseName());
 
     Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(base_path('routes/admin.php'));
 
