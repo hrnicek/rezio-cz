@@ -3,23 +3,25 @@
 namespace App\Models;
 
 use App\Models\Booking\Booking;
-use App\Models\Configuration\BillingSetting;
-use App\Models\Configuration\BlockDate;
+use App\Models\Finance\Invoice;
 use App\Models\Configuration\Season;
 use App\Models\Configuration\Service;
-use App\Models\Finance\Invoice;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Configuration\BlockDate;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Configuration\BillingSetting;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Property extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
 
     protected $table = 'properties';
 
     protected $fillable = [
+        'uuid',
         'name', 'short_name', 'slug', 'address', 'description', 'image',
         'default_check_in_time', 'default_check_out_time',
     ];

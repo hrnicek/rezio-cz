@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('properties', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->string('name');
             $table->string('short_name')->nullable();
             $table->string('slug')->unique();
