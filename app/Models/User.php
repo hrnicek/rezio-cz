@@ -3,7 +3,6 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Traits\HasPropertyRoles;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -14,7 +13,7 @@ use Stancl\Tenancy\ResourceSyncing\Syncable;
 class User extends Authenticatable implements Syncable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasPropertyRoles, HasRoles, Notifiable, ResourceSyncing;
+    use HasFactory, HasRoles, Notifiable, ResourceSyncing;
 
     /**
      * The attributes that are mass assignable.
