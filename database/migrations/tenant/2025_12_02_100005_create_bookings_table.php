@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('code')->nullable();
-            $table->foreignId('property_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('property_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('customer_id')->constrained()->cascadeOnDelete();
             $table->date('check_in_date');
             $table->date('check_out_date');

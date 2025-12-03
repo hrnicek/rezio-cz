@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('blackout_dates', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('property_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('property_id')->constrained()->cascadeOnDelete();
             $table->date('start_date');
             $table->date('end_date');
             $table->string('reason')->nullable();

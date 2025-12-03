@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('email_templates', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('property_id')->nullable();
+            $table->uuid('property_id')->nullable();
             $table->string('type')->index();
             $table->string('subject');
             $table->string('title');

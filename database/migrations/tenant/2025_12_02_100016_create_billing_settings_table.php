@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('billing_settings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('property_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('property_id')->constrained()->cascadeOnDelete();
             $table->boolean('is_vat_payer')->default(false);
             $table->string('ico')->nullable();
             $table->string('dic')->nullable();

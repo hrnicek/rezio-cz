@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->string('profile_photo_path', 2048)->nullable();
-            $table->foreignId('current_property_id')->nullable();
+            $table->foreignUuid('current_property_id')->nullable();
             $table->timestamps();
         });
     }

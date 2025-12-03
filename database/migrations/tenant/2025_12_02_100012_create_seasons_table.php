@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('seasons', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('property_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignUuid('property_id')->nullable()->constrained()->nullOnDelete();
             $table->string('name');
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();

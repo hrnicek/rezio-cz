@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('services', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('property_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('property_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->text('description')->nullable();
             $table->enum('price_type', ['per_person', 'per_night', 'per_day', 'per_stay', 'fixed', 'flat', 'per_hour'])->default('fixed');
