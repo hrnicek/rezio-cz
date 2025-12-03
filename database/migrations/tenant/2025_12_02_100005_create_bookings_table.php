@@ -23,6 +23,7 @@ return new class extends Migration
             $table->uuid('token')->nullable()->unique();
             $table->bigInteger('total_price_amount')->unsigned()->default(0);
             $table->string('currency', 3)->default('CZK');
+            $table->unsignedSmallInteger('guests_count')->default(1);
             $table->text('notes')->nullable();
             $table->timestamp('reminders_sent_at')->nullable();
             $table->timestamps();

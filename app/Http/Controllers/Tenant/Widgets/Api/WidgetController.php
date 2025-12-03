@@ -18,9 +18,12 @@ use Illuminate\Support\Carbon;
 
 class WidgetController extends Controller
 {
-    public function index(Property $id, CalendarRequest $request): JsonResponse
+    public function index(string $propertyId, CalendarRequest $request): JsonResponse
     {
-        $property = $id;
+        $property = Property::find($propertyId);
+        if (!$property) {
+            return response()->json(['error' => 'Property not found'], 404);
+        }
         $pricingService = new SeasonalPricingService;
 
         $month = (int) ($request->validated()['month'] ?? now()->month);
@@ -87,9 +90,12 @@ class WidgetController extends Controller
         ]);
     }
 
-    public function verify(Property $id, VerifyAvailabilityRequest $request): JsonResponse
+    public function verify(string $propertyId, VerifyAvailabilityRequest $request): JsonResponse
     {
-        $property = $id;
+        $property = Property::find($propertyId);
+        if (!$property) {
+            return response()->json(['error' => 'Property not found'], 404);
+        }
         $data = $request->validated();
 
         $checkin = config('booking.checkin_time', '14:00');

@@ -54,7 +54,7 @@ Route::middleware([
         Route::delete('/guests/{guest}', [\App\Http\Controllers\Tenant\Guest\CheckInController::class, 'destroy'])->name('guests.destroy');
     });
 
-    Route::prefix('api/widgets/{id}')
+    Route::prefix('api/widgets/{propertyId}')
         ->group(function () {
             Route::get('/', [WidgetController::class, 'index'])->name('api.widgets.index');
             Route::post('verify', [WidgetController::class, 'verify'])->name('api.widgets.verify');

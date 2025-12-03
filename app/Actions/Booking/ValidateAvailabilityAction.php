@@ -14,8 +14,8 @@ class ValidateAvailabilityAction
         $overlapping = Booking::where('status', '!=', 'cancelled')
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->where(function ($q) use ($startDate, $endDate) {
-                    $q->where('date_start', '<', $endDate)
-                        ->where('date_end', '>', $startDate);
+                    $q->where('check_in_date', '<', $endDate)
+                        ->where('check_out_date', '>', $startDate);
                 });
             })
             ->exists();

@@ -26,7 +26,7 @@ class Booking extends Model
     protected $fillable = [
         'property_id', 'customer_id', 'code', 'status', 'token',
         'check_in_date', 'check_out_date',
-        'total_price_amount', 'currency',
+        'total_price_amount', 'currency', 'guests_count',
         'notes', 'reminders_sent_at',
         'arrival_time_estimate', 'departure_time_estimate',
         'checked_in_at', 'checked_out_at',

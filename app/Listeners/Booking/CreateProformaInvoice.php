@@ -5,7 +5,7 @@ namespace App\Listeners\Booking;
 use App\Enums\InvoiceType;
 use App\Events\Booking\BookingCreated;
 use App\Models\Finance\Invoice;
-use App\States\Invoice\InvoiceState;
+use App\States\Invoice\Issued;
 
 class CreateProformaInvoice
 {
@@ -42,7 +42,7 @@ class CreateProformaInvoice
         $invoice->folio_id = $booking->folios()->first()?->id;
 
         $invoice->type = InvoiceType::Proforma;
-        $invoice->status = InvoiceState::Issued; // Proforma is issued immediately
+        $invoice->status = Issued::class; // Proforma is issued immediately
 
         $invoice->number = $this->generateInvoiceNumber();
         $invoice->variable_symbol = $invoice->number;

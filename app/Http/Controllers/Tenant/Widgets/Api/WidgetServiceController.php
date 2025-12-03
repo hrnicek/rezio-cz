@@ -16,10 +16,15 @@ use Illuminate\Support\Facades\Cache;
 
 class WidgetServiceController extends Controller
 {
-    public function index(Property $id): JsonResponse
+    public function index(string $propertyId): JsonResponse
     {
+        $property = Property::find($propertyId);
+        if (!$property) {
+            return response()->json(['error' => 'Property not found'], 404);
+        }
+
         $services = Service::query()
-            ->where('property_id', $id->id)
+            ->where('property_id', $property->id)
             ->where('is_active', true)
             ->orderBy('name')
             ->get(['id', 'name', 'description', 'price_type', 'price_amount', 'max_quantity']);
@@ -40,21 +45,26 @@ class WidgetServiceController extends Controller
         ]);
     }
 
-    public function availability(CheckAvailabilityRequest $request, Property $id): JsonResponse
+    public function availability(CheckAvailabilityRequest $request, string $propertyId): JsonResponse
     {
+        $property = Property::find($propertyId);
+        if (!$property) {
+            return response()->json(['error' => 'Property not found'], 404);
+        }
+
         $data = $request->validated();
 
-        $timestamp = $id->updated_at?->timestamp ?? '0';
-        $cacheKey = "widget_availability:{$id->id}:{$timestamp}:".md5(serialize($data));
+        $timestamp = $property->updated_at?->timestamp ?? '0';
+        $cacheKey = "widget_availability:{$property->id}:{$timestamp}:".md5(serialize($data));
 
-        $result = Cache::remember($cacheKey, now()->addMinutes(15), function () use ($data, $id) {
+        $result = Cache::remember($cacheKey, now()->addMinutes(15), function () use ($data, $property) {
             $checkin = config('booking.checkin_time', '14:00');
             $checkout = config('booking.checkout_time', '10:00');
             $start = Carbon::createFromFormat('Y-m-d H:i', $data['start_date'].' '.$checkin);
             $end = Carbon::createFromFormat('Y-m-d H:i', $data['end_date'].' '.$checkout);
 
             $overlappingBookings = Booking::query()
-                ->where('property_id', $id->id)
+                ->where('property_id', $property->uuid)
                 ->where('status', '!=', Cancelled::class)
                 ->where('check_in_date', '<', $end)
                 ->where('check_out_date', '>', $start)

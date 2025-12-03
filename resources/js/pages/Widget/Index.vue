@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import 'vue-sonner/style.css'
+
 import { ref, computed, onMounted, reactive } from "vue";
-import { toast } from "vue-sonner";
+import { Toaster, toast } from "vue-sonner";
 import axios from "axios";
 import { storeToRefs } from "pinia"; 
 import { useBookingStore } from "@/stores/booking";
@@ -448,6 +450,9 @@ onMounted(async () => {
 
     </div>
   </div>
+
+  <!-- Toast notifications -->
+  <Toaster position="bottom-left" :close-button="true" />
 </template>
 
 <style scoped>
