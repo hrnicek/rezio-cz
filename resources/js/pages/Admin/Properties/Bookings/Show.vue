@@ -113,7 +113,6 @@ interface BookingData {
     created_at: string;
     updated_at: string;
     payments: PaymentData[];
-    token: string | null;
     guests: GuestData[];
     arrival_time_estimate?: string | null;
     departure_time_estimate?: string | null;
@@ -473,7 +472,7 @@ const executeDeleteBooking = () => {
                                         </Button>
                                     </div>
                                     <div v-else class="text-sm text-muted-foreground">
-                                        <p>Check-in token není k dispozici.</p>
+                                        <p>Check-in kód není k dispozici.</p>
                                     </div>
                                     
                                     <div class="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-border">

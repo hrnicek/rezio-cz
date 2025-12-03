@@ -20,7 +20,6 @@ return new class extends Migration
             $table->timestamp('checked_in_at')->nullable();
             $table->timestamp('checked_out_at')->nullable();
             $table->string('status')->default('pending')->index();
-            $table->uuid('token')->nullable()->unique();
             $table->bigInteger('total_price_amount')->unsigned()->default(0);
             $table->string('currency', 3)->default('CZK');
             $table->unsignedSmallInteger('guests_count')->default(1);

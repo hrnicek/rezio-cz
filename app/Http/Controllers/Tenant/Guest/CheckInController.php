@@ -12,7 +12,7 @@ class CheckInController extends Controller
 {
     public function show(string $code)
     {
-        $booking = Booking::where('code', $code)
+        $booking = Booking::query()->where('code', $code)
             ->with(['property', 'guests'])
             ->firstOrFail();
 
@@ -25,7 +25,7 @@ class CheckInController extends Controller
 
     public function store(Request $request, string $code)
     {
-        $booking = Booking::where('code', $code)->firstOrFail();
+        $booking = Booking::query()->where('code', $code)->firstOrFail();
 
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
@@ -48,7 +48,7 @@ class CheckInController extends Controller
 
     public function update(Request $request, string $token, Guest $guest)
     {
-        $booking = Booking::where('token', $token)->firstOrFail();
+        $booking = Booking::query()->where('token', $token)->firstOrFail();
 
         if ($guest->booking_id !== $booking->id) {
             abort(403);
@@ -75,7 +75,7 @@ class CheckInController extends Controller
 
     public function destroy(string $token, Guest $guest)
     {
-        $booking = Booking::where('token', $token)->firstOrFail();
+        $booking = Booking::query()->where('token', $token)->firstOrFail();
 
         if ($guest->booking_id !== $booking->id) {
             abort(403);

@@ -11,7 +11,7 @@ class ServiceSeeder extends Seeder
     public function run(): void
     {
         // Get the first property in the current tenant context
-        $property = Property::first();
+        $property = Property::query()->first();
 
         if (! $property) {
             $this->command->warn('No property found, skipping service seeding');

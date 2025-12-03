@@ -13,7 +13,7 @@ class HandlePaymentDeleted
 
         // Find the invoice associated with this payment
         // We use paranoid check, though usually only one invoice per payment
-        $invoice = Invoice::where('payment_id', $payment->id)->first();
+        $invoice = Invoice::query()->where('payment_id', $payment->id)->first();
 
         if ($invoice) {
             // Soft delete the invoice

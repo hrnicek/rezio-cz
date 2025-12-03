@@ -32,7 +32,7 @@ class EmailTemplate extends Model
     public static function findForProperty(string $type, ?int $propertyId): ?self
     {
         if ($propertyId) {
-            $template = self::where('type', $type)
+            $template = self::query()->where('type', $type)
                 ->where('property_id', $propertyId)
                 ->first();
 
@@ -45,7 +45,7 @@ class EmailTemplate extends Model
         $defaultData = \App\Services\EmailTemplates\DefaultTemplates::get($type);
 
         if ($defaultData) {
-            return self::make($defaultData);
+            return self::query()->make($defaultData);
         }
 
         return null;

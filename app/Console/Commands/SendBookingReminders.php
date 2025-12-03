@@ -25,7 +25,7 @@ class SendBookingReminders extends Command
      */
     public function handle()
     {
-        $bookings = \App\Models\Booking\Booking::whereState('status', \App\States\Booking\Confirmed::class)
+        $bookings = \App\Models\Booking\Booking::query()->whereState('status', \App\States\Booking\Confirmed::class)
             ->whereDate('start_date', '=', now()->addDays(3)->toDateString())
             ->whereNull('reminders_sent_at')
             ->with('property')

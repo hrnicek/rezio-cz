@@ -11,6 +11,7 @@ use Stancl\Tenancy\ResourceSyncing\TenantPivot;
 
 class Tenant extends BaseTenant implements TenantWithDatabase
 {
+    use \Illuminate\Database\Eloquent\Factories\HasFactory;
     use HasDatabase, HasDomains, MaintenanceMode;
 
     // public function users()

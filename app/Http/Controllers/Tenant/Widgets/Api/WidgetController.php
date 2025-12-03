@@ -20,7 +20,7 @@ class WidgetController extends Controller
 {
     public function index(string $propertyId, CalendarRequest $request): JsonResponse
     {
-        $property = Property::find($propertyId);
+        $property = Property::query()->find($propertyId);
         if (!$property) {
             return response()->json(['error' => 'Property not found'], 404);
         }
@@ -92,7 +92,7 @@ class WidgetController extends Controller
 
     public function verify(string $propertyId, VerifyAvailabilityRequest $request): JsonResponse
     {
-        $property = Property::find($propertyId);
+        $property = Property::query()->find($propertyId);
         if (!$property) {
             return response()->json(['error' => 'Property not found'], 404);
         }

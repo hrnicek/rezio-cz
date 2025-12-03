@@ -35,7 +35,7 @@ class RevenueMetricsService
 
         // 2. Calculate Occupancy & Revenue (prorated per day)
         $totalDays = $startDate->diffInDays($endDate->copy()->startOfDay()) + 1;
-        $totalUnits = $propertyId ? 1 : Property::count();
+        $totalUnits = $propertyId ? 1 : Property::query()->count();
         $totalPossibleNights = $totalDays * $totalUnits;
 
         $bookedNights = 0;

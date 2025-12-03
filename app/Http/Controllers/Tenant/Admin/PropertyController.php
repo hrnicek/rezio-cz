@@ -17,7 +17,7 @@ class PropertyController extends Controller
      */
     public function index()
     {
-        $properties = Property::latest()->paginate(10)->withQueryString();
+        $properties = Property::query()->latest()->paginate(10)->withQueryString();
 
         return Inertia::render('Admin/Properties/Index', [
             'properties' => PropertyData::collect($properties),
@@ -44,7 +44,7 @@ class PropertyController extends Controller
             'image' => ['nullable', 'string'],
         ]);
 
-        $property = Property::create([
+        $property = Property::query()->create([
             'name' => $validated['name'],
             'address' => $validated['address'] ?? null,
             'description' => $validated['description'] ?? null,

@@ -28,7 +28,7 @@ class CalculateDominantSeasonAction
         arsort($seasonNights);
         $dominantSeasonId = array_key_first($seasonNights);
 
-        return Season::find($dominantSeasonId);
+        return Season::query()->find($dominantSeasonId);
     }
 
     private function getSeasonForDate(Carbon $date, $seasons): ?Season

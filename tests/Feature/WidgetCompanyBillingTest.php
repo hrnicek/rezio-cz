@@ -19,7 +19,7 @@ class WidgetCompanyBillingTest extends TestCase
         parent::setUp();
 
         // Create a tenant for testing
-        $this->tenant = Tenant::create([
+        $this->tenant = Tenant::query()->create([
             'id' => 'test_widget_'.uniqid(),
         ]);
         
@@ -31,7 +31,7 @@ class WidgetCompanyBillingTest extends TestCase
         tenancy()->initialize($this->tenant);
 
         // Create property
-        $this->property = Property::create([
+        $this->property = Property::query()->create([
             'name' => 'Test Property',
             'slug' => 'test-property',
         ]);

@@ -61,7 +61,7 @@ class CustomerController extends Controller
             'is_registered' => ['boolean'],
         ]);
 
-        Customer::create($validated);
+        Customer::query()->create($validated);
 
         return back()->with('success', 'Zákazník byl úspěšně vytvořen.');
     }

@@ -43,7 +43,7 @@ class BookingPriceCalculator
                 continue;
             }
 
-            $service = Service::find($serviceId);
+            $service = Service::query()->find($serviceId);
             $quantity = (int) ($selection['quantity'] ?? 0);
 
             if (! $service || ! $service->is_active || $quantity <= 0) {

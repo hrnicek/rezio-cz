@@ -11,7 +11,7 @@ class ReportController extends Controller
     public function index()
     {
         return \Inertia\Inertia::render('Admin/Reports/Index', [
-            'properties' => \App\Models\Property::select('id', 'name')->get(),
+            'properties' => \App\Models\Property::query()->select('id', 'name')->get(),
         ]);
     }
 

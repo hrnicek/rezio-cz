@@ -47,7 +47,7 @@ class DashboardController extends Controller
         return Inertia::render('Admin/Dashboard', [
             'bookings' => $bookings,
             'upcomingBookings' => $upcomingBookings,
-            'properties' => \App\Models\Property::withCount([
+            'properties' => \App\Models\Property::query()->withCount([
                 'bookings',
                 'bookings as active_bookings_count' => function ($query) {
                     $query->where('check_out_date', '>=', now());

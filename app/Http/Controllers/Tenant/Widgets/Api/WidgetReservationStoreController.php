@@ -42,7 +42,7 @@ class WidgetReservationStoreController extends Controller
 
         try {
             // Validate that property exists (after tenancy is initialized)
-            $property = Property::find($propertyId);
+            $property = Property::query()->find($propertyId);
             if (!$property) {
                 Log::warning('Property not found for booking', [
                     'property_id' => $propertyId,

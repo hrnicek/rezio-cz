@@ -20,7 +20,7 @@ class EmailTemplateTest extends TestCase
 
         // Create a tenant for testing
         // We use a random ID to avoid conflicts
-        $this->tenant = Tenant::create([
+        $this->tenant = Tenant::query()->create([
             'id' => 'test_'.uniqid(),
         ]);
 
@@ -62,7 +62,7 @@ class EmailTemplateTest extends TestCase
     public function test_fallback_logic()
     {
         // 1. Create a property
-        $property = Property::create([
+        $property = Property::query()->create([
             'name' => 'Test Property',
             'slug' => 'test-property',
         ]);
@@ -74,7 +74,7 @@ class EmailTemplateTest extends TestCase
         $this->assertNull($found->property_id); // Default data has no property_id
 
         // 3. Create override for this property
-        $override = EmailTemplate::create([
+        $override = EmailTemplate::query()->create([
             'property_id' => $property->id,
             'type' => 'RESERVATION_CONFIRMED',
             'subject' => 'Custom Subject',

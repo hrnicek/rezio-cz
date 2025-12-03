@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Central superadmin
-        Superadmin::create([
+        Superadmin::query()->create([
             'name' => 'Super Admin',
             'email' => 'hrncir@zondy.cz',
             'password' => bcrypt('password'),

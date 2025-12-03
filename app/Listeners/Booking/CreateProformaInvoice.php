@@ -17,7 +17,7 @@ class CreateProformaInvoice
         $booking = $event->booking;
 
         // Prevent duplicates (naive check)
-        if (Invoice::where('booking_id', $booking->id)->where('type', InvoiceType::Proforma)->exists()) {
+        if (Invoice::query()->where('booking_id', $booking->id)->where('type', InvoiceType::Proforma)->exists()) {
             return;
         }
 

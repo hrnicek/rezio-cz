@@ -11,6 +11,7 @@ use Stancl\Tenancy\ResourceSyncing\SyncMaster;
 
 class CentralUser extends Model implements SyncMaster
 {
+    use \Illuminate\Database\Eloquent\Factories\HasFactory;
     use CentralConnection, ResourceSyncing;
 
     public $table = 'users';

@@ -30,7 +30,7 @@ class CalendarController extends Controller
 
         return Inertia::render('Admin/Calendar/Index', [
             'bookings' => $bookings,
-            'properties' => \App\Models\Property::select(['id', 'name'])->get(),
+            'properties' => \App\Models\Property::query()->select(['id', 'name'])->get(),
         ]);
     }
 }

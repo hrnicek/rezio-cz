@@ -18,7 +18,7 @@ class WidgetServiceController extends Controller
 {
     public function index(string $propertyId): JsonResponse
     {
-        $property = Property::find($propertyId);
+        $property = Property::query()->find($propertyId);
         if (!$property) {
             return response()->json(['error' => 'Property not found'], 404);
         }
@@ -47,7 +47,7 @@ class WidgetServiceController extends Controller
 
     public function availability(CheckAvailabilityRequest $request, string $propertyId): JsonResponse
     {
-        $property = Property::find($propertyId);
+        $property = Property::query()->find($propertyId);
         if (!$property) {
             return response()->json(['error' => 'Property not found'], 404);
         }
@@ -76,7 +76,7 @@ class WidgetServiceController extends Controller
                 ->filter()
                 ->unique();
 
-            $services = Service::whereIn('id', $serviceIds)->get()->keyBy('id');
+            $services = Service::query()->whereIn('id', $serviceIds)->get()->keyBy('id');
 
             $resultItems = [];
             $overallAvailable = true;
@@ -133,7 +133,7 @@ class WidgetServiceController extends Controller
 
     public function availabilityByProperty(string $token, CheckAvailabilityRequest $request): JsonResponse
     {
-        $property = Property::where('slug', $token)->firstOrFail();
+        $property = Property::query()->where('slug', $token)->firstOrFail();
 
         return $this->availability($request, $property);
     }

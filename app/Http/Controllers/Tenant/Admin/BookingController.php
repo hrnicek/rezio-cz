@@ -24,7 +24,7 @@ class BookingController extends Controller
 
         $currentProperty = null;
         if ($currentPropertyId) {
-            $currentProperty = Property::find($currentPropertyId);
+            $currentProperty = Property::query()->find($currentPropertyId);
         }
 
         $bookings = Booking::with(['property', 'guests'])
@@ -128,20 +128,20 @@ class BookingController extends Controller
             'notes' => ['nullable', 'string'],
         ]);
 
-        $property = Property::findOrFail($validated['property_id']);
+        $property = Property::query()->findOrFail($validated['property_id']);
 
         if ($this->hasOverlap($property->id, $validated['check_in_date'], $validated['check_out_date'])) {
             return back()->withErrors(['check_in_date' => 'Selected dates are not available.']);
         }
 
         // Create a customer for the blocked date
-        $customer = Customer::create([
+        $customer = Customer::query()->create([
             'name' => 'Blocked Date',
             'email' => 'blocked@system.local',
             'phone' => null,
         ]);
 
-        $newBooking = Booking::create([
+        $newBooking = Booking::query()->create([
             'property_id' => $property->id,
             'customer_id' => $customer->id,
             'check_in_date' => $validated['check_in_date'],
@@ -183,7 +183,7 @@ class BookingController extends Controller
 
     private function hasOverlap($propertyId, $startDate, $endDate, $ignoreBookingId = null)
     {
-        return Booking::where('property_id', $propertyId)
+        return Booking::query()->where('property_id', $propertyId)
             ->where('status', '!=', Cancelled::class)
             ->when($ignoreBookingId, function ($query, $ignoreBookingId) {
                 return $query->where('id', '!=', $ignoreBookingId);

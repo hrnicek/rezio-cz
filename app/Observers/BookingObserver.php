@@ -20,7 +20,7 @@ class BookingObserver
     {
         do {
             $code = now()->format('y').strtoupper(Str::random(4));
-        } while (Booking::where('code', $code)->exists());
+        } while (Booking::query()->where('code', $code)->exists());
 
         return $code;
     }

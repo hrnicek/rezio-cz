@@ -195,7 +195,7 @@ class BookingService
     private function findOrCreateCustomer(array $customerData): Customer
     {
         // Try to find existing customer by email first
-        $customer = Customer::where('email', $customerData['email'])->first();
+        $customer = Customer::query()->where('email', $customerData['email'])->first();
 
         if ($customer) {
             // Update customer data if needed
@@ -218,7 +218,7 @@ class BookingService
         }
 
         // Create new customer
-        return Customer::create([
+        return Customer::query()->create([
             'email' => $customerData['email'],
             'first_name' => $customerData['first_name'] ?? '',
             'last_name' => $customerData['last_name'] ?? '',
@@ -281,7 +281,7 @@ class BookingService
         // Generate unique booking code
         $code = $this->generateUniqueBookingCode();
 
-        return Booking::create([
+        return Booking::query()->create([
             'property_id' => $data['property_id'],
             'customer_id' => $customer->id,
             'season_id' => $season?->id,
@@ -300,7 +300,7 @@ class BookingService
     {
         do {
             $code = strtoupper(Str::random(8));
-        } while (Booking::where('code', $code)->exists());
+        } while (Booking::query()->where('code', $code)->exists());
 
         return $code;
     }

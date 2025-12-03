@@ -24,7 +24,7 @@ class SeasonTest extends TestCase
         config(['cache.default' => 'file']);
 
         // Create a tenant for testing
-        $this->tenant = Tenant::create([
+        $this->tenant = Tenant::query()->create([
             'id' => 'test_'.uniqid(),
         ]);
         
@@ -39,7 +39,7 @@ class SeasonTest extends TestCase
         $this->user = User::factory()->create();
         
         // Create property
-        $this->property = Property::create([
+        $this->property = Property::query()->create([
             'name' => 'Test Property',
             'slug' => 'test-property',
         ]);
@@ -86,7 +86,7 @@ class SeasonTest extends TestCase
 
     public function test_can_update_season_with_new_fields()
     {
-        $season = Season::create([
+        $season = Season::query()->create([
             'property_id' => $this->property->id,
             'name' => 'Old Season',
             'start_date' => '2025-01-01',

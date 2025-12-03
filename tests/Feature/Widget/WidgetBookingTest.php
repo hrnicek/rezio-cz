@@ -20,7 +20,7 @@ class WidgetBookingTest extends TestCase
         parent::setUp();
 
         // Create a tenant for testing
-        $this->tenant = Tenant::create([
+        $this->tenant = Tenant::query()->create([
             'id' => 'test_widget_booking_' . uniqid(),
         ]);
 
@@ -32,13 +32,13 @@ class WidgetBookingTest extends TestCase
         tenancy()->initialize($this->tenant);
 
         // Create property with UUID
-        $this->property = Property::create([
+        $this->property = Property::query()->create([
             'name' => 'Test Property',
             'slug' => 'test-property',
         ]);
 
         // Create default season for pricing
-        $this->defaultSeason = Season::create([
+        $this->defaultSeason = Season::query()->create([
             'property_id' => $this->property->id,
             'name' => 'Default Season',
             'is_default' => true,
@@ -106,7 +106,7 @@ class WidgetBookingTest extends TestCase
     public function test_widget_booking_validation_error_returns_proper_message(): void
     {
         // Create a season with min_persons requirement
-        Season::create([
+        Season::query()->create([
             'property_id' => $this->property->id,
             'name' => 'High Season',
             'is_default' => false,
