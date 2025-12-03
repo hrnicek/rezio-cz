@@ -55,13 +55,13 @@ class Customer extends Model
         return $this->hasMany(Folio::class, 'customer_id');
     }
 
-    public function getNameAttribute(): string
+    protected function getNameAttribute(): string
     {
         return "{$this->first_name} {$this->last_name}";
     }
 
     // Helper pro získání správného jména na fakturu
-    public function getBillingNameAttribute(): string
+    protected function getBillingNameAttribute(): string
     {
         return $this->is_company ? ($this->company_name ?? $this->name) : $this->name;
     }

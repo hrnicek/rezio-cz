@@ -55,8 +55,8 @@ class RevenueMetricsService
         }
 
         foreach ($bookings as $booking) {
-            $bookingStart = Carbon::parse($booking->check_in_date)->startOfDay();
-            $bookingEnd = Carbon::parse($booking->check_out_date)->startOfDay();
+            $bookingStart = \Illuminate\Support\Facades\Date::parse($booking->check_in_date)->startOfDay();
+            $bookingEnd = \Illuminate\Support\Facades\Date::parse($booking->check_out_date)->startOfDay();
 
             // Calculate daily rate for this booking (in cents)
             $bookingNights = $bookingStart->diffInDays($bookingEnd);

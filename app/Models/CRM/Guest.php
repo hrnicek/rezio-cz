@@ -34,7 +34,7 @@ class Guest extends Model
         return $this->belongsTo(Booking::class);
     }
 
-    public function getFullNameAttribute(): string
+    protected function getFullNameAttribute(): string
     {
         return "{$this->first_name} {$this->last_name}";
     }

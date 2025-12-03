@@ -29,8 +29,8 @@ class WidgetController extends Controller
         $month = (int) ($request->validated()['month'] ?? now()->month);
         $year = (int) ($request->validated()['year'] ?? now()->year);
 
-        $periodStart = Carbon::create($year, $month, 1)->startOfMonth();
-        $periodEnd = Carbon::create($year, $month, 1)->endOfMonth();
+        $periodStart = \Illuminate\Support\Facades\Date::create($year, $month, 1)->startOfMonth();
+        $periodEnd = \Illuminate\Support\Facades\Date::create($year, $month, 1)->endOfMonth();
 
         $bookings = Booking::query()
             ->where('property_id', $property->id)
@@ -100,8 +100,8 @@ class WidgetController extends Controller
 
         $checkin = config('booking.checkin_time', '14:00');
         $checkout = config('booking.checkout_time', '10:00');
-        $start = Carbon::createFromFormat('Y-m-d H:i', $data['start_date'].' '.$checkin);
-        $end = Carbon::createFromFormat('Y-m-d H:i', $data['end_date'].' '.$checkout);
+        $start = \Illuminate\Support\Facades\Date::createFromFormat('Y-m-d H:i', $data['start_date'].' '.$checkin);
+        $end = \Illuminate\Support\Facades\Date::createFromFormat('Y-m-d H:i', $data['end_date'].' '.$checkout);
 
         $minLeadDays = (int) config('booking.min_lead_days', 1);
         $earliest = now()->timezone(config('booking.timezone', 'Europe/Prague'))

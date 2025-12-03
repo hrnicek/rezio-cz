@@ -14,9 +14,9 @@ class BookingPaymentController extends Controller
     public function store(Request $request, Booking $booking)
     {
         $validated = $request->validate([
-            'amount' => 'required|numeric|min:0',
-            'paid_at' => 'required|date',
-            'notes' => 'nullable|string',
+            'amount' => ['required', 'numeric', 'min:0'],
+            'paid_at' => ['required', 'date'],
+            'notes' => ['nullable', 'string'],
         ]);
 
         // 1. Find or Create default Folio (Hlavní účet)
@@ -45,13 +45,13 @@ class BookingPaymentController extends Controller
             'notes' => $validated['notes'] ?? null,
         ]);
 
-        return Redirect::back()->with('success', 'Platba byla úspěšně přidána.');
+        return back()->with('success', 'Platba byla úspěšně přidána.');
     }
 
     public function destroy(Booking $booking, Payment $payment)
     {
         $payment->delete();
 
-        return Redirect::back()->with('success', 'Platba byla smazána.');
+        return back()->with('success', 'Platba byla smazána.');
     }
 }

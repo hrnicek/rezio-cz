@@ -25,12 +25,12 @@ class PropertyServiceController extends Controller
     public function store(Request $request, Property $property)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
             'price_type' => ['required', new Enum(ServicePriceType::class)],
-            'price_amount' => 'required|numeric|min:0',
-            'max_quantity' => 'required|integer|min:0',
-            'is_active' => 'boolean',
+            'price_amount' => ['required', 'numeric', 'min:0'],
+            'max_quantity' => ['required', 'integer', 'min:0'],
+            'is_active' => ['boolean'],
         ]);
 
         // Convert price from units (frontend) to cents (backend)
@@ -38,18 +38,18 @@ class PropertyServiceController extends Controller
 
         $property->services()->create($validated);
 
-        return redirect()->route('admin.properties.services.index', $property);
+        return to_route('admin.properties.services.index', $property);
     }
 
     public function update(Request $request, Property $property, Service $service)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
             'price_type' => ['required', new Enum(ServicePriceType::class)],
-            'price_amount' => 'required|numeric|min:0',
-            'max_quantity' => 'required|integer|min:0',
-            'is_active' => 'boolean',
+            'price_amount' => ['required', 'numeric', 'min:0'],
+            'max_quantity' => ['required', 'integer', 'min:0'],
+            'is_active' => ['boolean'],
         ]);
 
         // Convert price from units (frontend) to cents (backend)
@@ -57,13 +57,13 @@ class PropertyServiceController extends Controller
 
         $service->update($validated);
 
-        return redirect()->route('admin.properties.services.index', $property);
+        return to_route('admin.properties.services.index', $property);
     }
 
     public function destroy(Property $property, Service $service)
     {
         $service->delete();
 
-        return redirect()->route('admin.properties.services.index', $property);
+        return to_route('admin.properties.services.index', $property);
     }
 }

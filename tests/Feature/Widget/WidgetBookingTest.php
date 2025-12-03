@@ -56,8 +56,8 @@ class WidgetBookingTest extends TestCase
 
     public function test_widget_booking_with_uuid_property_succeeds(): void
     {
-        $start = Carbon::now()->addDays(10)->format('Y-m-d');
-        $end = Carbon::now()->addDays(12)->format('Y-m-d');
+        $start = \Illuminate\Support\Facades\Date::now()->addDays(10)->format('Y-m-d');
+        $end = \Illuminate\Support\Facades\Date::now()->addDays(12)->format('Y-m-d');
 
         $payload = [
             'start_date' => $start,
@@ -111,14 +111,14 @@ class WidgetBookingTest extends TestCase
             'name' => 'High Season',
             'is_default' => false,
             'priority' => 10,
-            'start_date' => Carbon::now()->addDays(5),
-            'end_date' => Carbon::now()->addDays(15),
+            'start_date' => \Illuminate\Support\Facades\Date::now()->addDays(5),
+            'end_date' => \Illuminate\Support\Facades\Date::now()->addDays(15),
             'price_amount' => 300000,
             'min_persons' => 4, // Require minimum 4 persons
         ]);
 
-        $start = Carbon::now()->addDays(10)->format('Y-m-d');
-        $end = Carbon::now()->addDays(12)->format('Y-m-d');
+        $start = \Illuminate\Support\Facades\Date::now()->addDays(10)->format('Y-m-d');
+        $end = \Illuminate\Support\Facades\Date::now()->addDays(12)->format('Y-m-d');
 
         $payload = [
             'start_date' => $start,
@@ -158,8 +158,8 @@ class WidgetBookingTest extends TestCase
 
     public function test_widget_booking_with_invalid_dates_returns_validation_error(): void
     {
-        $start = Carbon::now()->addDays(12)->format('Y-m-d');
-        $end = Carbon::now()->addDays(10)->format('Y-m-d'); // End before start
+        $start = \Illuminate\Support\Facades\Date::now()->addDays(12)->format('Y-m-d');
+        $end = \Illuminate\Support\Facades\Date::now()->addDays(10)->format('Y-m-d'); // End before start
 
         $payload = [
             'start_date' => $start,

@@ -60,8 +60,8 @@ class WidgetServiceController extends Controller
         $result = Cache::remember($cacheKey, now()->addMinutes(15), function () use ($data, $property) {
             $checkin = config('booking.checkin_time', '14:00');
             $checkout = config('booking.checkout_time', '10:00');
-            $start = Carbon::createFromFormat('Y-m-d H:i', $data['start_date'].' '.$checkin);
-            $end = Carbon::createFromFormat('Y-m-d H:i', $data['end_date'].' '.$checkout);
+            $start = \Illuminate\Support\Facades\Date::createFromFormat('Y-m-d H:i', $data['start_date'].' '.$checkin);
+            $end = \Illuminate\Support\Facades\Date::createFromFormat('Y-m-d H:i', $data['end_date'].' '.$checkout);
 
             $overlappingBookings = Booking::query()
                 ->where('property_id', $property->uuid)

@@ -46,7 +46,7 @@ class BookingRetryService
                     // Exponential backoff with jitter
                     $delay = self::RETRY_DELAY_MS * pow(2, $attempt - 1);
                     $jitter = random_int(0, 50);
-                    usleep(($delay + $jitter) * 1000);
+                    \Illuminate\Support\Sleep::usleep(($delay + $jitter) * 1000);
                 }
             }
         }

@@ -43,7 +43,7 @@ class BlockDate extends Model
      * Scope: Najdi blokace, které kolidují s poptávaným termínem.
      * Logika překryvu intervalů: (StartA < EndB) && (EndA > StartB)
      */
-    public function scopeOverlaps(Builder $query, $checkIn, $checkOut): Builder
+    protected function scopeOverlaps(Builder $query, $checkIn, $checkOut): Builder
     {
         return $query->where(function ($q) use ($checkIn, $checkOut) {
             $q->where('start_date', '<', $checkOut)
@@ -54,15 +54,15 @@ class BlockDate extends Model
     /**
      * Scope: Pouze aktivní blokace (dnešní a budoucí)
      */
-    public function scopeUpcoming(Builder $query): Builder
+    protected function scopeUpcoming(Builder $query): Builder
     {
-        return $query->where('end_date', '>=', now()->startOfDay());
+        return $query->where('end_date', '>=', today());
     }
 
     /**
      * Scope: Pro konkrétní property (pomocná metoda)
      */
-    public function scopeForProperty(Builder $query, $propertyId): Builder
+    protected function scopeForProperty(Builder $query, $propertyId): Builder
     {
         return $query->where('property_id', $propertyId);
     }
@@ -72,7 +72,7 @@ class BlockDate extends Model
     /**
      * Počet dní blokace
      */
-    public function getDaysCountAttribute(): int
+    protected function getDaysCountAttribute(): int
     {
         // Včetně počátečního dne, nebo rozdíl? Záleží na logice, obvykle diffInDays
         return $this->start_date->diffInDays($this->end_date);

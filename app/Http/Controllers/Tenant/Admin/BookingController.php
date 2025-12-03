@@ -121,11 +121,11 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'property_id' => 'required|exists:properties,id',
-            'check_in_date' => 'required|date',
-            'check_out_date' => 'required|date|after:check_in_date',
+            'property_id' => ['required', 'exists:properties,id'],
+            'check_in_date' => ['required', 'date'],
+            'check_out_date' => ['required', 'date', 'after:check_in_date'],
             'status' => ['required', ValidStateRule::make(BookingState::class)],
-            'notes' => 'nullable|string',
+            'notes' => ['nullable', 'string'],
         ]);
 
         $property = Property::findOrFail($validated['property_id']);
@@ -150,7 +150,7 @@ class BookingController extends Controller
             'status' => $validated['status'],
         ]);
 
-        return redirect()->back()->with('success', 'Dates blocked successfully.');
+        return back()->with('success', 'Dates blocked successfully.');
     }
 
     public function update(Request $request, Booking $booking)
@@ -162,9 +162,9 @@ class BookingController extends Controller
 
         $validated = $request->validate([
             'status' => ['sometimes', 'required', ValidStateRule::make(BookingState::class)],
-            'check_in_date' => 'sometimes|required|date',
-            'check_out_date' => 'sometimes|required|date|after:check_in_date',
-            'notes' => 'nullable|string',
+            'check_in_date' => ['sometimes', 'required', 'date'],
+            'check_out_date' => ['sometimes', 'required', 'date', 'after:check_in_date'],
+            'notes' => ['nullable', 'string'],
         ]);
 
         if (isset($validated['check_in_date']) || isset($validated['check_out_date'])) {
@@ -178,7 +178,7 @@ class BookingController extends Controller
 
         $booking->update($validated);
 
-        return redirect()->back()->with('success', 'Booking updated.');
+        return back()->with('success', 'Booking updated.');
     }
 
     private function hasOverlap($propertyId, $startDate, $endDate, $ignoreBookingId = null)
@@ -207,6 +207,6 @@ class BookingController extends Controller
 
         $booking->delete();
 
-        return redirect()->back()->with('success', 'Booking deleted.');
+        return back()->with('success', 'Booking deleted.');
     }
 }

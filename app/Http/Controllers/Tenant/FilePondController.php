@@ -14,7 +14,7 @@ class FilePondController extends Controller
     public function process(Request $request)
     {
         $request->validate([
-            'filepond' => 'required|file',
+            'filepond' => ['required', 'file'],
         ]);
 
         $file = $request->file('filepond');

@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property string $uuid
- * @property-read \App\Models\Widget $widget
  */
 class Property extends Model
 {

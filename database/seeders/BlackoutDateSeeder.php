@@ -13,7 +13,7 @@ class BlackoutDateSeeder extends Seeder
      */
     public function run(): void
     {
-        $now = Carbon::now()->startOfDay();
+        $now = \Illuminate\Support\Facades\Date::now()->startOfDay();
 
         $items = [
             [

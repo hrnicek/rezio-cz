@@ -39,7 +39,7 @@ class HandleBookingExceptions
             }
 
             // For web requests, redirect back with error
-            return redirect()->back()
+            return back()
                 ->withInput()
                 ->withErrors(['booking' => $e->getMessage()]);
         }

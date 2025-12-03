@@ -56,7 +56,7 @@ class Booking extends Model
         return BookingFactory::new();
     }
 
-    public function getCheckInTimeAttribute(): string
+    protected function getCheckInTimeAttribute(): string
     {
         // 1. Má host specifický čas příjezdu? (např. Early Check-in)
         if ($this->arrival_time_estimate) {
@@ -67,9 +67,9 @@ class Booking extends Model
         return $this->property->default_check_in_time;
     }
 
-    public function getCheckInAtAttribute(): Carbon
+    protected function getCheckInAtAttribute(): Carbon
     {
-        return Carbon::parse(
+        return \Illuminate\Support\Facades\Date::parse(
             $this->check_in_date->format('Y-m-d').' '.$this->check_in_time
         );
     }

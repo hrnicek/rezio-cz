@@ -39,7 +39,7 @@ class DashboardController extends Controller
         $upcomingBookings = $bookingsQuery
             ->clone()
             ->where('check_in_date', '>=', now())
-            ->orderBy('check_in_date')
+            ->oldest('check_in_date')
             ->take(5)
             ->get()
             ->map(fn ($booking) => UpcomingBookingData::fromModel($booking)->toArray());

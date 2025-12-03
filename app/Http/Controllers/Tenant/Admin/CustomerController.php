@@ -28,8 +28,7 @@ class CustomerController extends Controller
                         ->orWhere('company_name', 'like', "%{$search}%")
                         ->orWhere('ico', 'like', "%{$search}%");
                 });
-            })
-            ->orderByDesc('created_at')
+            })->latest()
             ->paginate(10)
             ->withQueryString();
 
@@ -64,7 +63,7 @@ class CustomerController extends Controller
 
         Customer::create($validated);
 
-        return redirect()->back()->with('success', 'Zákazník byl úspěšně vytvořen.');
+        return back()->with('success', 'Zákazník byl úspěšně vytvořen.');
     }
 
     public function update(Request $request, Customer $customer): RedirectResponse
@@ -92,14 +91,14 @@ class CustomerController extends Controller
 
         $customer->update($validated);
 
-        return redirect()->back()->with('success', 'Zákazník byl úspěšně upraven.');
+        return back()->with('success', 'Zákazník byl úspěšně upraven.');
     }
 
     public function destroy(Customer $customer): RedirectResponse
     {
         $customer->delete();
 
-        return redirect()->back()->with('success', 'Zákazník byl smazán.');
+        return back()->with('success', 'Zákazník byl smazán.');
     }
 
     public function import(Request $request): RedirectResponse
@@ -111,9 +110,9 @@ class CustomerController extends Controller
         try {
             Excel::import(new CustomersImport, $request->file('file'));
 
-            return redirect()->back()->with('success', 'Import byl úspěšně dokončen.');
+            return back()->with('success', 'Import byl úspěšně dokončen.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Chyba při importu: '.$e->getMessage());
+            return back()->with('error', 'Chyba při importu: '.$e->getMessage());
         }
     }
 

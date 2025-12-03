@@ -44,7 +44,7 @@ class InvoiceItem extends Model
     /**
      * Vrátí sazbu DPH jako float (např. 21.0)
      */
-    public function getTaxRatePercentageAttribute(): float
+    protected function getTaxRatePercentageAttribute(): float
     {
         return $this->tax_rate / 100;
     }

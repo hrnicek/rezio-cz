@@ -167,8 +167,8 @@ class BookingService
             $checkout = config('booking.checkout_time', '10:00');
             $timezone = config('booking.timezone', 'Europe/Prague');
 
-            $start = Carbon::createFromFormat('Y-m-d H:i', $data['start_date'] . ' ' . $checkin, $timezone);
-            $end = Carbon::createFromFormat('Y-m-d H:i', $data['end_date'] . ' ' . $checkout, $timezone);
+            $start = \Illuminate\Support\Facades\Date::createFromFormat('Y-m-d H:i', $data['start_date'] . ' ' . $checkin, $timezone);
+            $end = \Illuminate\Support\Facades\Date::createFromFormat('Y-m-d H:i', $data['end_date'] . ' ' . $checkout, $timezone);
 
             if ($end->lte($start)) {
                 throw new BookingValidationException('End date must be after start date');

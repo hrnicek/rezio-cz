@@ -28,22 +28,22 @@ class CheckInController extends Controller
         $booking = Booking::where('code', $code)->firstOrFail();
 
         $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'is_adult' => 'required|boolean',
-            'gender' => 'nullable|string',
-            'nationality' => 'nullable|string',
-            'document_type' => 'nullable|string',
-            'document_number' => 'nullable|string',
-            'birth_date' => 'nullable|date',
-            'birth_place' => 'nullable|string',
-            'address' => 'nullable|array',
-            'signature' => 'nullable|string',
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'is_adult' => ['required', 'boolean'],
+            'gender' => ['nullable', 'string'],
+            'nationality' => ['nullable', 'string'],
+            'document_type' => ['nullable', 'string'],
+            'document_number' => ['nullable', 'string'],
+            'birth_date' => ['nullable', 'date'],
+            'birth_place' => ['nullable', 'string'],
+            'address' => ['nullable', 'array'],
+            'signature' => ['nullable', 'string'],
         ]);
 
         $booking->guests()->create($validated);
 
-        return redirect()->back()->with('success', 'Osoba byla úspěšně uložena.');
+        return back()->with('success', 'Osoba byla úspěšně uložena.');
     }
 
     public function update(Request $request, string $token, Guest $guest)
@@ -55,22 +55,22 @@ class CheckInController extends Controller
         }
 
         $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'is_adult' => 'required|boolean',
-            'gender' => 'nullable|string',
-            'nationality' => 'nullable|string',
-            'document_type' => 'nullable|string',
-            'document_number' => 'nullable|string',
-            'birth_date' => 'nullable|date',
-            'birth_place' => 'nullable|string',
-            'address' => 'nullable|array',
-            'signature' => 'nullable|string',
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'is_adult' => ['required', 'boolean'],
+            'gender' => ['nullable', 'string'],
+            'nationality' => ['nullable', 'string'],
+            'document_type' => ['nullable', 'string'],
+            'document_number' => ['nullable', 'string'],
+            'birth_date' => ['nullable', 'date'],
+            'birth_place' => ['nullable', 'string'],
+            'address' => ['nullable', 'array'],
+            'signature' => ['nullable', 'string'],
         ]);
 
         $guest->update($validated);
 
-        return redirect()->back()->with('success', 'Údaje byly aktualizovány.');
+        return back()->with('success', 'Údaje byly aktualizovány.');
     }
 
     public function destroy(string $token, Guest $guest)
@@ -83,6 +83,6 @@ class CheckInController extends Controller
 
         $guest->delete();
 
-        return redirect()->back()->with('success', 'Osoba byla smazána.');
+        return back()->with('success', 'Osoba byla smazána.');
     }
 }

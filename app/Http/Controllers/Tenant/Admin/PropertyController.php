@@ -38,10 +38,10 @@ class PropertyController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'nullable|string',
-            'description' => 'nullable|string',
-            'image' => 'nullable|string',
+            'name' => ['required', 'string', 'max:255'],
+            'address' => ['nullable', 'string'],
+            'description' => ['nullable', 'string'],
+            'image' => ['nullable', 'string'],
         ]);
 
         $property = Property::create([
@@ -61,7 +61,7 @@ class PropertyController extends Controller
             }
         }
 
-        return redirect()->route('admin.properties.index');
+        return to_route('admin.properties.index');
     }
 
     /**
@@ -88,10 +88,10 @@ class PropertyController extends Controller
     public function update(Request $request, Property $property)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'nullable|string',
-            'description' => 'nullable|string',
-            'image' => 'nullable|string',
+            'name' => ['required', 'string', 'max:255'],
+            'address' => ['nullable', 'string'],
+            'description' => ['nullable', 'string'],
+            'image' => ['nullable', 'string'],
         ]);
 
         $property->update([
@@ -124,7 +124,7 @@ class PropertyController extends Controller
             $property->update(['image' => null]);
         }
 
-        return redirect()->route('admin.properties.index');
+        return to_route('admin.properties.index');
     }
 
     /**
@@ -134,6 +134,6 @@ class PropertyController extends Controller
     {
         $property->delete();
 
-        return redirect()->route('admin.properties.index');
+        return to_route('admin.properties.index');
     }
 }

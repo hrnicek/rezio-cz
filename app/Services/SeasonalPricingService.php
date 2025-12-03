@@ -62,8 +62,8 @@ class SeasonalPricingService
 
     public function calculate_stay_price(string $propertyId, $checkInDate, $checkOutDate): int
     {
-        $checkIn = $checkInDate instanceof Carbon ? $checkInDate->copy()->startOfDay() : Carbon::parse($checkInDate)->startOfDay();
-        $checkOut = $checkOutDate instanceof Carbon ? $checkOutDate->copy()->startOfDay() : Carbon::parse($checkOutDate)->startOfDay();
+        $checkIn = $checkInDate instanceof Carbon ? $checkInDate->copy()->startOfDay() : \Illuminate\Support\Facades\Date::parse($checkInDate)->startOfDay();
+        $checkOut = $checkOutDate instanceof Carbon ? $checkOutDate->copy()->startOfDay() : \Illuminate\Support\Facades\Date::parse($checkOutDate)->startOfDay();
 
         if ($checkOut->lte($checkIn)) {
             return 0;

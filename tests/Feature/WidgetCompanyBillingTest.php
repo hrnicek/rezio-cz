@@ -47,8 +47,8 @@ class WidgetCompanyBillingTest extends TestCase
 
     public function test_booking_creation_saves_company_billing_fields()
     {
-        $start = Carbon::now()->addDays(10)->format('Y-m-d');
-        $end = Carbon::now()->addDays(12)->format('Y-m-d');
+        $start = \Illuminate\Support\Facades\Date::now()->addDays(10)->format('Y-m-d');
+        $end = \Illuminate\Support\Facades\Date::now()->addDays(12)->format('Y-m-d');
 
         $payload = [
             'start_date' => $start,
@@ -95,8 +95,8 @@ class WidgetCompanyBillingTest extends TestCase
 
     public function test_booking_creation_without_company_fields()
     {
-        $start = Carbon::now()->addDays(15)->format('Y-m-d');
-        $end = Carbon::now()->addDays(17)->format('Y-m-d');
+        $start = \Illuminate\Support\Facades\Date::now()->addDays(15)->format('Y-m-d');
+        $end = \Illuminate\Support\Facades\Date::now()->addDays(17)->format('Y-m-d');
 
         $payload = [
             'start_date' => $start,

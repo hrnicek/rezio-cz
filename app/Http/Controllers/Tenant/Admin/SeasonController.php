@@ -16,7 +16,7 @@ class SeasonController extends Controller
             'property' => $property,
             'seasons' => SeasonData::collect(
                 $property->seasons()
-                    ->orderBy('start_date')
+                    ->oldest('start_date')
                     ->paginate(request('per_page', 10))
                     ->withQueryString()
             ),
@@ -26,16 +26,16 @@ class SeasonController extends Controller
     public function store(Request $request, Property $property)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'is_default' => 'boolean',
-            'start_date' => 'exclude_if:is_default,true|required|date',
-            'end_date' => 'exclude_if:is_default,true|required|date|after:start_date',
-            'price' => 'required|numeric|min:0',
-            'min_stay' => 'nullable|integer|min:1',
-            'min_persons' => 'nullable|integer|min:1',
-            'priority' => 'nullable|integer',
-            'is_recurring' => 'boolean',
-            'is_full_season_booking_only' => 'boolean',
+            'name' => ['required', 'string', 'max:255'],
+            'is_default' => ['boolean'],
+            'start_date' => ['exclude_if:is_default,true', 'required', 'date'],
+            'end_date' => ['exclude_if:is_default,true', 'required', 'date', 'after:start_date'],
+            'price' => ['required', 'numeric', 'min:0'],
+            'min_stay' => ['nullable', 'integer', 'min:1'],
+            'min_persons' => ['nullable', 'integer', 'min:1'],
+            'priority' => ['nullable', 'integer'],
+            'is_recurring' => ['boolean'],
+            'is_full_season_booking_only' => ['boolean'],
         ]);
 
         if ($request->boolean('is_default')) {
@@ -48,22 +48,22 @@ class SeasonController extends Controller
 
         $property->seasons()->create($validated);
 
-        return redirect()->route('admin.properties.seasons.index', $property);
+        return to_route('admin.properties.seasons.index', $property);
     }
 
     public function update(Request $request, Property $property, Season $season)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'is_default' => 'boolean',
-            'start_date' => 'exclude_if:is_default,true|required|date',
-            'end_date' => 'exclude_if:is_default,true|required|date|after:start_date',
-            'price' => 'required|numeric|min:0',
-            'min_stay' => 'nullable|integer|min:1',
-            'min_persons' => 'nullable|integer|min:1',
-            'priority' => 'nullable|integer',
-            'is_recurring' => 'boolean',
-            'is_full_season_booking_only' => 'boolean',
+            'name' => ['required', 'string', 'max:255'],
+            'is_default' => ['boolean'],
+            'start_date' => ['exclude_if:is_default,true', 'required', 'date'],
+            'end_date' => ['exclude_if:is_default,true', 'required', 'date', 'after:start_date'],
+            'price' => ['required', 'numeric', 'min:0'],
+            'min_stay' => ['nullable', 'integer', 'min:1'],
+            'min_persons' => ['nullable', 'integer', 'min:1'],
+            'priority' => ['nullable', 'integer'],
+            'is_recurring' => ['boolean'],
+            'is_full_season_booking_only' => ['boolean'],
         ]);
 
         if ($request->boolean('is_default') && ! $season->is_default) {
@@ -76,13 +76,13 @@ class SeasonController extends Controller
 
         $season->update($validated);
 
-        return redirect()->route('admin.properties.seasons.index', $property);
+        return to_route('admin.properties.seasons.index', $property);
     }
 
     public function destroy(Property $property, Season $season)
     {
         $season->delete();
 
-        return redirect()->route('admin.properties.seasons.index', $property);
+        return to_route('admin.properties.seasons.index', $property);
     }
 }

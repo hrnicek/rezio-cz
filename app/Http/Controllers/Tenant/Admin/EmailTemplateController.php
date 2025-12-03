@@ -58,9 +58,9 @@ class EmailTemplateController extends Controller
     public function update(Request $request, Property $property, EmailTemplate $email_template)
     {
         $validated = $request->validate([
-            'subject' => 'required|string|max:255',
-            'body' => 'required|string',
-            'is_active' => 'boolean',
+            'subject' => ['required', 'string', 'max:255'],
+            'body' => ['required', 'string'],
+            'is_active' => ['boolean'],
         ]);
 
         $email_template->update($validated);
@@ -71,10 +71,10 @@ class EmailTemplateController extends Controller
     public function store(Request $request, Property $property)
     {
         $validated = $request->validate([
-            'type' => 'required|string',
-            'subject' => 'required|string|max:255',
-            'body' => 'required|string',
-            'is_active' => 'boolean',
+            'type' => ['required', 'string'],
+            'subject' => ['required', 'string', 'max:255'],
+            'body' => ['required', 'string'],
+            'is_active' => ['boolean'],
         ]);
 
         $property->emailTemplates()->create($validated);

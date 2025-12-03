@@ -18,13 +18,13 @@ class ReportController extends Controller
     public function data(Request $request, \App\Services\RevenueMetricsService $metricsService)
     {
         $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'property_id' => 'nullable|exists:properties,id',
+            'start_date' => ['required', 'date'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
+            'property_id' => ['nullable', 'exists:properties,id'],
         ]);
 
-        $startDate = \Carbon\Carbon::parse($request->start_date);
-        $endDate = \Carbon\Carbon::parse($request->end_date);
+        $startDate = \Illuminate\Support\Facades\Date::parse($request->start_date);
+        $endDate = \Illuminate\Support\Facades\Date::parse($request->end_date);
         $propertyId = $request->property_id;
 
         return response()->json(
@@ -35,13 +35,13 @@ class ReportController extends Controller
     public function export(Request $request, \App\Services\RevenueMetricsService $metricsService): StreamedResponse
     {
         $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'property_id' => 'nullable|exists:properties,id',
+            'start_date' => ['required', 'date'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
+            'property_id' => ['nullable', 'exists:properties,id'],
         ]);
 
-        $startDate = \Carbon\Carbon::parse($request->start_date);
-        $endDate = \Carbon\Carbon::parse($request->end_date);
+        $startDate = \Illuminate\Support\Facades\Date::parse($request->start_date);
+        $endDate = \Illuminate\Support\Facades\Date::parse($request->end_date);
         $propertyId = $request->property_id;
 
         $data = $metricsService->calculate($startDate, $endDate, $propertyId);
