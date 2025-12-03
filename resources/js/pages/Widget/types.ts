@@ -7,6 +7,16 @@ export interface Customer {
     email: string;
     phone: string;
     note: string;
+    // Company fields
+    isCompany: boolean;
+    companyName?: string;
+    ico?: string;
+    dic?: string;
+    hasVat: boolean;
+    billingStreet?: string;
+    billingCity?: string;
+    billingZip?: string;
+    billingCountry: string;
 }
 
 export interface MoneyData {

@@ -31,6 +31,15 @@ class WidgetReservationStoreController extends Controller
             'customer.email' => ['required', 'email'],
             'customer.phone' => ['required', 'string'],
             'customer.note' => ['nullable', 'string'],
+            'customer.is_company' => ['boolean'],
+            'customer.company_name' => ['nullable', 'string', 'required_if:customer.is_company,true'],
+            'customer.ico' => ['nullable', 'string', 'required_if:customer.is_company,true'],
+            'customer.dic' => ['nullable', 'string'],
+            'customer.has_vat' => ['boolean'],
+            'customer.billing_street' => ['nullable', 'string', 'required_if:customer.is_company,true'],
+            'customer.billing_city' => ['nullable', 'string', 'required_if:customer.is_company,true'],
+            'customer.billing_zip' => ['nullable', 'string', 'required_if:customer.is_company,true'],
+            'customer.billing_country' => ['nullable', 'string'],
             'addons' => ['array'],
             'addons.*.service_id' => ['required', 'integer'],
             'addons.*.quantity' => ['required', 'integer', 'min:0'],
@@ -74,12 +83,21 @@ class WidgetReservationStoreController extends Controller
         );
 
         return DB::transaction(function () use ($id, $data, $start, $end, $breakdown) {
-            $customer = Customer::query()->firstOrCreate(
+            $customer = Customer::query()->updateOrCreate(
                 ['email' => $data['customer']['email']],
                 [
                     'first_name' => $data['customer']['first_name'],
                     'last_name' => $data['customer']['last_name'],
                     'phone' => $data['customer']['phone'],
+                    'is_company' => $data['customer']['is_company'] ?? false,
+                    'company_name' => $data['customer']['company_name'] ?? null,
+                    'ico' => $data['customer']['ico'] ?? null,
+                    'dic' => $data['customer']['dic'] ?? null,
+                    'has_vat' => $data['customer']['has_vat'] ?? false,
+                    'billing_street' => $data['customer']['billing_street'] ?? null,
+                    'billing_city' => $data['customer']['billing_city'] ?? null,
+                    'billing_zip' => $data['customer']['billing_zip'] ?? null,
+                    'billing_country' => $data['customer']['billing_country'] ?? 'CZ',
                 ]
             );
 

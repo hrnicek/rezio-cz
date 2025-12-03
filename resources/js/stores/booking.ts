@@ -9,6 +9,15 @@ export const useBookingStore = defineStore('booking', {
       email: 'jakub@novak.com',
       phone: '+420 731 786 686',
       note: 'test',
+      isCompany: false,
+      companyName: '',
+      ico: '',
+      dic: '',
+      hasVat: false,
+      billingStreet: '',
+      billingCity: '',
+      billingZip: '',
+      billingCountry: 'CZ',
     } as Customer,
     startDate: null as string | null,
     endDate: null as string | null,
@@ -30,7 +39,22 @@ export const useBookingStore = defineStore('booking', {
       this.customer = { ...this.customer, ...partial };
     },
     resetCustomer() {
-      this.customer = { firstName: '', lastName: '', email: '', phone: '', note: '' };
+      this.customer = { 
+        firstName: '', 
+        lastName: '', 
+        email: '', 
+        phone: '', 
+        note: '',
+        isCompany: false,
+        companyName: '',
+        ico: '',
+        dic: '',
+        hasVat: false,
+        billingStreet: '',
+        billingCity: '',
+        billingZip: '',
+        billingCountry: 'CZ',
+      };
     },
     setStartDate(date?: string | null) {
       this.startDate = date || null;

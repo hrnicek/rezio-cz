@@ -119,7 +119,17 @@ const nextStep = async () => {
     last_name: customer.value.lastName,
     email: customer.value.email,
     phone: customer.value.phone,
-    note: customer.value.note
+    note: customer.value.note,
+    // Company fields
+    is_company: customer.value.isCompany,
+    company_name: customer.value.companyName,
+    ico: customer.value.ico,
+    dic: customer.value.dic,
+    has_vat: customer.value.hasVat,
+    billing_street: customer.value.billingStreet,
+    billing_city: customer.value.billingCity,
+    billing_zip: customer.value.billingZip,
+    billing_country: customer.value.billingCountry
   });
 
   if (currentStep.value === 1) {
@@ -153,6 +163,17 @@ const nextStep = async () => {
          fieldErrors[field] = "";
        }
     });
+
+    if (customer.value.isCompany) {
+        const companyFields: (keyof Customer)[] = ['companyName', 'ico', 'billingStreet', 'billingCity', 'billingZip'];
+        companyFields.forEach(field => {
+           if (!customer.value[field] || (typeof customer.value[field] === 'string' && customer.value[field].length < 1)) {
+             fieldErrors[field] = "Povinné pole"; isValid = false;
+           } else {
+             fieldErrors[field] = "";
+           }
+        });
+    }
     
     if (!isValid) {
       toast.error("Vyplňte prosím všechny údaje.");

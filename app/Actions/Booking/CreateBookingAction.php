@@ -42,6 +42,15 @@ class CreateBookingAction
                 'first_name' => $data['customer']['first_name'] ?? '',
                 'last_name' => $data['customer']['last_name'] ?? '',
                 'phone' => $data['customer']['phone'],
+                'is_company' => $data['customer']['is_company'] ?? false,
+                'company_name' => $data['customer']['company_name'] ?? null,
+                'ico' => $data['customer']['ico'] ?? null,
+                'dic' => $data['customer']['dic'] ?? null,
+                'has_vat' => $data['customer']['has_vat'] ?? false,
+                'billing_street' => $data['customer']['billing_street'] ?? null,
+                'billing_city' => $data['customer']['billing_city'] ?? null,
+                'billing_zip' => $data['customer']['billing_zip'] ?? null,
+                'billing_country' => $data['customer']['billing_country'] ?? 'CZ',
             ]);
 
             // 2. Parse dates (with default check-in / check-out times)

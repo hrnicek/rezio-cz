@@ -68,6 +68,21 @@ const emit = defineEmits<{
             <dd class="font-medium text-foreground break-all">{{ customer.email }}</dd>
             <dt class="text-muted-foreground">Telefon:</dt>
             <dd class="font-medium text-foreground">{{ customer.phone }}</dd>
+            
+            <template v-if="customer.isCompany">
+                <dt class="text-muted-foreground">Firma:</dt>
+                <dd class="font-medium text-foreground">{{ customer.companyName }}</dd>
+                <dt class="text-muted-foreground">IČO / DIČ:</dt>
+                <dd class="font-medium text-foreground">
+                    {{ customer.ico }} 
+                    <span v-if="customer.dic"> / {{ customer.dic }}</span>
+                </dd>
+                <dt class="text-muted-foreground">Adresa:</dt>
+                <dd class="font-medium text-foreground">
+                    {{ customer.billingStreet }}, {{ customer.billingCity }} {{ customer.billingZip }}
+                </dd>
+            </template>
+
             <dt class="text-muted-foreground">Poznámka:</dt>
             <dd class="text-foreground italic">{{ customer.note || '-' }}</dd>
           </dl>
