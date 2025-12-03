@@ -3,17 +3,21 @@
 namespace App\Models;
 
 use App\Models\Booking\Booking;
-use App\Models\Finance\Invoice;
+use App\Models\Configuration\BillingSetting;
+use App\Models\Configuration\BlockDate;
 use App\Models\Configuration\Season;
 use App\Models\Configuration\Service;
-use App\Models\Configuration\BlockDate;
+use App\Models\Finance\Invoice;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Configuration\BillingSetting;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @property string $uuid
+ * @property-read \App\Models\Widget $widget
+ */
 class Property extends Model
 {
     use HasFactory, HasUuids;
@@ -21,6 +25,7 @@ class Property extends Model
     protected $table = 'properties';
 
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected $fillable = [
@@ -73,5 +78,10 @@ class Property extends Model
     public function billingSetting(): HasOne
     {
         return $this->hasOne(BillingSetting::class);
+    }
+
+    public function emailTemplates(): HasMany
+    {
+        return $this->hasMany(\App\Models\Communication\EmailTemplate::class);
     }
 }

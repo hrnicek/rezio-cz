@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\Booking\BookingException;
 use App\Exceptions\Booking\BookingValidationException;
 use App\Models\Booking\Booking;
 use Illuminate\Support\Facades\Log;
@@ -10,14 +11,15 @@ use Throwable;
 class BookingRetryService
 {
     private const MAX_RETRIES = 3;
+
     private const RETRY_DELAY_MS = 100;
 
     /**
      * Execute a booking operation with retry logic
      *
-     * @param callable $operation The booking operation to retry
-     * @param array $context Context for logging
-     * @return Booking
+     * @param  callable  $operation  The booking operation to retry
+     * @param  array  $context  Context for logging
+     *
      * @throws BookingException
      */
     public function executeWithRetry(callable $operation, array $context = []): Booking
@@ -33,7 +35,7 @@ class BookingRetryService
             } catch (Throwable $e) {
                 $lastException = $e;
 
-                Log::warning("Booking operation failed (attempt {$attempt}/" . self::MAX_RETRIES . ")", [
+                Log::warning("Booking operation failed (attempt {$attempt}/".self::MAX_RETRIES.')', [
                     'error' => $e->getMessage(),
                     'attempt' => $attempt,
                     'context' => $context,

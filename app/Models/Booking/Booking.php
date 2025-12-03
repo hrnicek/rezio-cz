@@ -2,23 +2,25 @@
 
 namespace App\Models\Booking;
 
-use App\Models\CRM\Customer;
+use App\Models\Property;
 use App\Models\CRM\Guest;
+use App\Models\CRM\Customer;
+use Illuminate\Support\Carbon;
 use App\Models\Finance\Invoice;
 use App\Models\Finance\Payment;
+use Spatie\ModelStates\HasStates;
 use App\States\Booking\BookingState;
 use Database\Factories\BookingFactory;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Carbon;
-use Spatie\ModelStates\HasStates;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * @property-read \Illuminate\Database\Eloquent\Relations\HasManyThrough<\App\Models\Booking\BookingItem, \App\Models\Booking\Folio> $items
+ * @property-read \Illuminate\Database\Eloquent\Relations\HasManyThrough<\App\Models\Booking\BookingItem, \App\Models\Booking\Folio, \App\Models\Booking\Booking> $items
+ * @property string $guest_email
  */
 class Booking extends Model
 {
@@ -65,10 +67,8 @@ class Booking extends Model
         return $this->property->default_check_in_time;
     }
 
-    // Helper pro Frontend: Kdy přesně má nárok na klíče?
     public function getCheckInAtAttribute(): Carbon
     {
-        // Spojí Datum (Booking) + Čas (Vypočítaný)
         return Carbon::parse(
             $this->check_in_date->format('Y-m-d').' '.$this->check_in_time
         );
@@ -81,8 +81,7 @@ class Booking extends Model
 
     public function property(): BelongsTo
     {
-        // Předpoklad: App\Models\Property existuje
-        return $this->belongsTo(\App\Models\Property::class);
+        return $this->belongsTo(Property::class);
     }
 
     public function guests(): HasMany
@@ -100,7 +99,6 @@ class Booking extends Model
         return $this->hasMany(Invoice::class);
     }
 
-    // Zkratka pro získání všech položek přes všechna folia
     public function items()
     {
         return $this->hasManyThrough(BookingItem::class, Folio::class);

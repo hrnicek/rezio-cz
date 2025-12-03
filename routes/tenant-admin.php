@@ -11,14 +11,12 @@ use App\Http\Controllers\Tenant\Admin\SeasonController;
 use App\Http\Controllers\Tenant\Admin\Settings\PasswordController;
 use App\Http\Controllers\Tenant\Admin\Settings\ProfileController;
 use App\Http\Controllers\Tenant\Admin\Settings\TwoFactorAuthenticationController;
-use App\Http\Controllers\Tenant\Admin\SwitchPropertyController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::name('admin.')->middleware(['web', 'auth'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('calendar', [CalendarController::class, 'index'])->name('calendar.index');
-    Route::post('/switch-property', SwitchPropertyController::class)->name('switch-property');
 
     Route::get('properties/{property}/billing', [BillingController::class, 'edit'])->name('properties.billing.edit');
     Route::put('properties/{property}/billing', [BillingController::class, 'update'])->name('properties.billing.update');

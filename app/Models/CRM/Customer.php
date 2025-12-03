@@ -11,6 +11,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $name
+ * @property string $email
+ * @property string $phone
+ */
 class Customer extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;

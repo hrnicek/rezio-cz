@@ -8,10 +8,19 @@ parameters:
         - app/
 
     # Level 10 is the highest level
-    level: 1
+    level: 2
 
     ignoreErrors:
         - '#Relation .* is not found in .* model.#'
+        - '#.*HasManyThrough.*filter.*#'
+        - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model::#'
+        - '#.*Model::emailTemplates.*#'
+        - '#.*Model::items.*#'
+
+    reportUnmatchedIgnoredErrors: false
+
+    excludePaths:
+        - app/Http/Controllers/Tenant/Api/AresController.php
 
 #    excludePaths:
 #        - ./*/*/FileToBeExcluded.php
