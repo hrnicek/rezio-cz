@@ -2,7 +2,7 @@
 
 namespace App\Listeners\Payment;
 
-use App\Enums\InvoiceStatus;
+use App\States\Invoice\Paid as InvoicePaid;
 use App\Enums\InvoiceType;
 use App\Enums\PaymentMethod;
 use App\Events\Payment\PaymentCreated;
@@ -76,7 +76,7 @@ class CreatePaymentConfirmationInvoice
         $invoice->folio_id = $payment->folio_id;
         $invoice->payment_id = $payment->id;
         $invoice->type = InvoiceType::PaymentConfirmation;
-        $invoice->status = InvoiceStatus::Paid;
+        $invoice->status = new InvoicePaid($invoice);
 
         $invoice->number = $this->generateInvoiceNumber();
         $invoice->variable_symbol = $invoice->number;

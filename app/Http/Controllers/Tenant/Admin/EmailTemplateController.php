@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Tenant\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\EmailTemplate;
+use App\Models\Communication\EmailTemplate;
 use App\Models\Property;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

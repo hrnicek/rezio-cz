@@ -17,6 +17,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Spatie\ModelStates\HasStates;
 
+/**
+ * @property-read \Illuminate\Database\Eloquent\Relations\HasManyThrough<\App\Models\Booking\BookingItem, \App\Models\Booking\Folio> $items
+ */
 class Booking extends Model
 {
     use HasFactory, HasStates, HasUuids, SoftDeletes;

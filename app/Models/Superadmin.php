@@ -11,7 +11,7 @@ use Illuminate\Notifications\Notifiable;
 class Superadmin extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasPropertyRoles, Notifiable;
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.

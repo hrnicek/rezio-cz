@@ -23,7 +23,7 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->domain(env('APP_URL'))
+            ->domain(config('app.url'))
             ->default()
             ->id('central')
             ->path('central')
