@@ -17,6 +17,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $name
  * @property string $email
  * @property string $phone
+ * @property string $billing_name
+ * @property string $ico
+ * @property string $dic
+ * @property string $billing_street
+ * @property string $billing_city
+ * @property string $billing_zip
+ * @property string $billing_country
  */
 class Customer extends Model
 {

@@ -68,7 +68,7 @@ class WidgetServiceController extends Controller
                 ->where('status', '!=', Cancelled::class)
                 ->where('check_in_date', '<', $end)
                 ->where('check_out_date', '>', $start)
-                ->with(['items']) // Load items
+                ->with(['folios.items']) // Load items
                 ->get();
 
             $serviceIds = collect($data['selections'])
@@ -102,7 +102,14 @@ class WidgetServiceController extends Controller
                 foreach ($overlappingBookings as $booking) {
                     // Filter items for this service name
                     // This assumes Service Name is unique and immutable for tracking
-                    $items = $booking->items->filter(function ($item) use ($service) {
+                    /** @var \Illuminate\Database\Eloquent\Collection $folios */
+                    $folios = $booking->folios;
+                    $bookingItems = collect();
+                    foreach ($folios as $folio) {
+                        /** @var \App\Models\Booking\Folio $folio */
+                        $bookingItems = $bookingItems->merge($folio->items);
+                    }
+                    $items = $bookingItems->filter(function (/** @var \App\Models\Booking\BookingItem $item */ $item) use ($service) {
                         return $item->type === BookingItemType::Service && $item->name === $service->name;
                     });
 

@@ -16,6 +16,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property string $uuid
+ * @property string $name
+ * @property string $address
+ * @property string $default_check_in_time
+ * @property string $default_check_out_time
  */
 class Property extends Model
 {
@@ -74,11 +78,17 @@ class Property extends Model
         return $this->hasMany(Invoice::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<\App\Models\Configuration\BillingSetting, \App\Models\Property>
+     */
     public function billingSetting(): HasOne
     {
         return $this->hasOne(BillingSetting::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Communication\EmailTemplate, \App\Models\Property>
+     */
     public function emailTemplates(): HasMany
     {
         return $this->hasMany(\App\Models\Communication\EmailTemplate::class);

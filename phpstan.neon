@@ -11,11 +11,6 @@ parameters:
     level: 2
 
     ignoreErrors:
-        - '#Relation .* is not found in .* model.#'
-        - '#.*HasManyThrough.*filter.*#'
-        - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model::#'
-        - '#.*Model::emailTemplates.*#'
-        - '#.*Model::items.*#'
 
     reportUnmatchedIgnoredErrors: false
 

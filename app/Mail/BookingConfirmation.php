@@ -51,7 +51,7 @@ class BookingConfirmation extends Mailable implements ShouldQueue
             return new Content(
                 markdown: 'emails.bookings.dynamic',
                 with: [
-                    'body' => $this->replacePlaceholders($template->body),
+                    'body' => $this->replacePlaceholders($template->content),
                 ],
             );
         }

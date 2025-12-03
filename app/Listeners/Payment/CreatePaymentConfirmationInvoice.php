@@ -24,6 +24,7 @@ class CreatePaymentConfirmationInvoice
         }
 
         $payment = $event->payment;
+        /** @var \App\Models\Finance\Payment $payment */
 
         // For Updated event, check if status was changed to Paid
         if ($event instanceof PaymentUpdated) {
@@ -68,6 +69,7 @@ class CreatePaymentConfirmationInvoice
         if (! $booking) {
             return;
         }
+        /** @var \App\Models\Booking\Booking $booking */
 
         $customer = $booking->customer;
 

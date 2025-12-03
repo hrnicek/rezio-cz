@@ -69,7 +69,7 @@ class BookingController extends Controller
         $search = $request->input('search');
         $currentPropertyId = $request->user()->current_property_id;
 
-        $bookings = Booking::with(['property', 'guests'])
+        $bookings = Booking::with(['property', 'customer', 'guests'])
             ->when($currentPropertyId, function ($query, $propertyId) {
                 return $query->where('property_id', $propertyId);
             })
@@ -97,6 +97,7 @@ class BookingController extends Controller
             $file = fopen('php://output', 'w');
             fputcsv($file, ['ID', 'Property', 'Customer', 'Email', 'Phone', 'Check-in', 'Check-out', 'Status', 'Total Price', 'Notes']);
 
+            /** @var \App\Models\Booking\Booking $booking */
             foreach ($bookings as $booking) {
                 fputcsv($file, [
                     $booking->id,

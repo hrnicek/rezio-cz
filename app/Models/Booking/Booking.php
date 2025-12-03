@@ -19,7 +19,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * @property-read \Illuminate\Database\Eloquent\Relations\HasManyThrough<\App\Models\Booking\BookingItem, \App\Models\Booking\Folio, \App\Models\Booking\Booking> $items
+ * @property-read \App\Models\CRM\Customer $customer
+ * @property-read \App\Models\Property $property
+ * @property-read \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\CRM\Guest, \App\Models\Booking\Booking> $guests
+ * @property-read \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Booking\Folio, \App\Models\Booking\Booking> $folios
+ * @property-read \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Finance\Invoice, \App\Models\Booking\Booking> $invoices
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Booking\BookingItem> $items
+ * @property-read \Illuminate\Database\Eloquent\Relations\HasManyThrough<\App\Models\Booking\BookingItem, \App\Models\Booking\Folio, \App\Models\Booking\Booking> $items()
+ * @property-read \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Finance\Payment, \App\Models\Booking\Booking> $payments
  * @property string $guest_email
  */
 class Booking extends Model
@@ -101,7 +108,7 @@ class Booking extends Model
 
     public function items()
     {
-        return $this->hasManyThrough(BookingItem::class, Folio::class);
+        return $this->hasManyThrough(BookingItem::class, Folio::class, 'booking_id', 'folio_id', 'id', 'id');
     }
 
     public function payments(): HasMany

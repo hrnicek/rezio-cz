@@ -315,6 +315,7 @@ class BookingService
             'total_amount' => $priceBreakdown->total,
             'currency' => config('booking.currency', 'CZK'),
         ]);
+        /** @var \App\Models\Booking\Folio $folio */
 
         // Add accommodation item
         if ($priceBreakdown->accommodation > 0) {

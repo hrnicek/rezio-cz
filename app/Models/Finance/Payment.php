@@ -41,16 +41,25 @@ class Payment extends Model
 
     // --- RELATIONS ---
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Booking\Folio, \App\Models\Finance\Payment>
+     */
     public function folio(): BelongsTo
     {
         return $this->belongsTo(Folio::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Booking\Booking, \App\Models\Finance\Payment>
+     */
     public function booking(): BelongsTo
     {
         return $this->belongsTo(Booking::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<\App\Models\Finance\Invoice, \App\Models\Finance\Payment>
+     */
     public function invoice(): HasOne
     {
         return $this->hasOne(Invoice::class);

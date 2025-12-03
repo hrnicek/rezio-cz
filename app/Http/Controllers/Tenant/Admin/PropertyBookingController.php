@@ -77,6 +77,7 @@ class PropertyBookingController extends Controller
             $file = fopen('php://output', 'w');
             fputcsv($file, ['ID', 'Property', 'Guest Name', 'Email', 'Phone', 'Check-in', 'Check-out', 'Status', 'Total Price', 'Notes']);
 
+            /** @var \App\Models\Booking\Booking $booking */
             foreach ($bookings as $booking) {
                 fputcsv($file, [
                     $booking->id,

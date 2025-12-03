@@ -31,22 +31,34 @@ class Folio extends Model
 
     // --- RELATIONS ---
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Booking\Booking, \App\Models\Booking\Folio>
+     */
     public function booking(): BelongsTo
     {
         return $this->belongsTo(Booking::class);
     }
 
     // Kdo platí toto konkrétní folio (může být jiné než hlavní customer)
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\CRM\Customer, \App\Models\Booking\Folio>
+     */
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Booking\BookingItem, \App\Models\Booking\Folio>
+     */
     public function items(): HasMany
     {
         return $this->hasMany(BookingItem::class, 'folio_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Finance\Payment, \App\Models\Booking\Folio>
+     */
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class, 'folio_id');

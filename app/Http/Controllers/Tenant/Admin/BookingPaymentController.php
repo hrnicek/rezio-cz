@@ -21,6 +21,7 @@ class BookingPaymentController extends Controller
 
         // 1. Find or Create default Folio (Hlavní účet)
         $folio = $booking->folios()->first();
+        /** @var \App\Models\Booking\Folio $folio */
 
         if (! $folio) {
             $folio = $booking->folios()->create([
