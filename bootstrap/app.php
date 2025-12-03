@@ -24,7 +24,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'allow-iframe' => \App\Http\Middleware\AllowIframe::class,
-            'validate.widget.cors' => \App\Http\Middleware\ValidateWidgetCors::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
