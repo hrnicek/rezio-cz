@@ -99,7 +99,7 @@ class WidgetReservationStoreController extends Controller
             $folio = $booking->folios()->create([
                 'customer_id' => $customer->id,
                 'name' => 'Hlavní účet',
-                'status' => \App\Enums\FolioStatus::Open, // Assuming FolioStatus exists
+                'status' => \App\States\Folio\Open::class,
                 'total_amount' => $breakdown->total,
                 'currency' => config('booking.currency', 'CZK'),
             ]);

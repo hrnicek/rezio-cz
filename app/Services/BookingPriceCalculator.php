@@ -12,7 +12,7 @@ class BookingPriceCalculator
     public function __construct(private SeasonalPricingService $seasonalPricing) {}
 
     public function calculate(
-        int $propertyId,
+        string $propertyId,
         Carbon $startDate,
         Carbon $endDate,
         array $serviceSelections = []
@@ -52,7 +52,7 @@ class BookingPriceCalculator
 
             // Price logic based on Enum
             // price_amount is in cents (integer)
-            $unitPrice = (int) $service->price_amount;
+            $unitPrice = $service->price_amount instanceof \App\Support\Money ? $service->price_amount->getAmount() : (int) $service->price_amount;
             $lineTotal = 0;
 
             if ($service->price_type === ServicePriceType::PerNight || $service->price_type === ServicePriceType::PerDay) {

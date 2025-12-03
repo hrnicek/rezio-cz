@@ -10,9 +10,9 @@ class SeasonalPricingService
 {
     private ?Collection $seasonsCache = null;
 
-    private ?int $cachedPropertyId = null;
+    private ?string $cachedPropertyId = null;
 
-    private function loadSeasons(int $propertyId): Collection
+    private function loadSeasons(string $propertyId): Collection
     {
         if ($this->seasonsCache === null || $this->cachedPropertyId !== $propertyId) {
             $this->seasonsCache = Season::query()
@@ -24,7 +24,7 @@ class SeasonalPricingService
         return $this->seasonsCache;
     }
 
-    public function getSeasonForDate(int $propertyId, Carbon $date): ?Season
+    public function getSeasonForDate(string $propertyId, Carbon $date): ?Season
     {
         $seasons = $this->loadSeasons($propertyId);
 
@@ -49,7 +49,7 @@ class SeasonalPricingService
         return (int) $price;
     }
 
-    public function getPriceForDate(int $propertyId, Carbon $date): int
+    public function getPriceForDate(string $propertyId, Carbon $date): int
     {
         $seasons = $this->loadSeasons($propertyId);
         $defaultSeason = $seasons->firstWhere('is_default', true);
@@ -60,7 +60,7 @@ class SeasonalPricingService
         return $matchingSeason ? $this->getPriceAmount($matchingSeason->price_amount) : $basePrice;
     }
 
-    public function calculate_stay_price(int $propertyId, $checkInDate, $checkOutDate): int
+    public function calculate_stay_price(string $propertyId, $checkInDate, $checkOutDate): int
     {
         $checkIn = $checkInDate instanceof Carbon ? $checkInDate->copy()->startOfDay() : Carbon::parse($checkInDate)->startOfDay();
         $checkOut = $checkOutDate instanceof Carbon ? $checkOutDate->copy()->startOfDay() : Carbon::parse($checkOutDate)->startOfDay();

@@ -8,7 +8,7 @@ use Spatie\LaravelData\Data;
 class PropertyData extends Data
 {
     public function __construct(
-        public int $id,
+        public string $id,
         public string $name,
         public ?string $address,
         public ?string $image = null,

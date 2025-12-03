@@ -22,7 +22,8 @@ class CreateProformaInvoice
         }
 
         // Ensure we have something to invoice
-        if ($booking->total_price_amount <= 0) {
+        $totalAmount = $booking->total_price_amount instanceof \App\Support\Money ? $booking->total_price_amount->getAmount() : $booking->total_price_amount;
+        if ($totalAmount <= 0) {
             return;
         }
 
