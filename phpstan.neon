@@ -10,8 +10,8 @@ parameters:
     # Level 10 is the highest level
     level: 1
 
-#    ignoreErrors:
-#        - '#PHPDoc tag @var#'
-#
+    ignoreErrors:
+        - '#Relation .* is not found in .* model.#'
+
 #    excludePaths:
 #        - ./*/*/FileToBeExcluded.php
