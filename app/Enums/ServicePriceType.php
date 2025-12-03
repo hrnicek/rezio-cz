@@ -6,10 +6,10 @@ enum ServicePriceType: string
 {
     case PerPerson = 'per_person';
     case PerNight = 'per_night';
-    case PerDay = 'per_day'; // Legacy support
+    case PerDay = 'per_day';
     case PerStay = 'per_stay';
     case Fixed = 'fixed';
-    case Flat = 'flat'; // Legacy support
+    case Flat = 'flat'; 
     case PerHour = 'per_hour';
 
     public function label(): string

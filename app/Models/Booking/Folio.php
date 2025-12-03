@@ -52,8 +52,6 @@ class Folio extends Model
         return $this->hasMany(Payment::class, 'folio_id');
     }
 
-    // --- BUSINESS LOGIC ---
-
     public function recalculateTotal(): void
     {
         $this->update([
