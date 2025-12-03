@@ -77,10 +77,6 @@ watch(search, (value) => {
                         <Download class="mr-2 h-4 w-4" />
                         Export
                     </Button>
-                    <Button size="sm">
-                        <Plus class="mr-2 h-4 w-4" />
-                        Nová faktura
-                    </Button>
                 </div>
             </div>
 

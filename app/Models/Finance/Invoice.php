@@ -2,20 +2,21 @@
 
 namespace App\Models\Finance;
 
-use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
 use App\Models\Booking\Booking;
 use App\Models\Booking\Folio;
+use App\States\Invoice\InvoiceState;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\ModelStates\HasStates;
 
 class Invoice extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasStates, HasUuids, SoftDeletes;
 
     protected $table = 'invoices';
 
@@ -36,11 +37,9 @@ class Invoice extends Model
         'total_price_amount' => \App\Casts\MoneyCast::class,
         'total_net_amount' => \App\Casts\MoneyCast::class,
         'total_tax_amount' => \App\Casts\MoneyCast::class,
-        'status' => InvoiceStatus::class,
+        'status' => InvoiceState::class,
         'type' => InvoiceType::class,
     ];
-
-    // --- RELATIONS ---
 
     public function booking(): BelongsTo
     {
@@ -57,7 +56,6 @@ class Invoice extends Model
         return $this->belongsTo(Payment::class);
     }
 
-    // Zde odkazujeme na InvoiceItem, abychom se vyhnuli kolizi v namespace Finance
     public function items(): HasMany
     {
         return $this->hasMany(InvoiceItem::class);
