@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Tenant\Admin;
 use App\Data\Admin\CustomerData;
 use App\Exports\CustomersExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\Admin\Customer\ImportCustomerRequest;
+use App\Http\Requests\Tenant\Admin\Customer\StoreCustomerRequest;
+use App\Http\Requests\Tenant\Admin\Customer\UpdateCustomerRequest;
 use App\Imports\CustomersImport;
 use App\Models\CRM\Customer;
 use Illuminate\Http\RedirectResponse;
@@ -38,58 +41,16 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreCustomerRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50'],
-
-            'is_company' => ['boolean'],
-            'company_name' => ['nullable', 'string', 'max:255'],
-            'ico' => ['nullable', 'string', 'max:20'],
-            'dic' => ['nullable', 'string', 'max:20'],
-            'has_vat' => ['boolean'],
-
-            'billing_street' => ['nullable', 'string', 'max:255'],
-            'billing_city' => ['nullable', 'string', 'max:100'],
-            'billing_zip' => ['nullable', 'string', 'max:20'],
-            'billing_country' => ['nullable', 'string', 'size:2'],
-
-            'internal_notes' => ['nullable', 'string'],
-            'is_registered' => ['boolean'],
-        ]);
-
-        Customer::query()->create($validated);
+        Customer::query()->create($request->validated());
 
         return back()->with('success', 'Zákazník byl úspěšně vytvořen.');
     }
 
-    public function update(Request $request, Customer $customer): RedirectResponse
+    public function update(UpdateCustomerRequest $request, Customer $customer): RedirectResponse
     {
-        $validated = $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50'],
-
-            'is_company' => ['boolean'],
-            'company_name' => ['nullable', 'string', 'max:255'],
-            'ico' => ['nullable', 'string', 'max:20'],
-            'dic' => ['nullable', 'string', 'max:20'],
-            'has_vat' => ['boolean'],
-
-            'billing_street' => ['nullable', 'string', 'max:255'],
-            'billing_city' => ['nullable', 'string', 'max:100'],
-            'billing_zip' => ['nullable', 'string', 'max:20'],
-            'billing_country' => ['nullable', 'string', 'size:2'],
-
-            'internal_notes' => ['nullable', 'string'],
-            'is_registered' => ['boolean'],
-        ]);
-
-        $customer->update($validated);
+        $customer->update($request->validated());
 
         return back()->with('success', 'Zákazník byl úspěšně upraven.');
     }
@@ -101,12 +62,8 @@ class CustomerController extends Controller
         return back()->with('success', 'Zákazník byl smazán.');
     }
 
-    public function import(Request $request): RedirectResponse
+    public function import(ImportCustomerRequest $request): RedirectResponse
     {
-        $request->validate([
-            'file' => ['required', 'file', 'mimes:csv,xlsx,xls'],
-        ]);
-
         try {
             Excel::import(new CustomersImport, $request->file('file'));
 

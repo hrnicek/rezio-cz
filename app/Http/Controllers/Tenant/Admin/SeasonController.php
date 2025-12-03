@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Tenant\Admin;
 
 use App\Data\Admin\Property\SeasonData;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\Admin\Season\StoreSeasonRequest;
+use App\Http\Requests\Tenant\Admin\Season\UpdateSeasonRequest;
 use App\Models\Configuration\Season;
 use App\Models\Property;
-use Illuminate\Http\Request;
 
 class SeasonController extends Controller
 {
@@ -23,20 +24,9 @@ class SeasonController extends Controller
         ]);
     }
 
-    public function store(Request $request, Property $property)
+    public function store(StoreSeasonRequest $request, Property $property)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'is_default' => ['boolean'],
-            'start_date' => ['exclude_if:is_default,true', 'required', 'date'],
-            'end_date' => ['exclude_if:is_default,true', 'required', 'date', 'after:start_date'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'min_stay' => ['nullable', 'integer', 'min:1'],
-            'min_persons' => ['nullable', 'integer', 'min:1'],
-            'priority' => ['nullable', 'integer'],
-            'is_recurring' => ['boolean'],
-            'is_full_season_booking_only' => ['boolean'],
-        ]);
+        $validated = $request->validated();
 
         if ($request->boolean('is_default')) {
             $property->seasons()->where('is_default', true)->update(['is_default' => false]);
@@ -51,20 +41,9 @@ class SeasonController extends Controller
         return to_route('admin.properties.seasons.index', $property);
     }
 
-    public function update(Request $request, Property $property, Season $season)
+    public function update(UpdateSeasonRequest $request, Property $property, Season $season)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'is_default' => ['boolean'],
-            'start_date' => ['exclude_if:is_default,true', 'required', 'date'],
-            'end_date' => ['exclude_if:is_default,true', 'required', 'date', 'after:start_date'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'min_stay' => ['nullable', 'integer', 'min:1'],
-            'min_persons' => ['nullable', 'integer', 'min:1'],
-            'priority' => ['nullable', 'integer'],
-            'is_recurring' => ['boolean'],
-            'is_full_season_booking_only' => ['boolean'],
-        ]);
+        $validated = $request->validated();
 
         if ($request->boolean('is_default') && ! $season->is_default) {
             $property->seasons()->where('is_default', true)->update(['is_default' => false]);

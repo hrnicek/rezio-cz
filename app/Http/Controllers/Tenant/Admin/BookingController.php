@@ -5,14 +5,14 @@ namespace App\Http\Controllers\Tenant\Admin;
 use App\Data\Admin\Booking\BookingData;
 use App\Data\Admin\Booking\BookingListData;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\Admin\Booking\StoreBookingRequest;
+use App\Http\Requests\Tenant\Admin\Booking\UpdateBookingRequest;
 use App\Models\Booking\Booking;
 use App\Models\CRM\Customer;
 use App\Models\Property;
-use App\States\Booking\BookingState;
 use App\States\Booking\Cancelled;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Spatie\ModelStates\Validation\ValidStateRule;
 
 class BookingController extends Controller
 {
@@ -119,15 +119,9 @@ class BookingController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 
-    public function store(Request $request)
+    public function store(StoreBookingRequest $request)
     {
-        $validated = $request->validate([
-            'property_id' => ['required', 'exists:properties,id'],
-            'check_in_date' => ['required', 'date'],
-            'check_out_date' => ['required', 'date', 'after:check_in_date'],
-            'status' => ['required', ValidStateRule::make(BookingState::class)],
-            'notes' => ['nullable', 'string'],
-        ]);
+        $validated = $request->validated();
 
         $property = Property::query()->findOrFail($validated['property_id']);
 
@@ -142,7 +136,7 @@ class BookingController extends Controller
             'phone' => null,
         ]);
 
-        $newBooking = Booking::query()->create([
+        Booking::query()->create([
             'property_id' => $property->id,
             'customer_id' => $customer->id,
             'check_in_date' => $validated['check_in_date'],
@@ -154,19 +148,14 @@ class BookingController extends Controller
         return back()->with('success', 'Dates blocked successfully.');
     }
 
-    public function update(Request $request, Booking $booking)
+    public function update(UpdateBookingRequest $request, Booking $booking)
     {
         // Load property if not already loaded
         if (! $booking->relationLoaded('property')) {
             $booking->load('property');
         }
 
-        $validated = $request->validate([
-            'status' => ['sometimes', 'required', ValidStateRule::make(BookingState::class)],
-            'check_in_date' => ['sometimes', 'required', 'date'],
-            'check_out_date' => ['sometimes', 'required', 'date', 'after:check_in_date'],
-            'notes' => ['nullable', 'string'],
-        ]);
+        $validated = $request->validated();
 
         if (isset($validated['check_in_date']) || isset($validated['check_out_date'])) {
             $start = $validated['check_in_date'] ?? $booking->check_in_date;

@@ -14,14 +14,13 @@ use App\Models\Property;
 use App\Services\SeasonalPricingService;
 use App\States\Booking\Cancelled;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 
 class WidgetController extends Controller
 {
     public function index(string $propertyId, CalendarRequest $request): JsonResponse
     {
         $property = Property::query()->find($propertyId);
-        if (!$property) {
+        if (! $property) {
             return response()->json(['error' => 'Property not found'], 404);
         }
         $pricingService = new SeasonalPricingService;
@@ -93,7 +92,7 @@ class WidgetController extends Controller
     public function verify(string $propertyId, VerifyAvailabilityRequest $request): JsonResponse
     {
         $property = Property::query()->find($propertyId);
-        if (!$property) {
+        if (! $property) {
             return response()->json(['error' => 'Property not found'], 404);
         }
         $data = $request->validated();

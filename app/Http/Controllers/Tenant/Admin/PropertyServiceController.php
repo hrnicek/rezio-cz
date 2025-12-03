@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Tenant\Admin;
 
-use App\Enums\ServicePriceType;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\Admin\PropertyService\StorePropertyServiceRequest;
+use App\Http\Requests\Tenant\Admin\PropertyService\UpdatePropertyServiceRequest;
 use App\Models\Configuration\Service;
 use App\Models\Property;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rules\Enum;
 
 class PropertyServiceController extends Controller
 {
@@ -22,16 +21,9 @@ class PropertyServiceController extends Controller
         ]);
     }
 
-    public function store(Request $request, Property $property)
+    public function store(StorePropertyServiceRequest $request, Property $property)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'price_type' => ['required', new Enum(ServicePriceType::class)],
-            'price_amount' => ['required', 'numeric', 'min:0'],
-            'max_quantity' => ['required', 'integer', 'min:0'],
-            'is_active' => ['boolean'],
-        ]);
+        $validated = $request->validated();
 
         // Convert price from units (frontend) to cents (backend)
         $validated['price_amount'] = (int) round($validated['price_amount'] * 100);
@@ -41,16 +33,9 @@ class PropertyServiceController extends Controller
         return to_route('admin.properties.services.index', $property);
     }
 
-    public function update(Request $request, Property $property, Service $service)
+    public function update(UpdatePropertyServiceRequest $request, Property $property, Service $service)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'price_type' => ['required', new Enum(ServicePriceType::class)],
-            'price_amount' => ['required', 'numeric', 'min:0'],
-            'max_quantity' => ['required', 'integer', 'min:0'],
-            'is_active' => ['boolean'],
-        ]);
+        $validated = $request->validated();
 
         // Convert price from units (frontend) to cents (backend)
         $validated['price_amount'] = (int) round($validated['price_amount'] * 100);

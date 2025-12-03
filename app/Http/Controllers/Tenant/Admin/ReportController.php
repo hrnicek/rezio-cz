@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Tenant\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Tenant\Admin\Report\ReportRequest;
+use App\Services\RevenueMetricsService;
+use Illuminate\Support\Facades\Date;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReportController extends Controller
@@ -15,16 +17,10 @@ class ReportController extends Controller
         ]);
     }
 
-    public function data(Request $request, \App\Services\RevenueMetricsService $metricsService)
+    public function data(ReportRequest $request, RevenueMetricsService $metricsService)
     {
-        $request->validate([
-            'start_date' => ['required', 'date'],
-            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
-            'property_id' => ['nullable', 'exists:properties,id'],
-        ]);
-
-        $startDate = \Illuminate\Support\Facades\Date::parse($request->start_date);
-        $endDate = \Illuminate\Support\Facades\Date::parse($request->end_date);
+        $startDate = Date::parse($request->start_date);
+        $endDate = Date::parse($request->end_date);
         $propertyId = $request->property_id;
 
         return response()->json(
@@ -32,16 +28,10 @@ class ReportController extends Controller
         );
     }
 
-    public function export(Request $request, \App\Services\RevenueMetricsService $metricsService): StreamedResponse
+    public function export(ReportRequest $request, RevenueMetricsService $metricsService): StreamedResponse
     {
-        $request->validate([
-            'start_date' => ['required', 'date'],
-            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
-            'property_id' => ['nullable', 'exists:properties,id'],
-        ]);
-
-        $startDate = \Illuminate\Support\Facades\Date::parse($request->start_date);
-        $endDate = \Illuminate\Support\Facades\Date::parse($request->end_date);
+        $startDate = Date::parse($request->start_date);
+        $endDate = Date::parse($request->end_date);
         $propertyId = $request->property_id;
 
         $data = $metricsService->calculate($startDate, $endDate, $propertyId);

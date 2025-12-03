@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Tenant\Guest;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\Guest\CheckIn\StoreGuestRequest;
+use App\Http\Requests\Tenant\Guest\CheckIn\UpdateGuestRequest;
 use App\Models\Booking\Booking;
 use App\Models\CRM\Guest;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CheckInController extends Controller
@@ -23,30 +24,16 @@ class CheckInController extends Controller
         ]);
     }
 
-    public function store(Request $request, string $code)
+    public function store(StoreGuestRequest $request, string $code)
     {
         $booking = Booking::query()->where('code', $code)->firstOrFail();
 
-        $validated = $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'is_adult' => ['required', 'boolean'],
-            'gender' => ['nullable', 'string'],
-            'nationality' => ['nullable', 'string'],
-            'document_type' => ['nullable', 'string'],
-            'document_number' => ['nullable', 'string'],
-            'birth_date' => ['nullable', 'date'],
-            'birth_place' => ['nullable', 'string'],
-            'address' => ['nullable', 'array'],
-            'signature' => ['nullable', 'string'],
-        ]);
-
-        $booking->guests()->create($validated);
+        $booking->guests()->create($request->validated());
 
         return back()->with('success', 'Osoba byla úspěšně uložena.');
     }
 
-    public function update(Request $request, string $token, Guest $guest)
+    public function update(UpdateGuestRequest $request, string $token, Guest $guest)
     {
         $booking = Booking::query()->where('token', $token)->firstOrFail();
 
@@ -54,21 +41,7 @@ class CheckInController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'is_adult' => ['required', 'boolean'],
-            'gender' => ['nullable', 'string'],
-            'nationality' => ['nullable', 'string'],
-            'document_type' => ['nullable', 'string'],
-            'document_number' => ['nullable', 'string'],
-            'birth_date' => ['nullable', 'date'],
-            'birth_place' => ['nullable', 'string'],
-            'address' => ['nullable', 'array'],
-            'signature' => ['nullable', 'string'],
-        ]);
-
-        $guest->update($validated);
+        $guest->update($request->validated());
 
         return back()->with('success', 'Údaje byly aktualizovány.');
     }

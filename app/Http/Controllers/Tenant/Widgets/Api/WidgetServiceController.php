@@ -11,7 +11,6 @@ use App\Models\Configuration\Service;
 use App\Models\Property;
 use App\States\Booking\Cancelled;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class WidgetServiceController extends Controller
@@ -19,7 +18,7 @@ class WidgetServiceController extends Controller
     public function index(string $propertyId): JsonResponse
     {
         $property = Property::query()->find($propertyId);
-        if (!$property) {
+        if (! $property) {
             return response()->json(['error' => 'Property not found'], 404);
         }
 
@@ -48,7 +47,7 @@ class WidgetServiceController extends Controller
     public function availability(CheckAvailabilityRequest $request, string $propertyId): JsonResponse
     {
         $property = Property::query()->find($propertyId);
-        if (!$property) {
+        if (! $property) {
             return response()->json(['error' => 'Property not found'], 404);
         }
 

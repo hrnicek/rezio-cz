@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Tenant\Admin;
 
 use App\Data\Admin\Property\PropertyData;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\Admin\Property\StorePropertyRequest;
+use App\Http\Requests\Tenant\Admin\Property\UpdatePropertyRequest;
 use App\Models\Property;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -35,14 +36,9 @@ class PropertyController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StorePropertyRequest $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'address' => ['nullable', 'string'],
-            'description' => ['nullable', 'string'],
-            'image' => ['nullable', 'string'],
-        ]);
+        $validated = $request->validated();
 
         $property = Property::query()->create([
             'name' => $validated['name'],
@@ -85,14 +81,9 @@ class PropertyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Property $property)
+    public function update(UpdatePropertyRequest $request, Property $property)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'address' => ['nullable', 'string'],
-            'description' => ['nullable', 'string'],
-            'image' => ['nullable', 'string'],
-        ]);
+        $validated = $request->validated();
 
         $property->update([
             'name' => $validated['name'],

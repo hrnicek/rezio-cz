@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\FilePond\FilePondProcessRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -11,12 +12,8 @@ class FilePondController extends Controller
     /**
      * Upload a file to temporary storage.
      */
-    public function process(Request $request)
+    public function process(FilePondProcessRequest $request)
     {
-        $request->validate([
-            'filepond' => ['required', 'file'],
-        ]);
-
         $file = $request->file('filepond');
 
         // Store in a temporary directory.

@@ -4,25 +4,19 @@ namespace App\Http\Controllers\Tenant\Admin;
 
 use App\Enums\PaymentMethod;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\Admin\BookingPayment\StoreBookingPaymentRequest;
 use App\Models\Booking\Booking;
 use App\Models\Finance\Payment;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
 
 class BookingPaymentController extends Controller
 {
-    public function store(Request $request, Booking $booking)
+    public function store(StoreBookingPaymentRequest $request, Booking $booking)
     {
-        $validated = $request->validate([
-            'amount' => ['required', 'numeric', 'min:0'],
-            'paid_at' => ['required', 'date'],
-            'notes' => ['nullable', 'string'],
-        ]);
+        $validated = $request->validated();
 
         // 1. Find or Create default Folio (Hlavní účet)
         $folio = $booking->folios()->first();
         /** @var \App\Models\Booking\Folio $folio */
-
         if (! $folio) {
             $folio = $booking->folios()->create([
                 'customer_id' => $booking->customer_id,

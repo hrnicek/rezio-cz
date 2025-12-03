@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Tenant\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\Admin\EmailTemplate\StoreEmailTemplateRequest;
+use App\Http\Requests\Tenant\Admin\EmailTemplate\UpdateEmailTemplateRequest;
 use App\Models\Communication\EmailTemplate;
 use App\Models\Property;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class EmailTemplateController extends Controller
@@ -55,29 +56,16 @@ class EmailTemplateController extends Controller
         ]);
     }
 
-    public function update(Request $request, Property $property, EmailTemplate $email_template)
+    public function update(UpdateEmailTemplateRequest $request, Property $property, EmailTemplate $email_template)
     {
-        $validated = $request->validate([
-            'subject' => ['required', 'string', 'max:255'],
-            'body' => ['required', 'string'],
-            'is_active' => ['boolean'],
-        ]);
-
-        $email_template->update($validated);
+        $email_template->update($request->validated());
 
         return back();
     }
 
-    public function store(Request $request, Property $property)
+    public function store(StoreEmailTemplateRequest $request, Property $property)
     {
-        $validated = $request->validate([
-            'type' => ['required', 'string'],
-            'subject' => ['required', 'string', 'max:255'],
-            'body' => ['required', 'string'],
-            'is_active' => ['boolean'],
-        ]);
-
-        $property->emailTemplates()->create($validated);
+        $property->emailTemplates()->create($request->validated());
 
         return back();
     }
