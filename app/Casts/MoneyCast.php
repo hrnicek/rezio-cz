@@ -37,22 +37,26 @@ class MoneyCast implements CastsAttributes
             return $value->getAmount();
         }
 
-        // If value is float/int (e.g. from form input 60.00),
-        // we usually want to convert to cents IF it's not already cents.
-        // BUT, standard Laravel behavior is: set(6000) -> 6000.
-        // set(60.00) -> 60.
-        // If the user types 60 in the form, and we send 60 to the backend.
-        // If we want 60 CZK, we need 6000.
-        // However, the CAST is usually dumb. It assumes the input to the setter is already what you want (or close to it).
-        // The Akaunting Money package constructor takes amount in SUBUNITS (cents).
-        // So if I do new Money(60, 'CZK'), I get 0.60 CZK.
-        // So if I want 60 CZK, I must provide 6000.
+        if (is_int($value)) {
+            return $value;
+        }
 
-        // For the setter:
-        // If I do $model->price = 6000; -> I expect 60 CZK.
-        // If I do $model->price = 60; -> I expect 0.60 CZK.
-        // So I will just cast to int.
+        // Strict check: Reject floats to prevent precision issues
+        if (is_float($value)) {
+            throw new \InvalidArgumentException(
+                "MoneyCast: Float values are not allowed to prevent precision loss. " .
+                "Passed: {$value}. Please pass an integer (cents) or a Money object."
+            );
+        }
 
-        return (int) $value;
+        // Strict check: Reject strings unless they are purely numeric integers
+        if (is_string($value) && ctype_digit($value)) {
+            return (int) $value;
+        }
+
+        throw new \InvalidArgumentException(
+            "MoneyCast: Invalid type. Expected Money object or integer (cents). " .
+            "Received: " . gettype($value)
+        );
     }
 }

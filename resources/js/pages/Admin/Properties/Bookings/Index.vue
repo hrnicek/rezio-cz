@@ -141,7 +141,7 @@ const getStatusVariant = (status: string) => {
 
 const columns = computed(() => {
     const cols = [
-        { key: 'customer', label: 'Host' },
+        { key: 'customer', label: 'Jméno' },
         { key: 'check_in', label: 'Od' },
         { key: 'check_out', label: 'Do' },
         { key: 'total_price', label: 'Cena celkem' },
