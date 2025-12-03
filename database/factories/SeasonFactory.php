@@ -27,8 +27,6 @@ class SeasonFactory extends Factory
             'price' => $this->faker->numberBetween(100, 500),
             'start_date' => null,
             'end_date' => null,
-            'is_fixed_range' => false,
-            'check_in_days' => null,
         ];
     }
 }

@@ -10,9 +10,9 @@ use Inertia\Inertia;
 
 class CheckInController extends Controller
 {
-    public function show(string $token)
+    public function show(string $code)
     {
-        $booking = Booking::where('token', $token)
+        $booking = Booking::where('code', $code)
             ->with(['property', 'guests'])
             ->firstOrFail();
 
@@ -23,9 +23,9 @@ class CheckInController extends Controller
         ]);
     }
 
-    public function store(Request $request, string $token)
+    public function store(Request $request, string $code)
     {
-        $booking = Booking::where('token', $token)->firstOrFail();
+        $booking = Booking::where('code', $code)->firstOrFail();
 
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',

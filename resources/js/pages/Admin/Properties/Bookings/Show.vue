@@ -459,15 +459,15 @@ const executeDeleteBooking = () => {
                                     <CardDescription>Odkaz pro hosty k vyplnění údajů</CardDescription>
                                 </CardHeader>
                                 <CardContent class="space-y-4">
-                                    <div v-if="booking.token" class="flex items-center gap-2">
+                                    <div v-if="booking.code" class="flex items-center gap-2">
                                         <div class="relative flex-1">
-                                            <Input readonly :value="route('check-in.show', booking.token)" class="font-mono text-xs h-9" />
+                                            <Input disabled :value="route('check-in.show', booking.code)" class="font-mono text-xs h-9" />
                                         </div>
-                                        <Button variant="outline" size="icon" class="h-9 w-9" @click="copyToClipboard(route('check-in.show', booking.token))">
+                                        <Button variant="outline" size="icon" class="h-9 w-9" @click="copyToClipboard(route('check-in.show', booking.code))">
                                             <Copy class="h-4 w-4" />
                                         </Button>
                                         <Button variant="outline" size="icon" class="h-9 w-9" as-child>
-                                            <a :href="route('check-in.show', booking.token)" target="_blank">
+                                            <a :href="route('check-in.show', booking.code)" target="_blank">
                                                 <ExternalLink class="h-4 w-4" />
                                             </a>
                                         </Button>

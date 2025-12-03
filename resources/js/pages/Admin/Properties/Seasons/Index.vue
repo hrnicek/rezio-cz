@@ -47,11 +47,11 @@ interface SeasonData {
     end_date: string | null;
     price_amount: MoneyData;
     min_stay: number | null;
-    check_in_days: number[] | null;
+    min_persons: number | null;
     is_default: boolean;
-    is_fixed_range: boolean;
     priority: number;
     is_recurring: boolean;
+    is_full_season_booking_only: boolean;
 }
 
 interface PropertyData {
@@ -84,11 +84,11 @@ const form = useForm({
     // Wait, Season model has 'price_amount' in fillable, but check if there's a mutator or if controller handles it.
     // Controller validates 'price'.
     min_stay: 1,
-    check_in_days: [] as number[],
+    min_persons: 1,
     is_default: false,
-    is_fixed_range: false,
     priority: 0,
     is_recurring: false,
+    is_full_season_booking_only: false,
 });
 
 const weekDays = [
@@ -114,11 +114,11 @@ const openEditDialog = (season: SeasonData) => {
     form.end_date = season.end_date ? new Date(season.end_date).toISOString().split('T')[0] : '';
     form.price = season.price_amount.value; // Using price_amount from model
     form.min_stay = season.min_stay || 1;
-    form.check_in_days = season.check_in_days || [];
+    form.min_persons = season.min_persons || 1;
     form.is_default = season.is_default;
-    form.is_fixed_range = season.is_fixed_range;
     form.priority = season.priority;
     form.is_recurring = season.is_recurring;
+    form.is_full_season_booking_only = season.is_full_season_booking_only;
     isDialogOpen.value = true;
 };
 
@@ -172,15 +172,6 @@ const deleteSeason = () => {
     });
 };
 
-const toggleCheckInDay = (day: number) => {
-    const index = form.check_in_days.indexOf(day);
-    if (index > -1) {
-        form.check_in_days.splice(index, 1);
-    } else {
-        form.check_in_days.push(day);
-    }
-};
-
 const breadcrumbs = [
     { title: 'Nemovitosti', href: '/admin/properties' },
     { title: props.property.name, href: `/admin/properties/${props.property.id}/edit` },
@@ -211,10 +202,6 @@ const columns = [
         key: 'min_stay',
         label: 'Min. pobyt',
         sortable: true
-    },
-    {
-        key: 'check_in_days',
-        label: 'Dny příjezdu'
     },
     {
         key: 'status',
@@ -269,14 +256,9 @@ const columns = [
                 <template #min_stay="{ value }">
                     {{ value || 1 }} <span class="text-muted-foreground text-xs">nocí</span>
                 </template>
-                <template #check_in_days="{ value }">
-                    <span v-if="!value || value.length === 0" class="text-muted-foreground text-xs uppercase">Kdykoliv</span>
-                    <span v-else class="text-xs font-mono">{{ value.map((d: number) => weekDays[d].label.substring(0, 2)).join(', ') }}</span>
-                </template>
                 <template #status="{ item }">
                     <div class="flex gap-1 flex-wrap">
                         <Badge v-if="item.is_default" variant="secondary" class="rounded-sm shadow-none">Výchozí</Badge>
-                        <Badge v-if="item.is_fixed_range" variant="outline" class="rounded-sm">Pevný</Badge>
                         <Badge v-if="item.is_recurring" variant="outline" class="rounded-sm">Opakovaná</Badge>
                     </div>
                 </template>
@@ -331,7 +313,7 @@ const columns = [
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="space-y-2">
                                 <Label for="priority" class="text-xs uppercase text-muted-foreground font-mono">Váha</Label>
                                 <Input id="priority" v-model.number="form.priority" type="number" class="h-9" />
@@ -339,40 +321,32 @@ const columns = [
                             </div>
                             
                             <div class="space-y-2">
-                                <Label for="min_stay" class="text-xs uppercase text-muted-foreground font-mono">Minimální délka pobytu (noci)</Label>
+                                <Label for="min_stay" class="text-xs uppercase text-muted-foreground font-mono">Min. délka (noci)</Label>
                                 <Input id="min_stay" v-model.number="form.min_stay" type="number" min="1" class="h-9" />
                                 <div v-if="form.errors.min_stay" class="text-sm text-destructive">{{ form.errors.min_stay }}</div>
                             </div>
+
+                            <div class="space-y-2">
+                                <Label for="min_persons" class="text-xs uppercase text-muted-foreground font-mono">Min. počet osob</Label>
+                                <Input id="min_persons" v-model.number="form.min_persons" type="number" min="1" class="h-9" />
+                                <div v-if="form.errors.min_persons" class="text-sm text-destructive">{{ form.errors.min_persons }}</div>
+                            </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                             <div class="flex items-center space-x-2">
                                 <Checkbox id="is_default" v-model:checked="form.is_default" />
                                 <Label for="is_default" class="cursor-pointer text-sm font-medium">Výchozí sezóna</Label>
                             </div>
 
                             <div class="flex items-center space-x-2">
-                                <Checkbox id="is_fixed_range" v-model:checked="form.is_fixed_range" />
-                                <Label for="is_fixed_range" class="cursor-pointer text-sm font-medium">Pevný rozsah</Label>
-                            </div>
-
-                            <div class="flex items-center space-x-2">
                                 <Checkbox id="is_recurring" v-model:checked="form.is_recurring" />
                                 <Label for="is_recurring" class="cursor-pointer text-sm font-medium">Opakovaná (roční)</Label>
                             </div>
-                        </div>
 
-                        <div class="space-y-2">
-                            <Label class="text-xs uppercase text-muted-foreground font-mono">Dny příjezdu (volitelné)</Label>
-                            <div class="flex flex-wrap gap-2">
-                                <div v-for="day in weekDays" :key="day.value" class="flex items-center space-x-2">
-                                    <Checkbox 
-                                        :id="`day-${day.value}`" 
-                                        :checked="form.check_in_days.includes(day.value)"
-                                        @update:checked="toggleCheckInDay(day.value)"
-                                    />
-                                    <Label :for="`day-${day.value}`" class="cursor-pointer text-sm">{{ day.label }}</Label>
-                                </div>
+                            <div class="flex items-center space-x-2">
+                                <Checkbox id="is_full_season_booking_only" v-model:checked="form.is_full_season_booking_only" />
+                                <Label for="is_full_season_booking_only" class="cursor-pointer text-sm font-medium">Pouze celá sezóna</Label>
                             </div>
                         </div>
 

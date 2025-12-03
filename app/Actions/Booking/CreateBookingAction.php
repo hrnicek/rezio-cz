@@ -2,10 +2,11 @@
 
 namespace App\Actions\Booking;
 
-use App\Models\Booking;
+use App\Models\Booking\Booking;
 use App\Models\Configuration\Service;
 use App\Models\CRM\Customer;
-use App\Rules\Booking\CheckInDayRule;
+use App\Rules\Booking\FullSeasonBookingRule;
+use App\Rules\Booking\MinPersonsRule;
 use App\Rules\Booking\MinStayRule;
 use App\Services\BookingPriceCalculator;
 use App\Services\BookingRules;
@@ -24,7 +25,8 @@ class CreateBookingAction
         // Register default rules
         $this->bookingRules
             ->addRule(new MinStayRule)
-            ->addRule(new CheckInDayRule);
+            ->addRule(new MinPersonsRule)
+            ->addRule(new FullSeasonBookingRule);
     }
 
     public function execute(array $data): Booking
@@ -58,7 +60,8 @@ class CreateBookingAction
             $season = $this->seasonCalculator->execute($startDate, $endDate);
 
             // Validate business rules
-            $this->bookingRules->validate($startDate, $endDate, $season);
+            $guestsCount = (int) ($data['guests_count'] ?? 1);
+            $this->bookingRules->validate($startDate, $endDate, $season, $guestsCount);
 
             // 4. Calculate price (seasonal overlay)
             $priceBreakdown = $this->priceCalculator->calculate(

@@ -32,10 +32,10 @@ class SeasonController extends Controller
             'end_date' => 'exclude_if:is_default,true|required|date|after:start_date',
             'price' => 'required|numeric|min:0',
             'min_stay' => 'nullable|integer|min:1',
-            'check_in_days' => 'nullable|array',
-            'is_fixed_range' => 'boolean',
+            'min_persons' => 'nullable|integer|min:1',
             'priority' => 'nullable|integer',
             'is_recurring' => 'boolean',
+            'is_full_season_booking_only' => 'boolean',
         ]);
 
         if ($request->boolean('is_default')) {
@@ -60,10 +60,10 @@ class SeasonController extends Controller
             'end_date' => 'exclude_if:is_default,true|required|date|after:start_date',
             'price' => 'required|numeric|min:0',
             'min_stay' => 'nullable|integer|min:1',
-            'check_in_days' => 'nullable|array',
-            'is_fixed_range' => 'boolean',
+            'min_persons' => 'nullable|integer|min:1',
             'priority' => 'nullable|integer',
             'is_recurring' => 'boolean',
+            'is_full_season_booking_only' => 'boolean',
         ]);
 
         if ($request->boolean('is_default') && ! $season->is_default) {

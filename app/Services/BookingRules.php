@@ -20,10 +20,10 @@ class BookingRules
         return $this;
     }
 
-    public function validate(Carbon $start, Carbon $end, ?Season $season): void
+    public function validate(Carbon $start, Carbon $end, ?Season $season, int $guestsCount = 1): void
     {
         foreach ($this->rules as $rule) {
-            $rule->validate($start, $end, $season);
+            $rule->validate($start, $end, $season, $guestsCount);
         }
     }
 }

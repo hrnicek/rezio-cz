@@ -64,13 +64,13 @@ const cancelEdit = () => {
 
 const submit = () => {
     if (editingGuestId.value) {
-        form.put(route('check-in.guests.update', [props.booking.checkin_token, editingGuestId.value]), {
+        form.put(route('check-in.guests.update', [props.booking.code, editingGuestId.value]), {
             onSuccess: () => {
                 cancelEdit();
             },
         });
     } else {
-        form.post(route('check-in.guests.store', props.booking.checkin_token), {
+        form.post(route('check-in.guests.store', props.booking.code), {
             onSuccess: () => {
                 form.reset();
             },
@@ -80,7 +80,7 @@ const submit = () => {
 
 const deleteGuest = (guestId: number) => {
     if (confirm('Opravdu chcete smazat tuto osobu?')) {
-        useForm({}).delete(route('check-in.guests.destroy', [props.booking.checkin_token, guestId]));
+        useForm({}).delete(route('check-in.guests.destroy', [props.booking.code, guestId]));
     }
 };
 

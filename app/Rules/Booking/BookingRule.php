@@ -7,5 +7,5 @@ use Carbon\Carbon;
 
 interface BookingRule
 {
-    public function validate(Carbon $start, Carbon $end, ?Season $season): void;
+    public function validate(Carbon $start, Carbon $end, ?Season $season, int $guestsCount = 1): void;
 }
